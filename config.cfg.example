@@ -1,6 +1,6 @@
 [DeyeInverter]
 inverter_ip = 192.168.123.123
 inverter_port = 8899
-inverter_sn = 1234567890
+inverter_serialnumber = 1234567890
 # in full Watts (as integer):
 installed_power = 8000

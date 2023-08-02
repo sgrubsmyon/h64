@@ -21,7 +21,7 @@ config = config["DeyeInverter"]
 
 inverter_ip = config["inverter_ip"]
 inverter_port = int(config["inverter_port"])
-inverter_sn = int(config["inverter_sn"])
+inverter_serialnumber = int(config["inverter_serialnumber"])
 installed_power = int(config["installed_power"])  # in full Watts (as integer)
 
 # END CONFIG
@@ -47,7 +47,7 @@ def modbus_request_frame(modbus_frame) -> bytearray:
     modbus_crc.reverse()
     checksum = bytearray.fromhex("00")  # checksum placeholder for outer frame
     end_code = bytearray.fromhex("15")
-    inverter_sn = bytearray.fromhex("{:10x}".format(self.config.serial_number))
+    inverter_sn = bytearray.fromhex("{:10x}".format(inverter_serialnumber))
     inverter_sn.reverse()
     frame = (
         start
@@ -201,6 +201,35 @@ def read_registers(first_reg: int, last_reg: int) -> dict[int, bytearray]:
         return {}
     return parse_modbus_read_response(modbus_resp_frame, first_reg, last_reg)
 
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog="read_deye_inverter",
+        description="Read modbus registers from Deye inverter via TCP packets",
+        epilog="Based on https://github.com/kbialek/deye-inverter-mqtt"
+    )
+
+    parser.add_argument('first_reg', metavar='FIRST_REG', type=int,
+                        help='Integer number of first register to read, e.g. 625')
+    parser.add_argument('last_reg', metavar='LAST_REG', type=int,
+                        help='Integer number of last register to read, e.g. 625')
+
+    args = parser.parse_args()
+
+    registers = read_registers(args.first_reg, args.last_reg)
+
+    if registers is None:
+        print("Error: no registers read")
+        sys.exit(1)
+    for reg_address in registers:
+        reg_bytes = registers[reg_address]
+        reg_value_int = int.from_bytes(reg_bytes, "big")
+        low_byte = reg_bytes[1]
+        high_byte = reg_bytes[0]
+        print(f"Register {reg_address}:   int: {reg_value_int}, l: {low_byte}, h: {high_byte}")
+        # Verified that it works: (run from deye-inverter-mqtt repo)
+        #   $ sudo docker run --rm --env-file config.env ghcr.io/kbialek/deye-inverter-mqtt r 625; ../../read_deye_inverter.py 625 625
+        # Both commands return the same values
 
 # Source: https://github.com/jlopez77/DeyeInverter/blob/main/InverterData.py
 
