@@ -7,6 +7,7 @@ import socket
 import libscrc
 import configparser
 import argparse
+import pandas
 
 # Based on: https://github.com/kbialek/deye-inverter-mqtt
 
@@ -219,7 +220,7 @@ if __name__ == "__main__":
     registers = read_registers(args.first_reg, args.last_reg)
 
     if registers is None:
-        print("Error: no registers read")
+        log.error("No registers read")
         sys.exit(1)
     for reg_address in registers:
         reg_bytes = registers[reg_address]
@@ -229,6 +230,6 @@ if __name__ == "__main__":
         print(
             f"Register {reg_address}:   int: {reg_value_int}, l: {low_byte}, h: {high_byte}"
         )
-        # Verified that it works: (run from deye-inverter-mqtt repo)
-        #   $ sudo docker run --rm --env-file config.env ghcr.io/kbialek/deye-inverter-mqtt r 625; ../../read_deye_inverter.py 625 625
-        # Both commands return the same values
+    
+    all_registers = pandas.read_csv("deye_sun-10k-sg04lp3_registers.csv")
+    all_register_numbers = all_registers["Modbus address"]
