@@ -2,9 +2,9 @@
 
 import logging
 import sys
+import os
 import socket
 import libscrc
-import os
 import configparser
 import argparse
 
@@ -209,10 +209,10 @@ if __name__ == "__main__":
         epilog="Based on https://github.com/kbialek/deye-inverter-mqtt"
     )
 
-    parser.add_argument('first_reg', metavar='FIRST_REG', type=int,
-                        help='Integer number of first register to read, e.g. 625')
-    parser.add_argument('last_reg', metavar='LAST_REG', type=int,
-                        help='Integer number of last register to read, e.g. 625')
+    parser.add_argument("first_reg", metavar="FIRST_REG", type=int,
+                        help="Integer number of first register to read, e.g. 625")
+    parser.add_argument("last_reg", metavar="LAST_REG", type=int,
+                        help="Integer number of last register to read, e.g. 625")
 
     args = parser.parse_args()
 
