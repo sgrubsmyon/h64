@@ -222,5 +222,6 @@ if __name__ == "__main__":
     all_metrics = pandas.read_csv("deye_sun-10k-sg04lp3_metrics.csv")
 
     for index, row in all_metrics.iterrows():
+        print(row["Metric"])
         print(metric_read_string(row))
         print("---")
