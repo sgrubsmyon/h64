@@ -76,18 +76,9 @@ def send_request(req_frame) -> bytes | None:
         sock_conn = socket.create_connection(
             (inverter_ip, inverter_port), timeout=10
         )
-        # if not self.__reachable:
-        #     self.__reachable = True
-        #     log.info("Re-connected to socket on IP %s",
-        #                     inverter_ip)
     except OSError as e:
-        # if self.__reachable:
-        #     log.warning(
-        #         "Could not open socket on IP %s: %s", inverter_ip, e)
-        # else:
         log.error("Could not open socket on IP %s: %s",
                   inverter_ip, e)
-        # self.__reachable = False
         return
 
     log.debug("Request frame: %s", req_frame.hex())
@@ -152,7 +143,7 @@ def extract_modbus_response_frame(frame: bytes | None) -> bytes | None:
     return frame[25:-2]
 
 
-def parse_modbus_read_response(frame: bytes, first_reg: int, last_reg: int) -> dict[int, bytearray]:
+def modbus_read_response_to_registers(frame: bytes, first_reg: int, last_reg: int) -> dict[int, bytearray]:
     # Credits: kbialek
     reg_count = last_reg - first_reg + 1
     registers = {}
@@ -199,12 +190,16 @@ def read_registers(first_reg: int, last_reg: int) -> dict[int, bytearray]:
     modbus_resp_frame = extract_modbus_response_frame(resp_frame)
     if modbus_resp_frame is None:
         return {}
-    return parse_modbus_read_response(modbus_resp_frame, first_reg, last_reg)
+    return modbus_read_response_to_registers(modbus_resp_frame, first_reg, last_reg)
+
+
+def register_to_value(reg_bytes, signed, factor, offset):
+    return int.from_bytes(reg_bytes, "big", signed=signed) * factor + offset
 
 
 def metric_read_string(metric_row):
     registers = read_registers(
-        metric_row["Modbus address first"], metric_row["Modbus address last"])
+        metric_row["Modbus first address"], metric_row["Modbus last address"])
     strings = []
     if registers is None:
         log.error("No registers read for: %s", metric_row)
@@ -213,8 +208,9 @@ def metric_read_string(metric_row):
         reg_value_int = int.from_bytes(reg_bytes, "big")
         low_byte = reg_bytes[1]
         high_byte = reg_bytes[0]
+        value = register_to_value(reg_bytes, metric_row["Signed"], metric_row["Factor"], metric_row["Offset"])
         strings.append(
-            f"Register {reg_address}:   int: {reg_value_int}, l: {low_byte}, h: {high_byte}")
+            f"Register {reg_address}:   raw: {reg_bytes}, int: {reg_value_int}, l: {low_byte}, h: {high_byte}, value; {value}")
     return "\n".join(strings)
 
 
