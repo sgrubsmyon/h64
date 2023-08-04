@@ -6,7 +6,6 @@ import os
 import socket
 import libscrc
 import configparser
-import argparse
 import pandas
 
 # Based on: https://github.com/kbialek/deye-inverter-mqtt
@@ -203,36 +202,25 @@ def read_registers(first_reg: int, last_reg: int) -> dict[int, bytearray]:
     return parse_modbus_read_response(modbus_resp_frame, first_reg, last_reg)
 
 
-def register_read_string(register_row):
-    registers = read_registers(register_row["Modbus address first"], register_row["Modbus address last"])
+def metric_read_string(metric_row):
+    registers = read_registers(
+        metric_row["Modbus address first"], metric_row["Modbus address last"])
     strings = []
     if registers is None:
-        log.error("No registers read for: %s", register_row)
+        log.error("No registers read for: %s", metric_row)
     for reg_address in registers:
         reg_bytes = registers[reg_address]
         reg_value_int = int.from_bytes(reg_bytes, "big")
         low_byte = reg_bytes[1]
         high_byte = reg_bytes[0]
-        strings.append(f"Register {reg_address}:   int: {reg_value_int}, l: {low_byte}, h: {high_byte}")
+        strings.append(
+            f"Register {reg_address}:   int: {reg_value_int}, l: {low_byte}, h: {high_byte}")
     return "\n".join(strings)
 
 
 if __name__ == "__main__":
-    # parser = argparse.ArgumentParser(
-    #     prog="read_deye_inverter",
-    #     description="Read modbus registers from Deye inverter via TCP packets",
-    #     epilog="Based on https://github.com/kbialek/deye-inverter-mqtt"
-    # )
+    all_metrics = pandas.read_csv("deye_sun-10k-sg04lp3_metrics.csv")
 
-    # parser.add_argument("first_reg", metavar="FIRST_REG", type=int,
-    #                     help="Integer number of first register to read, e.g. 625")
-    # parser.add_argument("last_reg", metavar="LAST_REG", type=int,
-    #                     help="Integer number of last register to read, e.g. 625")
-
-    # args = parser.parse_args()
-    
-    all_registers = pandas.read_csv("deye_sun-10k-sg04lp3_registers.csv")
-
-    print(register_read_string(all_registers.iloc[7]))
-    print("---")
-    print(register_read_string(all_registers.iloc[8]))
+    for index, row in all_metrics.iterrows():
+        print(metric_read_string(row))
+        print("---")
