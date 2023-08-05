@@ -7,7 +7,7 @@ import socket
 import libscrc
 import configparser
 import pandas
-import numpy as np
+from datetime import datetime
 
 # Based on: https://github.com/kbialek/deye-inverter-mqtt
 
@@ -37,7 +37,6 @@ def find_register_address_ranges(all_metrics):
         addr_last = row["Modbus last address"]
         all_reg_addresses += list(range(addr_first, addr_last + 1))
     all_reg_addresses = sorted(all_reg_addresses)
-    print(all_reg_addresses)
 
     reg_address_ranges = []
     addr = all_reg_addresses[0]
@@ -231,7 +230,7 @@ def register_to_value(reg_bytes_list, signed, factor, offset):
     return int.from_bytes(bytes_sum, "big", signed=signed) * factor + offset
 
 
-def metric_read_string(registers, metric_row):
+def metric_data(registers, metric_row, time):
     reg_address_first = metric_row["Modbus first address"]
     reg_address_last = metric_row["Modbus last address"]
     relevant_reg_addresses = list(filter(
@@ -248,28 +247,36 @@ def metric_read_string(registers, metric_row):
     value = register_to_value(
         reg_bytes_list, metric_row["Signed"], metric_row["Factor"], metric_row["Offset"]
     )
-    return f"{metric_row['Metric']}: {value} {metric_row['Unit']}"
+    return {
+        "metric": metric_row["Metric"],
+        "value": value,
+        "unit": metric_row["Unit"],
+        "time": time
+    }
+
+
+def metric_data_human_readable(data):
+    return f"{data['metric']}:\t{data['value']} {data['unit']}"
 
 
 if __name__ == "__main__":
     all_metrics = pandas.read_csv("deye_sun-10k-sg04lp3_metrics.csv")
-    min_reg_address = np.min(all_metrics["Modbus first address"])
-    max_reg_address = np.max(all_metrics["Modbus last address"])
-
     reg_address_ranges = find_register_address_ranges(all_metrics)
-    print(reg_address_ranges)
 
-    # Slow: send request via socket for every metric (takes about 6,3 seconds)
-    # for index, row in all_metrics.iterrows():
-    #     registers = read_registers(row["Modbus first address"], row["Modbus last address"])
-
-    # sys.exit(0)
-    
-    # Faster: send request via socket only for each address range (takes about 2,5 seconds)
+    # Faster than individual request for each metric:
+    # send request via socket only for each address range
+    # (takes about 2,5 seconds)
+    all_registers = {}
+    time = datetime.now().isoformat()
     for addr_range in reg_address_ranges:
         registers = read_registers(addr_range[0], addr_range[1])
-        # if registers is None:
-        #     log.error("No registers read")
-        # else:
-        #     for index, row in all_metrics.iterrows():
-        #         print(metric_read_string(registers, row))
+        if registers is None:
+            log.error("No registers read for range %s", addr_range)
+        else:
+            all_registers.update(registers)
+
+    print(all_registers)
+    for index, row in all_metrics.iterrows():
+        data = metric_data(all_registers, row, time)
+        # print(data)
+        print(metric_data_human_readable(data))
