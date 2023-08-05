@@ -30,6 +30,31 @@ installed_power = int(config["installed_power"])  # in full Watts (as integer)
 log = logging.getLogger("DeyeInverter")
 
 
+def find_register_address_ranges(all_metrics):
+    all_reg_addresses = []
+    for _, row in all_metrics.iterrows():
+        addr_first = row["Modbus first address"]
+        addr_last = row["Modbus last address"]
+        all_reg_addresses += list(range(addr_first, addr_last + 1))
+    all_reg_addresses = sorted(all_reg_addresses)
+    print(all_reg_addresses)
+
+    reg_address_ranges = []
+    addr = all_reg_addresses[0]
+    range_low = addr
+    for addr2 in all_reg_addresses[1:]:
+        if addr2 > addr + 1:
+            range_high = addr
+            reg_address_ranges.append((range_low, range_high))
+            range_low = addr2
+        addr = addr2
+    # Append very last range
+    range_high = addr
+    reg_address_ranges.append((range_low, range_high))
+
+    return reg_address_ranges
+
+
 def modbus_read_request_frame(first_reg: int, last_reg: int) -> bytearray:
     # Credits: kbialek
     reg_count = last_reg - first_reg + 1
@@ -195,18 +220,15 @@ def read_registers(first_reg: int, last_reg: int) -> dict[int, bytearray]:
 
 
 def register_to_value(reg_bytes_list, signed, factor, offset):
-    print("reg_bytes_list:", reg_bytes_list)
+    # need to reverse the bytes list because of "big" endian
+    # (double register has first byte in second reg_address and second byte in first reg_address,
+    # see kbialek's code in deye_sensor.py, class DoubleRegisterSensor, method read_value():
+    #   low_word_reg_address = self.reg_address
+    #   high_word_reg_address = self.reg_address + 1
+    #   high_word + low_word # not low_word + high_word!
+    # `+` concatenates the bytes, so high_word comes first (left), low_word right
     bytes_sum = b''.join(reversed(reg_bytes_list))
-    print("bytes_sum:", bytes_sum)
     return int.from_bytes(bytes_sum, "big", signed=signed) * factor + offset
-
-
-def register_to_value2(reg_bytes_list, signed, factor, offset):
-    int_list = [int.from_bytes(byte, 'big') for byte in reg_bytes_list]
-    int_sum = sum(int_list)
-    bytes_sum2 = int_sum.to_bytes(4, 'big')
-    print("bytes_sum2:", bytes_sum2)
-    return int.from_bytes(bytes_sum2, "big", signed=signed) * factor + offset
 
 
 def metric_read_string(registers, metric_row):
@@ -219,7 +241,6 @@ def metric_read_string(registers, metric_row):
     if len(relevant_reg_addresses) == 0:
         log.error("No registers read for: %s", metric_row["Metric"])
         return ""
-    print(relevant_reg_addresses)
     reg_bytes_list = list(map(
         lambda reg_address: registers[reg_address],
         relevant_reg_addresses
@@ -227,10 +248,7 @@ def metric_read_string(registers, metric_row):
     value = register_to_value(
         reg_bytes_list, metric_row["Signed"], metric_row["Factor"], metric_row["Offset"]
     )
-    value2 = register_to_value2(
-        reg_bytes_list, metric_row["Signed"], metric_row["Factor"], metric_row["Offset"]
-    )
-    return f"{metric_row['Metric']}: {value} {metric_row['Unit']}\t{value2} {metric_row['Unit']}"
+    return f"{metric_row['Metric']}: {value} {metric_row['Unit']}"
 
 
 if __name__ == "__main__":
@@ -238,17 +256,20 @@ if __name__ == "__main__":
     min_reg_address = np.min(all_metrics["Modbus first address"])
     max_reg_address = np.max(all_metrics["Modbus last address"])
 
+    reg_address_ranges = find_register_address_ranges(all_metrics)
+    print(reg_address_ranges)
+
+    # Slow: send request via socket for every metric (takes about 6,3 seconds)
     # for index, row in all_metrics.iterrows():
-    #     # print(row["Metric"])
     #     registers = read_registers(row["Modbus first address"], row["Modbus last address"])
-    # print(metric_read_string(registers, row))
-    #     # print("---")
 
     # sys.exit(0)
-
-    registers = read_registers(520, 525)
-    if registers is None:
-        log.error("No registers read")
-    else:
-        for index, row in all_metrics.iterrows():
-            print(metric_read_string(registers, row))
+    
+    # Faster: send request via socket only for each address range (takes about 2,5 seconds)
+    for addr_range in reg_address_ranges:
+        registers = read_registers(addr_range[0], addr_range[1])
+        # if registers is None:
+        #     log.error("No registers read")
+        # else:
+        #     for index, row in all_metrics.iterrows():
+        #         print(metric_read_string(registers, row))

@@ -33,9 +33,9 @@ Daily Battery Charge,514,514,battery/daily_charge,kWh,False,0.1,0
 Daily Battery Discharge,515,515,battery/daily_discharge,kWh,False,0.1,0
 Total Battery Charge,516,517,battery/total_charge,kWh,False,0.1,0
 Total Battery Discharge,518,519,battery/total_discharge,kWh,False,0.1,0
-Battery Power,590,590,battery/power,W,True,1,0
 Battery Voltage,587,587,battery/voltage,V,False,0.01,0
 Battery SOC,588,588,battery/soc,%,False,1,0
+Battery Power,590,590,battery/power,W,True,1,0
 Battery Current,591,591,battery/current,A,True,0.01,0
 Battery Temperature,586,586,battery/temperature,°C,False,0.1,-100.0
 Total Load Power,653,653,ac/ups/total_power,W,False,1,0
