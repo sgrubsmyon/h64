@@ -7,6 +7,7 @@ import socket
 import libscrc
 import configparser
 import pandas
+import numpy as np
 
 # Based on: https://github.com/kbialek/deye-inverter-mqtt
 
@@ -193,31 +194,81 @@ def read_registers(first_reg: int, last_reg: int) -> dict[int, bytearray]:
     return modbus_read_response_to_registers(modbus_resp_frame, first_reg, last_reg)
 
 
-def register_to_value(reg_bytes, signed, factor, offset):
-    return int.from_bytes(reg_bytes, "big", signed=signed) * factor + offset
+def split_int(num, split):
+    """convert base-10 int to other bases and return digits in a list"""
+    res = []
+    exp = 1
+    while exp < num:
+        trunc = exp
+        exp *= split
+        current_num = num % exp // trunc
+        res.insert(0, current_num)
+    return res
 
 
-def metric_read_string(metric_row):
-    registers = read_registers(
-        metric_row["Modbus first address"], metric_row["Modbus last address"])
-    strings = []
-    if registers is None:
-        log.error("No registers read for: %s", metric_row)
-    for reg_address in registers:
-        reg_bytes = registers[reg_address]
-        reg_value_int = int.from_bytes(reg_bytes, "big")
-        low_byte = reg_bytes[1]
-        high_byte = reg_bytes[0]
-        value = register_to_value(reg_bytes, metric_row["Signed"], metric_row["Factor"], metric_row["Offset"])
-        strings.append(
-            f"Register {reg_address}:   raw: {reg_bytes}, int: {reg_value_int}, l: {low_byte}, h: {high_byte}, value; {value}")
-    return "\n".join(strings)
+def register_to_value(reg_bytes_list, signed, factor, offset):
+    print("reg_bytes_list:", reg_bytes_list)
+    bytes_sum = b''.join(reg_bytes_list)
+    int_list = [int.from_bytes(byte, 'big') for byte in reg_bytes_list]
+    int_sum = sum(int_list)
+    bytes_sum2 = bytes(split_int(int_sum, 256))
+    bytes_sum3 = int_sum.to_bytes(2, 'big')
+    print("bytes_sum:", bytes_sum)
+    print("bytes_sum2:", bytes_sum2)
+    print("bytes_sum3:", bytes_sum3)
+    print("bytes test 1-1:", bytes(split_int(254, 256)))
+    print("bytes test 1-2:", (254).to_bytes(2, 'big'))
+    print("bytes test 2-1:", bytes(split_int(255, 256)))
+    print("bytes test 2-2:", (255).to_bytes(2, 'big'))
+    print("bytes test 3-1:", bytes(split_int(256, 256)))
+    print("bytes test 3-2:", (256).to_bytes(2, 'big'))
+    print("bytes test 4-1:", bytes(split_int(257, 256)))
+    print("bytes test 4-2:", (257).to_bytes(2, 'big'))
+    return int.from_bytes(bytes_sum2, "big", signed=signed) * factor + offset
+
+
+def metric_read_string(registers, metric_row):
+    reg_address_first = metric_row["Modbus first address"]
+    reg_address_last = metric_row["Modbus last address"]
+    relevant_reg_addresses = list(filter(
+        lambda reg_address: reg_address >= reg_address_first and reg_address <= reg_address_last,
+        registers
+    ))
+    if len(relevant_reg_addresses) == 0:
+        log.error("No registers read for: %s", metric_row["Metric"])
+        return ""
+    print(relevant_reg_addresses)
+    reg_bytes_list = list(map(
+        lambda reg_address: registers[reg_address],
+        relevant_reg_addresses
+    ))
+    value = register_to_value(
+        reg_bytes_list, metric_row["Signed"], metric_row["Factor"], metric_row["Offset"]
+    )
+    # reg_value_int = int.from_bytes(reg_bytes, "big")
+    # low_byte = reg_bytes[1]
+    # high_byte = reg_bytes[0]
+    # strings.append(
+    #     f"Register {reg_address}:   raw: {reg_bytes}, int: {reg_value_int}, l: {low_byte}, h: {high_byte}, value; {value}")
+    return f"{metric_row['Metric']}: {value}"
 
 
 if __name__ == "__main__":
     all_metrics = pandas.read_csv("deye_sun-10k-sg04lp3_metrics.csv")
+    min_reg_address = np.min(all_metrics["Modbus first address"])
+    max_reg_address = np.max(all_metrics["Modbus last address"])
 
-    for index, row in all_metrics.iterrows():
-        print(row["Metric"])
-        print(metric_read_string(row))
-        print("---")
+    # for index, row in all_metrics.iterrows():
+    #     # print(row["Metric"])
+    #     registers = read_registers(row["Modbus first address"], row["Modbus last address"])
+    # print(metric_read_string(registers, row))
+    #     # print("---")
+
+    # sys.exit(0)
+
+    registers = read_registers(520, 525)
+    if registers is None:
+        log.error("No registers read")
+    else:
+        for index, row in all_metrics.iterrows():
+            print(metric_read_string(registers, row))
