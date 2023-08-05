@@ -194,36 +194,18 @@ def read_registers(first_reg: int, last_reg: int) -> dict[int, bytearray]:
     return modbus_read_response_to_registers(modbus_resp_frame, first_reg, last_reg)
 
 
-def split_int(num, split):
-    """convert base-10 int to other bases and return digits in a list"""
-    res = []
-    exp = 1
-    while exp < num:
-        trunc = exp
-        exp *= split
-        current_num = num % exp // trunc
-        res.insert(0, current_num)
-    return res
-
-
 def register_to_value(reg_bytes_list, signed, factor, offset):
     print("reg_bytes_list:", reg_bytes_list)
-    bytes_sum = b''.join(reg_bytes_list)
+    bytes_sum = b''.join(reversed(reg_bytes_list))
+    print("bytes_sum:", bytes_sum)
+    return int.from_bytes(bytes_sum, "big", signed=signed) * factor + offset
+
+
+def register_to_value2(reg_bytes_list, signed, factor, offset):
     int_list = [int.from_bytes(byte, 'big') for byte in reg_bytes_list]
     int_sum = sum(int_list)
-    bytes_sum2 = bytes(split_int(int_sum, 256))
-    bytes_sum3 = int_sum.to_bytes(2, 'big')
-    print("bytes_sum:", bytes_sum)
+    bytes_sum2 = int_sum.to_bytes(4, 'big')
     print("bytes_sum2:", bytes_sum2)
-    print("bytes_sum3:", bytes_sum3)
-    print("bytes test 1-1:", bytes(split_int(254, 256)))
-    print("bytes test 1-2:", (254).to_bytes(2, 'big'))
-    print("bytes test 2-1:", bytes(split_int(255, 256)))
-    print("bytes test 2-2:", (255).to_bytes(2, 'big'))
-    print("bytes test 3-1:", bytes(split_int(256, 256)))
-    print("bytes test 3-2:", (256).to_bytes(2, 'big'))
-    print("bytes test 4-1:", bytes(split_int(257, 256)))
-    print("bytes test 4-2:", (257).to_bytes(2, 'big'))
     return int.from_bytes(bytes_sum2, "big", signed=signed) * factor + offset
 
 
@@ -245,12 +227,10 @@ def metric_read_string(registers, metric_row):
     value = register_to_value(
         reg_bytes_list, metric_row["Signed"], metric_row["Factor"], metric_row["Offset"]
     )
-    # reg_value_int = int.from_bytes(reg_bytes, "big")
-    # low_byte = reg_bytes[1]
-    # high_byte = reg_bytes[0]
-    # strings.append(
-    #     f"Register {reg_address}:   raw: {reg_bytes}, int: {reg_value_int}, l: {low_byte}, h: {high_byte}, value; {value}")
-    return f"{metric_row['Metric']}: {value}"
+    value2 = register_to_value2(
+        reg_bytes_list, metric_row["Signed"], metric_row["Factor"], metric_row["Offset"]
+    )
+    return f"{metric_row['Metric']}: {value} {metric_row['Unit']}\t{value2} {metric_row['Unit']}"
 
 
 if __name__ == "__main__":
