@@ -7,7 +7,9 @@ import socket
 import libscrc
 import configparser
 import pandas
+import numpy as np
 from datetime import datetime
+import json
 
 # Based on: https://github.com/kbialek/deye-inverter-mqtt
 
@@ -247,6 +249,8 @@ def metric_data(registers, metric_row, time):
     value = register_to_value(
         reg_bytes_list, metric_row["Signed"], metric_row["Factor"], metric_row["Offset"]
     )
+    digits = int(-np.log10(metric_row["Factor"]))
+    value = round(value, digits)
     return {
         "metric": metric_row["Metric"],
         "value": value,
@@ -275,8 +279,10 @@ if __name__ == "__main__":
         else:
             all_registers.update(registers)
 
-    print(all_registers)
+    data = []
     for index, row in all_metrics.iterrows():
-        data = metric_data(all_registers, row, time)
-        # print(data)
-        print(metric_data_human_readable(data))
+        this_data = metric_data(all_registers, row, time)
+        data.append(this_data)
+        print(metric_data_human_readable(this_data))
+
+    print(json.dumps(data))
