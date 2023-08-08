@@ -1,50 +1,50 @@
-Metric,Modbus first address,Modbus last address,MQTT topic suffix,column_name,Unit,Signed,Factor,Offset
-Daily PV Production,529,529,day_energy,daily_pv_production,kWh,False,0.1,0
-Total PV Production,534,535,total_energy,total_pv_production,kWh,False,0.1,0
-PV1 Power,672,672,dc/pv1/power,pv1_power,W,False,1,0
-PV2 Power,673,673,dc/pv2/power,pv2_power,W,False,1,0
-PV1 Voltage,676,676,dc/pv1/voltage,pv1_voltage,V,False,0.1,0
-PV2 Voltage,678,678,dc/pv2/voltage,pv2_voltage,V,False,0.1,0
-PV1 Current,677,677,dc/pv1/current,pv1_current,A,False,0.1,0
-PV2 Current,679,679,dc/pv2/current,pv2_current,A,False,0.1,0
-Daily Load Consumption,526,526,ac/ups/daily_energy,daily_load_energy_consumption,kWh,False,0.1,0
-Total Load Consumption,527,528,ac/ups/total_energy,total_load_energy_consumption,kWh,False,0.1,0
-Daily Energy Bought,520,520,ac/daily_energy_bought,daily_energy_bought,kWh,False,0.1,0
-Daily Energy Sold,521,521,ac/daily_energy_sold,daily_energy_sold,kWh,False,0.1,0
-Total Energy Bought,522,523,ac/total_energy_bought,total_energy_bought,kWh,False,0.1,0
-Total Energy Sold,524,525,ac/total_energy_sold,total_energy_sold,kWh,False,0.1,0
-Total Load Power,653,653,ac/ups/total_power,total_load_power,W,False,1,0
-Total Grid Power,625,625,ac/total_power,total_grid_power,W,True,1,0
-Load Power L1,650,650,ac/ups/l1/power,load_power_l1,W,False,1,0
-Load Power L2,651,651,ac/ups/l2/power,load_power_l2,W,False,1,0
-Load Power L3,652,652,ac/ups/l3/power,load_power_l3,W,False,1,0
-Load Voltage L1,644,644,ac/ups/l1/voltage,load_voltage_l1,V,False,0.1,0
-Load Voltage L2,645,645,ac/ups/l2/voltage,load_voltage_l2,V,False,0.1,0
-Load Voltage L3,646,646,ac/ups/l3/voltage,load_voltage_l3,V,False,0.1,0
-Grid Voltage L1,598,598,ac/l1/voltage,grid_voltage_l1,V,False,0.1,0
-Grid Voltage L2,599,599,ac/l2/voltage,grid_voltage_l2,V,False,0.1,0
-Grid Voltage L3,600,600,ac/l3/voltage,grid_voltage_l3,V,False,0.1,0
-CT Internal Power L1,604,604,ac/l1/ct/internal,ct_internal_power_l1,W,True,1,0
-CT Internal Power L2,605,605,ac/l2/ct/internal,ct_internal_power_l2,W,True,1,0
-CT Internal Power L3,606,606,ac/l3/ct/internal,ct_internal_power_l3,W,True,1,0
-CT External Power L1,616,616,ac/l1/ct/external,ct_external_power_l1,W,True,1,0
-CT External Power L2,617,617,ac/l2/ct/external,ct_external_power_l2,W,True,1,0
-CT External Power L3,618,618,ac/l3/ct/external,ct_external_power_l3,W,True,1,0
-Inverter Power L1,633,633,ac/l1/power,inverter_power_l1,W,True,1,0
-Inverter Power L2,634,634,ac/l2/power,inverter_power_l2,W,True,1,0
-Inverter Power L3,635,635,ac/l3/power,inverter_power_l3,W,True,1,0
-Current L1,630,630,ac/l1/current,current_l1,A,True,0.01,0
-Current L2,631,631,ac/l2/current,current_l2,A,True,0.01,0
-Current L3,632,632,ac/l3/current,current_l3,A,True,0.01,0
-DC Temperature,540,540,radiator_temp,dc_temperature,°C,True,0.1,-100
-AC Temperature,541,541,ac/temperature,ac_temperature,°C,True,0.1,-100
-Battery SOC,588,588,battery/soc,battery_soc,%,False,1,0
-Battery Power,590,590,battery/power,battery_power,W,True,1,0
-Daily Battery Charge,514,514,battery/daily_charge,battery_daily_charge,kWh,False,0.1,0
-Daily Battery Discharge,515,515,battery/daily_discharge,battery_daily_discharge,kWh,False,0.1,0
-Total Battery Charge,516,517,battery/total_charge,battery_total_charge,kWh,False,0.1,0
-Total Battery Discharge,518,519,battery/total_discharge,battery_total_discharge,kWh,False,0.1,0
-Battery Voltage,587,587,battery/voltage,battery_voltage,V,False,0.01,0
-Battery Current,591,591,battery/current,battery_current,A,True,0.01,0
-Battery Temperature,586,586,battery/temperature,battery_temperature,°C,False,0.1,-100
-Active power regulation,40,40,settings/active_power_regulation,active_power_regulation,%,False,1,0
+Group,Metric,Modbus first address,Modbus last address,MQTT topic suffix,column_name,Unit,Signed,Factor,Offset
+Slow,Daily PV Production,529,529,day_energy,daily_pv_production,kWh,False,0.1,0
+Slow,Total PV Production,534,535,total_energy,total_pv_production,kWh,False,0.1,0
+Fast,PV1 Power,672,672,dc/pv1/power,pv1_power,W,False,1,0
+Fast,PV2 Power,673,673,dc/pv2/power,pv2_power,W,False,1,0
+Fast,PV1 Voltage,676,676,dc/pv1/voltage,pv1_voltage,V,False,0.1,0
+Fast,PV2 Voltage,678,678,dc/pv2/voltage,pv2_voltage,V,False,0.1,0
+Fast,PV1 Current,677,677,dc/pv1/current,pv1_current,A,False,0.1,0
+Fast,PV2 Current,679,679,dc/pv2/current,pv2_current,A,False,0.1,0
+Slow,Daily Load Consumption,526,526,ac/ups/daily_energy,daily_load_energy_consumption,kWh,False,0.1,0
+Slow,Total Load Consumption,527,528,ac/ups/total_energy,total_load_energy_consumption,kWh,False,0.1,0
+Slow,Daily Energy Bought,520,520,ac/daily_energy_bought,daily_energy_bought,kWh,False,0.1,0
+Slow,Daily Energy Sold,521,521,ac/daily_energy_sold,daily_energy_sold,kWh,False,0.1,0
+Slow,Total Energy Bought,522,523,ac/total_energy_bought,total_energy_bought,kWh,False,0.1,0
+Slow,Total Energy Sold,524,525,ac/total_energy_sold,total_energy_sold,kWh,False,0.1,0
+Fast,Total Load Power,653,653,ac/ups/total_power,total_load_power,W,False,1,0
+Fast,Total Grid Power,625,625,ac/total_power,total_grid_power,W,True,1,0
+Fast,Load Power L1,650,650,ac/ups/l1/power,load_power_l1,W,False,1,0
+Fast,Load Power L2,651,651,ac/ups/l2/power,load_power_l2,W,False,1,0
+Fast,Load Power L3,652,652,ac/ups/l3/power,load_power_l3,W,False,1,0
+Fast,Load Voltage L1,644,644,ac/ups/l1/voltage,load_voltage_l1,V,False,0.1,0
+Fast,Load Voltage L2,645,645,ac/ups/l2/voltage,load_voltage_l2,V,False,0.1,0
+Fast,Load Voltage L3,646,646,ac/ups/l3/voltage,load_voltage_l3,V,False,0.1,0
+Fast,Grid Voltage L1,598,598,ac/l1/voltage,grid_voltage_l1,V,False,0.1,0
+Fast,Grid Voltage L2,599,599,ac/l2/voltage,grid_voltage_l2,V,False,0.1,0
+Fast,Grid Voltage L3,600,600,ac/l3/voltage,grid_voltage_l3,V,False,0.1,0
+Fast,CT Internal Power L1,604,604,ac/l1/ct/internal,ct_internal_power_l1,W,True,1,0
+Fast,CT Internal Power L2,605,605,ac/l2/ct/internal,ct_internal_power_l2,W,True,1,0
+Fast,CT Internal Power L3,606,606,ac/l3/ct/internal,ct_internal_power_l3,W,True,1,0
+Fast,CT External Power L1,616,616,ac/l1/ct/external,ct_external_power_l1,W,True,1,0
+Fast,CT External Power L2,617,617,ac/l2/ct/external,ct_external_power_l2,W,True,1,0
+Fast,CT External Power L3,618,618,ac/l3/ct/external,ct_external_power_l3,W,True,1,0
+Fast,Inverter Power L1,633,633,ac/l1/power,inverter_power_l1,W,True,1,0
+Fast,Inverter Power L2,634,634,ac/l2/power,inverter_power_l2,W,True,1,0
+Fast,Inverter Power L3,635,635,ac/l3/power,inverter_power_l3,W,True,1,0
+Fast,Current L1,630,630,ac/l1/current,current_l1,A,True,0.01,0
+Fast,Current L2,631,631,ac/l2/current,current_l2,A,True,0.01,0
+Fast,Current L3,632,632,ac/l3/current,current_l3,A,True,0.01,0
+Fast,DC Temperature,540,540,radiator_temp,dc_temperature,°C,True,0.1,-100
+Fast,AC Temperature,541,541,ac/temperature,ac_temperature,°C,True,0.1,-100
+Slow,Battery SOC,588,588,battery/soc,battery_soc,%,False,1,0
+Fast,Battery Power,590,590,battery/power,battery_power,W,True,1,0
+Slow,Daily Battery Charge,514,514,battery/daily_charge,battery_daily_charge,kWh,False,0.1,0
+Slow,Daily Battery Discharge,515,515,battery/daily_discharge,battery_daily_discharge,kWh,False,0.1,0
+Slow,Total Battery Charge,516,517,battery/total_charge,battery_total_charge,kWh,False,0.1,0
+Slow,Total Battery Discharge,518,519,battery/total_discharge,battery_total_discharge,kWh,False,0.1,0
+Fast,Battery Voltage,587,587,battery/voltage,battery_voltage,V,False,0.01,0
+Fast,Battery Current,591,591,battery/current,battery_current,A,True,0.01,0
+Fast,Battery Temperature,586,586,battery/temperature,battery_temperature,°C,False,0.1,-100
+Slow,Active power regulation,40,40,settings/active_power_regulation,active_power_regulation,%,False,1,0
