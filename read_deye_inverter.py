@@ -40,20 +40,20 @@ def find_register_address_ranges(all_metrics):
         all_reg_addresses += list(range(addr_first, addr_last + 1))
     all_reg_addresses = sorted(all_reg_addresses)
 
-    reg_address_ranges = []
+    reg_addr_ranges = []
     addr = all_reg_addresses[0]
     range_low = addr
     for addr2 in all_reg_addresses[1:]:
         if addr2 > addr + 1:
             range_high = addr
-            reg_address_ranges.append((range_low, range_high))
+            reg_addr_ranges.append((range_low, range_high))
             range_low = addr2
         addr = addr2
     # Append very last range
     range_high = addr
-    reg_address_ranges.append((range_low, range_high))
+    reg_addr_ranges.append((range_low, range_high))
 
-    return reg_address_ranges
+    return reg_addr_ranges
 
 
 def modbus_read_request_frame(first_reg: int, last_reg: int) -> bytearray:
@@ -265,24 +265,41 @@ def metric_data_human_readable(data):
 
 if __name__ == "__main__":
     all_metrics = pandas.read_csv("deye_sun-10k-sg04lp3_metrics.csv")
-    reg_address_ranges = find_register_address_ranges(all_metrics)
+    metric_groups = np.unique(all_metrics["Group"])
+    metrics = {}
+    for gr in metric_groups:
+        metrics[gr] = all_metrics.loc[all_metrics["Group"] == gr]
+
+    reg_address_ranges = {}
+    for gr in metric_groups:
+        reg_address_ranges[gr] = find_register_address_ranges(metrics[gr])
+        print(gr, reg_address_ranges[gr])
 
     # Faster than individual request for each metric:
     # send request via socket only for each address range
-    # (takes about 2,5 seconds)
+    # (takes about 2.5 seconds)
     all_registers = {}
-    time = datetime.now().isoformat()
-    for addr_range in reg_address_ranges:
-        registers = read_registers(addr_range[0], addr_range[1])
-        if registers is None:
-            log.error("No registers read for range %s", addr_range)
-        else:
-            all_registers.update(registers)
+    for gr in metric_groups:
+        all_registers[gr] = {}
+        time = datetime.now().isoformat()
+        for addr_range in reg_address_ranges[gr]:
+            registers = read_registers(addr_range[0], addr_range[1])
+            if registers is None:
+                log.error("No registers read for range %s", addr_range)
+            else:
+                all_registers[gr].update(registers)
 
-    data = []
-    for index, row in all_metrics.iterrows():
-        this_data = metric_data(all_registers, row, time)
-        data.append(this_data)
-        print(metric_data_human_readable(this_data))
+    data = {}
+    for gr in metric_groups:
+        print(f"Values changing {gr}:")
+        print("---------------------")
+        data[gr] = []
+        for index, row in metrics[gr].iterrows():
+            this_data = metric_data(all_registers[gr], row, time)
+            data[gr].append(this_data)
+            print(metric_data_human_readable(this_data))
+        print()
 
-    print(json.dumps(data))
+    for gr in metric_groups:
+        print(json.dumps(data[gr]))
+        print()
