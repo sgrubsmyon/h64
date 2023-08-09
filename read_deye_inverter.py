@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import logging
 import sys
 import os
@@ -25,7 +26,7 @@ config = config["DeyeInverter"]
 inverter_ip = config["inverter_ip"]
 inverter_port = int(config["inverter_port"])
 inverter_serialnumber = int(config["inverter_serialnumber"])
-installed_power = int(config["installed_power"])  # in full Watts (as integer)
+# installed_power = int(config["installed_power"])  # in full Watts (as integer)
 
 # END CONFIG
 
@@ -260,46 +261,52 @@ def metric_data(registers, metric_row, time):
 
 
 def metric_data_human_readable(data):
-    return f"{data['metric']}:\t{data['value']} {data['unit']}"
+    return f"{'{0: <25}'.format(data['metric'] + ':')} {data['value']} {data['unit']}"
+
+
+def data_of_metric_group(group):
+    all_metrics = pandas.read_csv("deye_sun-10k-sg04lp3_metrics.csv")
+    metrics = all_metrics.loc[all_metrics["Group"] == group]
+    reg_address_ranges = find_register_address_ranges(metrics)
+    # print(group + ":", reg_address_ranges)
+
+    all_registers = {}
+    time = datetime.now().isoformat()
+    for addr_range in reg_address_ranges:
+        registers = read_registers(addr_range[0], addr_range[1])
+        if registers is None:
+            log.error("No registers read for range %s", addr_range)
+        else:
+            all_registers.update(registers)
+
+    data = []
+    for _, row in metrics.iterrows():
+        this_data = metric_data(all_registers, row, time)
+        data.append(this_data)
+
+    return data
+
+
+def print_data_of_metric_group(group, data):
+    print(f"Values changing {group}:")
+    print("---------------------")
+    for this_data in data:
+        print(metric_data_human_readable(this_data))
+    # print()
+    # print(json.dumps(data))
 
 
 if __name__ == "__main__":
-    all_metrics = pandas.read_csv("deye_sun-10k-sg04lp3_metrics.csv")
-    metric_groups = np.unique(all_metrics["Group"])
-    metrics = {}
-    for gr in metric_groups:
-        metrics[gr] = all_metrics.loc[all_metrics["Group"] == gr]
+    parser = argparse.ArgumentParser(
+        prog="read_deye_inverter",
+        description="Read modbus registers from Deye inverter via TCP packets",
+        epilog="Based on https://github.com/kbialek/deye-inverter-mqtt"
+    )
 
-    reg_address_ranges = {}
-    for gr in metric_groups:
-        reg_address_ranges[gr] = find_register_address_ranges(metrics[gr])
-        print(gr, reg_address_ranges[gr])
+    parser.add_argument("metric_group", metavar="METRIC_GROUP", type=str,
+                        help="String, one of [\"Slow\", \"Fast\", \"Faster\"]")
 
-    # Faster than individual request for each metric:
-    # send request via socket only for each address range
-    # (takes about 2.5 seconds)
-    all_registers = {}
-    for gr in metric_groups:
-        all_registers[gr] = {}
-        time = datetime.now().isoformat()
-        for addr_range in reg_address_ranges[gr]:
-            registers = read_registers(addr_range[0], addr_range[1])
-            if registers is None:
-                log.error("No registers read for range %s", addr_range)
-            else:
-                all_registers[gr].update(registers)
+    args = parser.parse_args()
 
-    data = {}
-    for gr in metric_groups:
-        print(f"Values changing {gr}:")
-        print("---------------------")
-        data[gr] = []
-        for index, row in metrics[gr].iterrows():
-            this_data = metric_data(all_registers[gr], row, time)
-            data[gr].append(this_data)
-            print(metric_data_human_readable(this_data))
-        print()
-
-    for gr in metric_groups:
-        print(json.dumps(data[gr]))
-        print()
+    data = data_of_metric_group(args.metric_group)
+    print_data_of_metric_group(args.metric_group, data)
