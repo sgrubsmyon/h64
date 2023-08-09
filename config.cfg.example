@@ -4,4 +4,4 @@ inverter_port = 8899
 # serial number of the inverter's wifi module:
 inverter_serialnumber = 1234567890
 # in full Watts (as integer):
-installed_power = 8000
+# installed_power = 8000
