@@ -3,6 +3,7 @@
 from datetime import datetime
 import time
 import numpy as np
+from read_deye_inverter import data_of_metric_group
 
 start_point = {
     "faster": (0, 0),  # 0 minutes, 0 seconds
@@ -33,7 +34,6 @@ def sample(minute_of_last_slow_sampling):
     now_minute = now.minute + now.second / 60 + now.microsecond * 1e-6 / 60
     # print(f"Now: {now.minute}:{now.second + now.microsecond * 1e-6}")
 
-    print((now_minute - minute_of_last_slow_sampling))
     if (now_minute - minute_of_last_slow_sampling) > (interval["slow"][0] + interval["slow"][1] / 60):
         # Last slow sampling is too much in the past,
         # do it right now!
@@ -65,8 +65,8 @@ def sample(minute_of_last_slow_sampling):
         minute_of_last_slow_sampling = now_minute
     print(f"{now.minute}:{now.second + now.microsecond * 1e-6}: Sampling '{next_sampling_group}'")
 
-    # Emulate sampling taking 2 seconds (too long for 1.5 second intervals between faster and fast or faster and slow)
-    time.sleep(2)
+    data = data_of_metric_group(next_sampling_group)
+    # print(data)
 
     # Repeat the same process
     sample(minute_of_last_slow_sampling)

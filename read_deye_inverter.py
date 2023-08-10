@@ -15,6 +15,25 @@ import json
 # Based on: https://github.com/kbialek/deye-inverter-mqtt
 
 
+def load_config():
+    config = configparser.ConfigParser()
+    config.read("config.cfg")
+    config = config["DeyeInverter"]
+    return config
+
+
+# so that files like config.cfg are always found, no matter from where the script is being run
+os.chdir(os.path.dirname(sys.argv[0]))
+
+# Define global variables:
+log = logging.getLogger("DeyeInverter")
+config = load_config()
+
+# Load metadata:
+all_metrics = pandas.read_csv("deye_sun-10k-sg04lp3_metrics.csv")
+groups = np.unique(all_metrics["Group"])
+
+
 def find_register_address_ranges(all_metrics):
     all_reg_addresses = []
     for _, row in all_metrics.iterrows():
@@ -45,7 +64,7 @@ def modbus_read_request_frame(first_reg: int, last_reg: int) -> bytearray:
     return bytearray.fromhex("0103{:04x}{:04x}".format(first_reg, reg_count))
 
 
-def modbus_request_frame(modbus_frame, config) -> bytearray:
+def modbus_request_frame(modbus_frame) -> bytearray:
     # Credits: kbialek
     start = bytearray.fromhex("A5")  # start
     length = (15 + len(modbus_frame) + 2).to_bytes(2, "little")  # datalength
@@ -57,7 +76,8 @@ def modbus_request_frame(modbus_frame, config) -> bytearray:
     modbus_crc.reverse()
     checksum = bytearray.fromhex("00")  # checksum placeholder for outer frame
     end_code = bytearray.fromhex("15")
-    inverter_sn = bytearray.fromhex("{:10x}".format(int(config["inverter_serialnumber"])))
+    inverter_sn = bytearray.fromhex(
+        "{:10x}".format(int(config["inverter_serialnumber"])))
     inverter_sn.reverse()
     frame = (
         start
@@ -80,7 +100,7 @@ def modbus_request_frame(modbus_frame, config) -> bytearray:
     return frame
 
 
-def send_request(req_frame, config, log) -> bytes | None:
+def send_request(req_frame) -> bytes | None:
     # Credits: kbialek
     try:
         sock_conn = socket.create_connection(
@@ -118,7 +138,7 @@ def send_request(req_frame, config, log) -> bytes | None:
     return
 
 
-def parse_response_error_code(frame: bytes, log) -> None:
+def parse_response_error_code(frame: bytes) -> None:
     # Credits: kbialek
     error_frame = frame[25:-2]
     error_code = error_frame[0]
@@ -132,14 +152,14 @@ def parse_response_error_code(frame: bytes, log) -> None:
             "Unknown response error code. Error frame: %s", error_frame.hex())
 
 
-def extract_modbus_response_frame(frame: bytes | None, log) -> bytes | None:
+def extract_modbus_response_frame(frame: bytes | None) -> bytes | None:
     # Credits: kbialek
     # 29 - outer frame, 2 - modbus addr and command, 2 - modbus crc
     if not frame:
         # Error was already logged in `send_request()` function
         return None
     if len(frame) == 29:
-        parse_response_error_code(frame, log)
+        parse_response_error_code(frame)
         return None
     if len(frame) < (29 + 4):
         log.error("Response frame is too short")
@@ -153,7 +173,7 @@ def extract_modbus_response_frame(frame: bytes | None, log) -> bytes | None:
     return frame[25:-2]
 
 
-def modbus_read_response_to_registers(frame: bytes, first_reg: int, last_reg: int, log) -> dict[int, bytearray]:
+def modbus_read_response_to_registers(frame: bytes, first_reg: int, last_reg: int) -> dict[int, bytearray]:
     # Credits: kbialek
     reg_count = last_reg - first_reg + 1
     registers = {}
@@ -179,7 +199,7 @@ def modbus_read_response_to_registers(frame: bytes, first_reg: int, last_reg: in
     return registers
 
 
-def read_registers(first_reg: int, last_reg: int, config, log) -> dict[int, bytearray]:
+def read_registers(first_reg: int, last_reg: int) -> dict[int, bytearray]:
     # Credits: kbialek
     """
     Reads multiple modbus holding registers
@@ -195,12 +215,12 @@ def read_registers(first_reg: int, last_reg: int, config, log) -> dict[int, byte
     Credits: kbialek
     """
     modbus_frame = modbus_read_request_frame(first_reg, last_reg)
-    req_frame = modbus_request_frame(modbus_frame, config)
-    resp_frame = send_request(req_frame, config, log)
-    modbus_resp_frame = extract_modbus_response_frame(resp_frame, log)
+    req_frame = modbus_request_frame(modbus_frame)
+    resp_frame = send_request(req_frame)
+    modbus_resp_frame = extract_modbus_response_frame(resp_frame)
     if modbus_resp_frame is None:
         return {}
-    return modbus_read_response_to_registers(modbus_resp_frame, first_reg, last_reg, log)
+    return modbus_read_response_to_registers(modbus_resp_frame, first_reg, last_reg)
 
 
 def register_to_value(reg_bytes_list, signed, factor, offset):
@@ -215,7 +235,7 @@ def register_to_value(reg_bytes_list, signed, factor, offset):
     return int.from_bytes(bytes_sum, "big", signed=signed) * factor + offset
 
 
-def metric_data(registers, metric_row, time, log):
+def metric_data(registers, metric_row, time):
     reg_address_first = metric_row["Modbus first address"]
     reg_address_last = metric_row["Modbus last address"]
     relevant_reg_addresses = list(filter(
@@ -245,37 +265,27 @@ def metric_data(registers, metric_row, time, log):
 def metric_data_human_readable(data):
     return f"{'{0: <25}'.format(data['metric'] + ':')} {data['value']} {data['unit']}"
 
-def load_config():
-    config = configparser.ConfigParser()
-    config.read("config.cfg")
-    config = config["DeyeInverter"]
-    return config
+
+# Do this outside the function so that the code is executed only once when the script is loaded:
+metrics, reg_address_ranges = {}, {}
+for group in groups:
+    metrics[group] = all_metrics.loc[all_metrics["Group"] == group]
+    reg_address_ranges[group] = find_register_address_ranges(metrics[group])
 
 
 def data_of_metric_group(group):
-    # so that files like config.cfg are always found, no matter from where the script is being run
-    os.chdir(os.path.dirname(sys.argv[0]))
-
-    config = load_config()
-    log = logging.getLogger("DeyeInverter")
-
-    all_metrics = pandas.read_csv("deye_sun-10k-sg04lp3_metrics.csv")
-    metrics = all_metrics.loc[all_metrics["Group"] == group]
-    reg_address_ranges = find_register_address_ranges(metrics)
-    # print(group + ":", reg_address_ranges)
-
     all_registers = {}
     time = datetime.now().isoformat()
-    for addr_range in reg_address_ranges:
-        registers = read_registers(addr_range[0], addr_range[1], config, log)
+    for addr_range in reg_address_ranges[group]:
+        registers = read_registers(addr_range[0], addr_range[1])
         if registers is None:
             log.error("No registers read for range %s", addr_range)
         else:
             all_registers.update(registers)
 
     data = []
-    for _, row in metrics.iterrows():
-        this_data = metric_data(all_registers, row, time, log)
+    for _, row in metrics[group].iterrows():
+        this_data = metric_data(all_registers, row, time)
         data.append(this_data)
 
     return data
