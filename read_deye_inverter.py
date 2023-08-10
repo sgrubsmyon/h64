@@ -298,7 +298,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument("metric_group", metavar="METRIC_GROUP", type=str,
-                        help="String, one of [\"Slow\", \"Fast\", \"Faster\"]")
+                        help="String, one of [\"slow\", \"fast\", \"faster\"]")
 
     args = parser.parse_args()
 
