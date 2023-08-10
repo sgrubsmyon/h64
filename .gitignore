@@ -1,3 +1,4 @@
 .vscode
 external_code
 config.cfg
+__pycache__
