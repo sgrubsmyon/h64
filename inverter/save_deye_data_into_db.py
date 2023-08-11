@@ -28,6 +28,7 @@ for group in start_point:
     sampling_points[group] = np.arange(
         minute_startpoint, 60, minute_interval)
 
+curr_values = {}
 
 def sample(minute_of_last_slow_sampling):
     now = datetime.now()
@@ -66,6 +67,8 @@ def sample(minute_of_last_slow_sampling):
     print(f"{now.minute}:{now.second + now.microsecond * 1e-6}: Sampling '{next_sampling_group}'")
 
     data = data_of_metric_group(next_sampling_group)
+    curr_values[next_sampling_group] = data
+    print(curr_values)
     # print(data)
 
     # Repeat the same process

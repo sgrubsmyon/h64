@@ -17,7 +17,7 @@ import json
 
 def load_config():
     config = configparser.ConfigParser()
-    config.read("config.cfg")
+    config.read("../config.cfg")
     config = config["DeyeInverter"]
     return config
 
@@ -235,7 +235,7 @@ def register_to_value(reg_bytes_list, signed, factor, offset):
     return int.from_bytes(bytes_sum, "big", signed=signed) * factor + offset
 
 
-def metric_data(registers, metric_row, time):
+def metric_data(registers, metric_row):
     reg_address_first = metric_row["Modbus first address"]
     reg_address_last = metric_row["Modbus last address"]
     relevant_reg_addresses = list(filter(
@@ -257,8 +257,7 @@ def metric_data(registers, metric_row, time):
     return {
         "metric": metric_row["Metric"],
         "value": value,
-        "unit": metric_row["Unit"],
-        "time": time
+        "unit": metric_row["Unit"]
     }
 
 
@@ -285,10 +284,10 @@ def data_of_metric_group(group):
 
     data = []
     for _, row in metrics[group].iterrows():
-        this_data = metric_data(all_registers, row, time)
+        this_data = metric_data(all_registers, row)
         data.append(this_data)
 
-    return data
+    return (time, data)
 
 
 def print_data_of_metric_group(group, data):
@@ -312,5 +311,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    data = data_of_metric_group(args.metric_group)
+    time, data = data_of_metric_group(args.metric_group)
     print_data_of_metric_group(args.metric_group, data)
