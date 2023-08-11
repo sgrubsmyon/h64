@@ -27,6 +27,7 @@ $ pip install --upgrade pip
 $ pip install libscrc
 $ sudo apt install libpq-dev
 $ pip install psycopg2
+$ pip install --upgrade websockets
 ```
 
 
