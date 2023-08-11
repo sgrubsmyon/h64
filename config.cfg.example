@@ -5,3 +5,22 @@ inverter_port = 8899
 inverter_serialnumber = 1234567890
 # in full Watts (as integer):
 # installed_power = 8000
+sampling_start_point_faster_minute = 0
+sampling_start_point_faster_second = 0
+sampling_start_point_fast_minute = 0
+sampling_start_point_fast_second = 4.5
+sampling_start_point_slow_minute = 0
+sampling_start_point_slow_second = 1.5
+sampling_interval_faster_minute = 0
+sampling_interval_faster_second = 3
+sampling_interval_fast_minute = 0
+sampling_interval_fast_second = 15
+sampling_interval_slow_minute = 5
+sampling_interval_slow_second = 0
+
+[PostgreSQL]
+host = localhost
+port = 5432
+user = postgres
+db = yourdatabasename
+password = password

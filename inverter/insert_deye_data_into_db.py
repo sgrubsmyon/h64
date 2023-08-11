@@ -1,20 +1,38 @@
 #!/usr/bin/env python3
 
+import configparser
 from datetime import datetime
+import signal
 import time
 import numpy as np
-from read_deye_inverter import data_of_metric_group
+import psycopg2
+from read_deye_inverter import data_for_psql
+
+### global variables ###
+
+# load config file
+
+config = configparser.ConfigParser()
+config.read("../config.cfg")
+cfg_deye = config["DeyeInverter"]
+cfg_psql = config["PostgreSQL"]
 
 start_point = {
-    "faster": (0, 0),  # 0 minutes, 0 seconds
-    "fast": (0, 4.5),  # 0 minutes, 4.5 seconds
-    "slow": (0, 1.5)  # 0 minutes, 1.5 seconds
+    # 0 minutes, 0 seconds
+    "faster": (float(cfg_deye["sampling_start_point_faster_minute"]), float(cfg_deye["sampling_start_point_faster_second"])),
+    # 0 minutes, 4.5 seconds
+    "fast": (float(cfg_deye["sampling_start_point_fast_minute"]), float(cfg_deye["sampling_start_point_fast_second"])),
+    # 0 minutes, 1.5 seconds
+    "slow": (float(cfg_deye["sampling_start_point_slow_minute"]), float(cfg_deye["sampling_start_point_slow_second"]))
 }
 
 interval = {
-    "faster": (0, 3),  # 3 seconds
-    "fast": (0, 15),  # 15 seconds
-    "slow": (5, 0)  # 5 minutes, 0 seconds
+    # 3 seconds
+    "faster": (float(cfg_deye["sampling_interval_faster_minute"]), float(cfg_deye["sampling_interval_faster_second"])),
+    # 15 seconds
+    "fast": (float(cfg_deye["sampling_interval_fast_minute"]), float(cfg_deye["sampling_interval_fast_second"])),
+    # 5 minutes, 0 seconds
+    "slow": (float(cfg_deye["sampling_interval_slow_minute"]), float(cfg_deye["sampling_interval_slow_second"]))
 }
 
 # slow sampling is privileged: if it would be skipped because
@@ -28,7 +46,38 @@ for group in start_point:
     sampling_points[group] = np.arange(
         minute_startpoint, 60, minute_interval)
 
-curr_values = {}
+# # create connection to DB that shall be persisted throughout
+# conn = psycopg2.connect(
+#     host=cfg_psql["host"],
+#     port=cfg_psql["port"],
+#     user=cfg_psql["user"],
+#     database=cfg_psql["db"],
+#     password=cfg_psql["password"]
+# )
+# cur = conn.cursor()
+
+
+# close connection to database when this script is terminated:
+def close_psql_conn():
+    print("Received SIGTERM. Closing connection to database.")
+    # cur.close()
+    # conn.close()
+
+
+signal.signal(signal.SIGTERM, close_psql_conn)
+
+### end globals ###
+
+
+def insert_into_psql(group, keys, values):
+    query = f'''
+        INSERT INTO metrics_{group}({', '.join(keys)})
+            VALUES ({', '.join(['%s'] * len(values))});
+    '''
+    print(query, values)
+    # cur.execute(query, values)
+    # conn.commit()
+
 
 def sample(minute_of_last_slow_sampling):
     now = datetime.now()
@@ -64,12 +113,10 @@ def sample(minute_of_last_slow_sampling):
     now_minute = now.minute + now.second / 60 + now.microsecond * 1e-6 / 60
     if next_sampling_group == "slow":
         minute_of_last_slow_sampling = now_minute
-    print(f"{now.minute}:{now.second + now.microsecond * 1e-6}: Sampling '{next_sampling_group}'")
+    # print(f"{now.minute}:{now.second + now.microsecond * 1e-6}: Sampling '{next_sampling_group}'")
 
-    data = data_of_metric_group(next_sampling_group)
-    curr_values[next_sampling_group] = data
-    print(curr_values)
-    # print(data)
+    keys, values = data_for_psql(next_sampling_group)
+    insert_into_psql(next_sampling_group, keys, values)
 
     # Repeat the same process
     sample(minute_of_last_slow_sampling)

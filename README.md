@@ -21,10 +21,12 @@ $ sudo apt install python3.10-venv # or whatever version is the currently used o
 # In the directory of h64:
 $ python3.10 -m venv venv
 $ source venv/bin/activate
-$ pip install --upgrade pip
 -->
 
+$ pip install --upgrade pip
 $ pip install libscrc
+$ sudo apt install libpq-dev
+$ pip install psycopg2
 ```
 
 

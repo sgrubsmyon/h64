@@ -10,9 +10,11 @@ import configparser
 import pandas
 import numpy as np
 from datetime import datetime
-import json
 
 # Based on: https://github.com/kbialek/deye-inverter-mqtt
+
+# so that files like config.cfg are always found, no matter from where the script is being run
+os.chdir(os.path.dirname(sys.argv[0]))
 
 
 def load_config():
@@ -21,9 +23,6 @@ def load_config():
     config = config["DeyeInverter"]
     return config
 
-
-# so that files like config.cfg are always found, no matter from where the script is being run
-os.chdir(os.path.dirname(sys.argv[0]))
 
 # Define global variables:
 log = logging.getLogger("DeyeInverter")
@@ -257,7 +256,8 @@ def metric_data(registers, metric_row):
     return {
         "metric": metric_row["Metric"],
         "value": value,
-        "unit": metric_row["Unit"]
+        "unit": metric_row["Unit"],
+        "column_name": metric_row["column_name"]
     }
 
 
@@ -275,6 +275,7 @@ for group in groups:
 def data_of_metric_group(group):
     all_registers = {}
     time = datetime.now().isoformat()
+
     for addr_range in reg_address_ranges[group]:
         registers = read_registers(addr_range[0], addr_range[1])
         if registers is None:
@@ -297,6 +298,13 @@ def print_data_of_metric_group(group, data):
         print(metric_data_human_readable(this_data))
     # print()
     # print(json.dumps(data))
+
+
+def data_for_psql(group):
+    time, data = data_of_metric_group(group)
+    keys = ("time",) + tuple([item["column_name"] for item in data])
+    values = (time,) + tuple([item["value"] for item in data])
+    return keys, values
 
 
 if __name__ == "__main__":
