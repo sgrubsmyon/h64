@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import asyncio
 import configparser
 import websockets
@@ -29,36 +30,39 @@ CONFIG = CONFIG["WebSocket"]
 
 ### end global variables ###
 
-
-async def on_connect(conn):
-    CONNECTIONS.add(conn)
-    print(f"New connection ({conn.id})! Number of open connections: {len(CONNECTIONS)}")
-    try:
-        # Send the current values to the freshly connected client:
-        await conn.send(json.dumps(CURR_VALUES))
-        # Now wait for a message from the client.
-        # There is only one client that is supposed to ever
-        # send messages and this is the Python script
-        # querying the inverter and putting the values
-        # into the database. It sends messages with
-        # the fresh values to this WebSocket server.
-        # All other clients (in web browser) only passively
-        # receive the messages with current values and do
-        # not send any messages.
-        async for message in conn:
-            # await on_message(conn, message)
-            on_message(conn, message)
-    except websockets.exceptions.ConnectionClosedError:
-        # do not complain
-        pass
-    finally:
-        on_close(conn)
+def on_connect_closure(debug):
+    async def on_connect(conn):
+        CONNECTIONS.add(conn)
+        print(
+            f"New connection ({conn.id})! Number of open connections: {len(CONNECTIONS)}")
+        try:
+            # Send the current values to the freshly connected client:
+            await conn.send(json.dumps(CURR_VALUES))
+            # Now wait for a message from the client.
+            # There is only one client that is supposed to ever
+            # send messages and this is the Python script
+            # querying the inverter and putting the values
+            # into the database. It sends messages with
+            # the fresh values to this WebSocket server.
+            # All other clients (in web browser) only passively
+            # receive the messages with current values and do
+            # not send any messages.
+            async for message in conn:
+                # await on_message(conn, message, debug)
+                on_message(conn, message, debug)
+        except websockets.exceptions.ConnectionClosedError:
+            # do not complain
+            pass
+        finally:
+            on_close(conn)
+    return on_connect
 
 
 # async def on_message(conn, message):
-def on_message(conn, message):
+def on_message(conn, message, debug):
     msg = json.loads(message)
-    print("Message from", conn, ":", msg)
+    if debug:
+        print("Message from", conn, ":", msg)
     if "group" in msg and "values" in msg:
         # Update the current values with new ones:
         group = msg["group"]
@@ -69,17 +73,28 @@ def on_message(conn, message):
 
 def on_close(conn):
     CONNECTIONS.remove(conn)
-    print(f"Connection ({conn.id}) closed. Number of open connections: {len(CONNECTIONS)}")
+    print(
+        f"Connection ({conn.id}) closed. Number of open connections: {len(CONNECTIONS)}")
 
 
-async def main():
-    async with websockets.serve(on_connect, CONFIG["host"], CONFIG["port"]):
+async def main(debug):
+    async with websockets.serve(on_connect_closure(debug), CONFIG["host"], CONFIG["port"]):
         await asyncio.Future()  # run forever
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(
+        prog="inverter_websocket_server",
+        description="""
+        WebSocket server providing live data from invert, read via `read_deye_inverter.py`,
+        sent to this WebSocket server by `insert_deye_data_into_db.py`
+        """,
+        epilog=""
+    )
 
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help="Turn debug output on")
 
-# curr_values[next_sampling_group] = data
-# print(curr_values)
+    args = parser.parse_args()
+
+    asyncio.run(main(args.debug))

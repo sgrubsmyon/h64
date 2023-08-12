@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import configparser
 from datetime import datetime
 import json
@@ -63,65 +64,74 @@ for group in start_point:
 # cur = conn.cursor()
 
 
-# close connection to database when this script is terminated:
-def close_psql_conn():
-    print("Received SIGTERM. Closing connection to database.")
-    # cur.close()
-    # conn.close()
+# create connection to WebSocket server that shall be persisted throughout
+ws_conn = None
 
 
-signal.signal(signal.SIGTERM, close_psql_conn)
-
-
-# create connection to WebSocket server that shall be poersisted throughout
 async def connect_to_websocket_server():
+    global ws_conn
     uri = f"ws://{cfg_ws['host']}:{cfg_ws['port']}"
     ws_conn = await websockets.connect(uri)
-    return ws_conn
 
+
+# close connection to database and WebSocket server when this script is terminated:
+def close_connections():
+    print("Received SIGTERM. Closing connection to database and WebSocket server.")
+    # cur.close()
+    # conn.close()
+    ws_conn.close()
+
+
+signal.signal(signal.SIGTERM, close_connections)
 
 ###################
 ### end globals ###
 ###################
 
 
-def insert_into_psql(group, data):
+def insert_into_psql(group, data, debug):
     query = f'''
         INSERT INTO metrics_{group}({', '.join(data.keys())})
             VALUES ({', '.join(['%s'] * len(data.values()))});
     '''
-    print(query, data.values())
+    if debug:
+        print(query, data.values())
     # cur.execute(query, values)
     # conn.commit()
 
 
-async def send_to_websocket_server(ws_conn, data):
-    print("Sending data to server:", json.dumps(data))
+async def send_to_websocket_server(group, data, debug):
+    global ws_conn
+    msg = {
+        "group": group,
+        "values": data
+    }
+    if debug:
+        print("Sending msg to server:", json.dumps(msg))
     try:
-        await ws_conn.send(json.dumps(data))
+        await ws_conn.send(json.dumps(msg))
     except websockets.exceptions.ConnectionClosedError:
         # Connection was closed, reopen it
         print("Reopening closed WS connection.")
         try:
-            ws_conn = await connect_to_websocket_server()
-            ws_conn = await send_to_websocket_server(ws_conn, data)
+            await connect_to_websocket_server()
+            await send_to_websocket_server(group, data, debug)
         except ConnectionRefusedError:
             print("WebSocket server is down. Not sending data. Trying again later.")
             ws_conn = None
-    return ws_conn
 
 
-async def sample(minute_of_last_slow_sampling, ws_conn):
+async def sample(minute_of_last_slow_sampling, debug):
+    global ws_conn
     if ws_conn == None:
         try:
-            ws_conn = await connect_to_websocket_server()
+            await connect_to_websocket_server()
         except ConnectionRefusedError:
             print("WebSocket server is down. Not sending data. Trying again later.")
             ws_conn = None
 
     now = datetime.now()
     now_minute = now.minute + now.second / 60 + now.microsecond * 1e-6 / 60
-    # print(f"Now: {now.minute}:{now.second + now.microsecond * 1e-6}")
 
     if (now_minute - minute_of_last_slow_sampling) > (interval["slow"][0] + interval["slow"][1] / 60):
         # Last slow sampling is too much in the past,
@@ -152,16 +162,30 @@ async def sample(minute_of_last_slow_sampling, ws_conn):
     now_minute = now.minute + now.second / 60 + now.microsecond * 1e-6 / 60
     if next_sampling_group == "slow":
         minute_of_last_slow_sampling = now_minute
-    # print(f"{now.minute}:{now.second + now.microsecond * 1e-6}: Sampling '{next_sampling_group}'")
 
     data = data_for_psql(next_sampling_group)
-    insert_into_psql(next_sampling_group, data)
+    insert_into_psql(next_sampling_group, data, debug)
     if ws_conn != None:
-        ws_conn = await send_to_websocket_server(ws_conn, data)
+        await send_to_websocket_server(next_sampling_group, data, debug)
 
     # Repeat the same process
-    await sample(minute_of_last_slow_sampling, ws_conn)
+    await sample(minute_of_last_slow_sampling, debug)
 
 
-# Start the infinite sampling loop
-asyncio.run(sample(minute_of_last_slow_sampling, None))
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog="insert_deye_data_into_db",
+        description="""
+        Insert Deye inverter data read with `read_deye_inverter.py`
+        into an SQL DB and also send it to WebSocket server `inverter_websocket_server.py`
+        """,
+        epilog=""
+    )
+
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help="Turn debug output on")
+
+    args = parser.parse_args()
+
+    # Start the infinite sampling loop
+    asyncio.run(sample(minute_of_last_slow_sampling, args.debug))
