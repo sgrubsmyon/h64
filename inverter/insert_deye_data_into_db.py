@@ -96,7 +96,7 @@ def insert_into_psql(group, data, debug):
     '''
     if debug:
         print(query, data.values())
-    cur.execute(query, values)
+    cur.execute(query, data.values())
     conn.commit()
 
 
