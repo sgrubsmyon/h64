@@ -11,25 +11,6 @@ code is adopted from https://github.com/kbialek/deye-inverter-mqtt
 This code is intended to be run on a small server such as a Raspberry Pi, running an
 Ubuntu server OS (https://ubuntu.com/download/raspberry-pi).
 
-### Python
-
-```
-<!-- Optional:
-# Create a virtual environment:
-$ sudo apt update && sudo apt upgrade
-$ sudo apt install python3.10-venv # or whatever version is the currently used one
-# In the directory of h64:
-$ python3.10 -m venv venv
-$ source venv/bin/activate
--->
-
-$ pip install --upgrade pip
-$ pip install libscrc
-$ sudo apt install libpq-dev
-$ pip install psycopg2
-$ pip install --upgrade websockets
-```
-
 
 ### PostgreSQL and TimescaleDB
 
@@ -75,6 +56,26 @@ Create tables for h64:
 ```
 $ cd inverter
 $ psql -U postgres -h localhost -d yourdatabasename -f create_inverter_metrics_tables.sql
+```
+
+
+### Python
+
+```
+<!-- Optional:
+# Create a virtual environment:
+$ sudo apt update && sudo apt upgrade
+$ sudo apt install python3.10-venv # or whatever version is the currently used one
+# In the directory of h64:
+$ python3.10 -m venv venv
+$ source venv/bin/activate
+-->
+
+$ pip install --upgrade pip
+$ pip install libscrc
+$ sudo apt install libpq-dev
+$ pip install psycopg2
+$ pip install --upgrade websockets
 ```
 
 
