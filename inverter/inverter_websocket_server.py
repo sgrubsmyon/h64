@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import asyncio
+import configparser
 import websockets
 import json
 
@@ -21,6 +22,10 @@ conn.send(JSON.stringify({group: "slow", values: {a: 1, b: 2, c: 5}}))
 
 CONNECTIONS = set()
 CURR_VALUES = {}
+
+CONFIG = configparser.ConfigParser()
+CONFIG.read("../config.cfg")
+CONFIG = CONFIG["WebSocket"]
 
 ### end global variables ###
 
@@ -43,6 +48,9 @@ async def on_connect(conn):
         async for message in conn:
             # await on_message(conn, message)
             on_message(conn, message)
+    except websockets.exceptions.ConnectionClosedError:
+        # do not complain
+        pass
     finally:
         on_close(conn)
 
@@ -65,7 +73,7 @@ def on_close(conn):
 
 
 async def main():
-    async with websockets.serve(on_connect, "localhost", 8765):
+    async with websockets.serve(on_connect, CONFIG["host"], CONFIG["port"]):
         await asyncio.Future()  # run forever
 
 
