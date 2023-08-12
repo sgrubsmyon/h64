@@ -302,9 +302,12 @@ def print_data_of_metric_group(group, data):
 
 def data_for_psql(group):
     time, data = data_of_metric_group(group)
-    keys = ("time",) + tuple([item["column_name"] for item in data])
-    values = (time,) + tuple([item["value"] for item in data])
-    return keys, values
+    psql_data = {
+        "time": time
+    }
+    for item in data:
+        psql_data[item["column_name"]] = item["value"]
+    return psql_data
 
 
 if __name__ == "__main__":
