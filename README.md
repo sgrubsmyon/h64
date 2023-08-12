@@ -58,6 +58,12 @@ $ cd inverter
 $ psql -U postgres -h localhost -d yourdatabasename -f create_inverter_metrics_tables.sql
 ```
 
+Open h64 database in psql:
+
+```
+$ psql -U postgres -h localhost -d yourdatabasename
+```
+
 
 ### Python
 
