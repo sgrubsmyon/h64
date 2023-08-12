@@ -53,15 +53,15 @@ for group in start_point:
     sampling_points[group] = np.arange(
         minute_startpoint, 60, minute_interval)
 
-# # create connection to DB that shall be persisted throughout
-# conn = psycopg2.connect(
-#     host=cfg_psql["host"],
-#     port=cfg_psql["port"],
-#     user=cfg_psql["user"],
-#     database=cfg_psql["db"],
-#     password=cfg_psql["password"]
-# )
-# cur = conn.cursor()
+# create connection to DB that shall be persisted throughout
+conn = psycopg2.connect(
+    host=cfg_psql["host"],
+    port=cfg_psql["port"],
+    user=cfg_psql["user"],
+    database=cfg_psql["db"],
+    password=cfg_psql["password"]
+)
+cur = conn.cursor()
 
 
 # create connection to WebSocket server that shall be persisted throughout
@@ -77,8 +77,8 @@ async def connect_to_websocket_server():
 # close connection to database and WebSocket server when this script is terminated:
 def close_connections():
     print("Received SIGTERM. Closing connection to database and WebSocket server.")
-    # cur.close()
-    # conn.close()
+    cur.close()
+    conn.close()
     ws_conn.close()
 
 
@@ -96,8 +96,8 @@ def insert_into_psql(group, data, debug):
     '''
     if debug:
         print(query, data.values())
-    # cur.execute(query, values)
-    # conn.commit()
+    cur.execute(query, values)
+    conn.commit()
 
 
 async def send_to_websocket_server(group, data, debug):
