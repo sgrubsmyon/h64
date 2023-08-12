@@ -116,7 +116,7 @@ async def send_to_websocket_server(group, data, debug):
         try:
             await connect_to_websocket_server()
             await send_to_websocket_server(group, data, debug)
-        except ConnectionRefusedError:
+        except (ConnectionRefusedError, OSError):
             print("WebSocket server is down. Not sending data. Trying again later.")
             ws_conn = None
 
@@ -126,7 +126,7 @@ async def sample(minute_of_last_slow_sampling, debug):
     if ws_conn == None:
         try:
             await connect_to_websocket_server()
-        except ConnectionRefusedError:
+        except (ConnectionRefusedError, OSError):
             print("WebSocket server is down. Not sending data. Trying again later.")
             ws_conn = None
 
