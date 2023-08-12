@@ -72,6 +72,8 @@ $ source venv/bin/activate
 -->
 
 $ pip install --upgrade pip
+$ pip install numpy
+$ pip install pandas
 $ pip install libscrc
 $ sudo apt install libpq-dev
 $ pip install psycopg2
