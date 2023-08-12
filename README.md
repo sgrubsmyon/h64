@@ -35,6 +35,8 @@ $ pip install --upgrade websockets
 
 See https://docs.timescale.com/self-hosted/latest/install/installation-linux/.
 
+Install PostgreSQL and TimescaleDB:
+
 ```
 $ sudo apt install gnupg postgresql-common apt-transport-https lsb-release wget
 $ sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
@@ -49,9 +51,14 @@ $ sudo systemctl restart postgresql
 $ sudo -u postgres psql
 > \password postgres
 > \q
+```
+
+Create database:
+
+```
 $ psql -U postgres -h localhost
-> CREATE database inverter;
-> \c inverter
+> CREATE database yourdatabasename;
+> \c yourdatabasename
 > CREATE EXTENSION IF NOT EXISTS timescaledb;
 > \dx
                                                 List of installed extensions
@@ -61,7 +68,13 @@ $ psql -U postgres -h localhost
  timescaledb | 2.11.1  | public     | Enables scalable inserts and complex queries for time-series data (Community Edition)
 (2 rows)
 > \q
-$ psql -U postgres -h localhost -d inverter -f create_metrics_tables.sql
+```
+
+Create tables for h64:
+
+```
+$ cd inverter
+$ psql -U postgres -h localhost -d yourdatabasename -f create_inverter_metrics_tables.sql
 ```
 
 
@@ -69,6 +82,7 @@ $ psql -U postgres -h localhost -d inverter -f create_metrics_tables.sql
 
 ```
 $ cp -i config.cfg.example config.cfg
+$ chmod 600 config.cfg
 ```
 
 Edit file config.cfg and fill in your numbers.
