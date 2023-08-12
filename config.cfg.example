@@ -24,3 +24,7 @@ port = 5432
 user = postgres
 db = yourdatabasename
 password = password
+
+[WebSocket]
+host = localhost
+port = 6789
