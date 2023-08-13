@@ -86,7 +86,8 @@ def close_connections(dry_run):
 
     async def close(signalnum, stackframe):
         global conn, cur, ws_conn
-        print(f"[{datetime.now()}] Received SIGTERM. Closing connection to database and WebSocket server.")
+        print(
+            f"[{datetime.now()}] Received SIGTERM. Closing connection to database and WebSocket server.")
         if not dry_run:
             cur.close()
             conn.close()
@@ -110,11 +111,12 @@ def insert_into_psql(group, data, debug, dry_run):
         conn.commit()
 
 
-async def send_to_websocket_server(group, data, debug):
+async def send_to_websocket_server(group, data, status, debug):
     global ws_conn
     msg = {
         "group": group,
-        "values": data
+        "values": data,
+        "status": status
     }
     if debug:
         print("Sending msg to server:", json.dumps(msg))
@@ -123,11 +125,14 @@ async def send_to_websocket_server(group, data, debug):
     except websockets.exceptions.ConnectionClosedError:
         # Connection was closed, reopen it
         print(f"[{datetime.now()}] Reopening closed WS connection.")
+        status = {"type": "WARN",
+                  "msg": "Had to reopen closed WebSocket connection"}
         try:
             await connect_to_websocket_server()
-            await send_to_websocket_server(group, data, debug)
+            await send_to_websocket_server(group, data, status, debug)
         except (ConnectionRefusedError, OSError):
-            print(f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later.")
+            print(
+                f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later.")
             ws_conn = None
 
 
@@ -137,8 +142,11 @@ async def sample(minute_of_last_slow_sampling, debug, dry_run):
         try:
             await connect_to_websocket_server()
         except (ConnectionRefusedError, OSError):
-            print(f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later.")
+            print(
+                f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later.")
             ws_conn = None
+
+    status = {"type": "NORMAL", "msg": ""}
 
     now = datetime.now()
     now_minute = now.minute + now.second / 60 + now.microsecond * 1e-6 / 60
@@ -146,7 +154,8 @@ async def sample(minute_of_last_slow_sampling, debug, dry_run):
     if (now_minute - minute_of_last_slow_sampling) > (interval["slow"][0] + interval["slow"][1] / 60):
         # Last slow sampling is too much in the past,
         # do it right now!
-        print(f"[{datetime.now()}] Slow sampling was skipped, is now done before others.")
+        print(
+            f"[{datetime.now()}] Slow sampling was skipped, is now done before others.")
         next_sampling_group = "slow"
         next_sampling_delta_t = 0
     else:
@@ -156,7 +165,17 @@ async def sample(minute_of_last_slow_sampling, debug, dry_run):
             # Remove sampling points of the past (negative time difference delta_t)
             delta_ts = delta_ts[delta_ts > 0]
             # Find next upcoming sampling point (closest in time in the future)
-            delta_t = np.min(delta_ts)
+            try:
+                delta_t = np.min(delta_ts)
+            except ValueError:
+                # Probably, there are no sampling points in the future,
+                # just set delta_t to the group's interval
+                status = {"type": "ERROR", "msg": "Problem with delta_t"}
+                print(f"[{datetime.now()}] Problem finding min of the delta_ts.")
+                print(f"[{datetime.now()}] group:", group)
+                print(f"[{datetime.now()}] delta_ts:", delta_ts)
+                delta_t = interval[group][0] + interval[group][1] / 60
+                print(f"[{datetime.now()}] Using as delta_t:", delta_t)
             closest_sampling_point[group] = delta_t
         # Find which metric group has the smallest delta_t
         next_sampling_group = min(closest_sampling_point,
@@ -174,9 +193,12 @@ async def sample(minute_of_last_slow_sampling, debug, dry_run):
         minute_of_last_slow_sampling = now_minute
 
     data = data_for_psql(next_sampling_group)
-    insert_into_psql(next_sampling_group, data, debug, dry_run)
+    if data != None:
+        insert_into_psql(next_sampling_group, data, debug, dry_run)
+    else:
+        status = {"type": "ERROR", "msg": "Problem with modbus packets from inverter: empty data"}
     if ws_conn != None:
-        await send_to_websocket_server(next_sampling_group, data, debug)
+        await send_to_websocket_server(next_sampling_group, data, status, debug)
 
     # Repeat the same process
     await sample(minute_of_last_slow_sampling, debug, dry_run)

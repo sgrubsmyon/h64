@@ -31,6 +31,7 @@ os.chdir(os.path.dirname(sys.argv[0]))
 
 CONNECTIONS = set()
 CURR_VALUES = {}
+CURR_STATUS = {}
 
 CONFIG = configparser.ConfigParser()
 CONFIG.read("../config.cfg")
@@ -48,7 +49,10 @@ def on_connect_closure(debug):
             f"[{datetime.now()}] New connection ({conn.id})! Number of open connections: {len(CONNECTIONS)}")
         try:
             # Send the current values to the freshly connected client:
-            await conn.send(json.dumps(CURR_VALUES))
+            await conn.send(json.dumps({
+                "values": CURR_VALUES,
+                "status": CURR_STATUS
+            }))
             # Now wait for a message from the client.
             # There is only one client that is supposed to ever
             # send messages and this is the Python script
@@ -77,9 +81,13 @@ async def on_message(conn, message, debug):
     if "group" in msg and "values" in msg:
         # Update the current values with new ones:
         group = msg["group"]
-        CURR_VALUES[group] = msg["values"]
+        if msg["values"] != None:
+            CURR_VALUES[group] = msg["values"]
     # Broadcast the new current values to all connected clients
-    websockets.broadcast(CONNECTIONS, json.dumps(CURR_VALUES))
+    websockets.broadcast(CONNECTIONS, json.dumps({
+        "values": CURR_VALUES,
+        "status": CURR_STATUS
+    }))
 
 
 async def on_close(conn):

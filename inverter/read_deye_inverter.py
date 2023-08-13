@@ -306,7 +306,13 @@ def data_for_psql(group):
         "time": time
     }
     for item in data:
-        psql_data[item["column_name"]] = item["value"]
+        try:
+            psql_data[item["column_name"]] = item["value"]
+        except TypeError:
+            # This item of data is not a dict, but a (probably empty) string.
+            # This means the whole measurement has not succeeded, so do not
+            # save anything in the DB
+            return None
     return psql_data
 
 
