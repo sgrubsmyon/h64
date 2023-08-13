@@ -58,18 +58,18 @@ def on_connect_closure(debug):
             # receive the messages with current values and do
             # not send any messages.
             async for message in conn:
-                # await on_message(conn, message, debug)
-                on_message(conn, message, debug)
+                await on_message(conn, message, debug)
+                # on_message(conn, message, debug)
         except websockets.exceptions.ConnectionClosedError:
             # do not complain
             pass
         finally:
-            on_close(conn)
+            await on_close(conn)
     return on_connect
 
 
-# async def on_message(conn, message):
-def on_message(conn, message, debug):
+async def on_message(conn, message, debug):
+    # def on_message(conn, message, debug):
     msg = json.loads(message)
     if debug:
         print("Message from", conn, ":", msg)
@@ -81,7 +81,7 @@ def on_message(conn, message, debug):
     websockets.broadcast(CONNECTIONS, json.dumps(CURR_VALUES))
 
 
-def on_close(conn):
+async def on_close(conn):
     CONNECTIONS.remove(conn)
     print(
         f"Connection ({conn.id}) closed. Number of open connections: {len(CONNECTIONS)}")
