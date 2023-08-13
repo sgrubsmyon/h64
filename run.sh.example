@@ -1,0 +1,4 @@
+#!/bin/bash
+
+/usr/bin/sudo -u yourusername /home/yourusername/h64/inverter/inverter_websocket_server.py > /var/log/h64/ inverter_websocket_server &
+/usr/bin/sudo -u yourusername /home/yourusername/h64/inverter/insert_deye_data_into_db.py > /var/log/h64/insert_deye_data_into_db &
