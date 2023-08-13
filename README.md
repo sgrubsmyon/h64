@@ -95,3 +95,42 @@ $ chmod 600 config.cfg
 ```
 
 Edit file config.cfg and fill in your numbers.
+
+
+## Create directory for log file(s)
+
+```
+$ sudo mkdir /var/log/h64
+```
+
+
+## Rename and edit run.sh.example
+
+```
+$ cp -i run.sh.example run.sh
+```
+
+
+## Create systemd unit file
+
+```
+$ sudo vim /etc/systemd/system/h64.service
+```
+
+```
+[Unit]
+Description=Unit file for running h64 family home data collection tools
+
+[Service]
+ExecStart=/home/<yourusername>/h64/run.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```
+$ sudo systemctl daemon-reload
+$ sudo systemctl enable h64.service
+$ sudo systemctl start h64.service
+```
