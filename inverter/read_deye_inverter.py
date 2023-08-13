@@ -283,12 +283,17 @@ def data_of_metric_group(group):
         else:
             all_registers.update(registers)
 
+    status = {"type": "NORMAL", "msg": ""}
     data = []
-    for _, row in metrics[group].iterrows():
-        this_data = metric_data(all_registers, row)
-        data.append(this_data)
+    try:
+        for _, row in metrics[group].iterrows():
+            this_data = metric_data(all_registers, row)
+            data.append(this_data)
+    except RecursionError:
+        status = {"type": "ERROR", "msg": "Problem with recursion over metric group rows (pandas)"}
+        pass
 
-    return (time, data)
+    return (time, data, status)
 
 
 def print_data_of_metric_group(group, data):
@@ -301,7 +306,7 @@ def print_data_of_metric_group(group, data):
 
 
 def data_for_psql(group):
-    time, data = data_of_metric_group(group)
+    time, data, status = data_of_metric_group(group)
     psql_data = {
         "time": time
     }
@@ -312,8 +317,9 @@ def data_for_psql(group):
             # This item of data is not a dict, but a (probably empty) string.
             # This means the whole measurement has not succeeded, so do not
             # save anything in the DB
-            return None
-    return psql_data
+            status = {"type": "ERROR", "msg": "Problem with modbus packets from inverter: empty data"}
+            return None, status
+    return psql_data, status
 
 
 if __name__ == "__main__":
@@ -328,5 +334,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    time, data = data_of_metric_group(args.metric_group)
+    time, data, status = data_of_metric_group(args.metric_group)
     print_data_of_metric_group(args.metric_group, data)

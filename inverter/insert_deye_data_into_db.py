@@ -192,11 +192,9 @@ async def sample(minute_of_last_slow_sampling, debug, dry_run):
     if next_sampling_group == "slow":
         minute_of_last_slow_sampling = now_minute
 
-    data = data_for_psql(next_sampling_group)
+    data, status = data_for_psql(next_sampling_group)
     if data != None:
         insert_into_psql(next_sampling_group, data, debug, dry_run)
-    else:
-        status = {"type": "ERROR", "msg": "Problem with modbus packets from inverter: empty data"}
     if ws_conn != None:
         await send_to_websocket_server(next_sampling_group, data, status, debug)
 
