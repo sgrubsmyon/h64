@@ -104,31 +104,20 @@ $ sudo mkdir /var/log/h64
 ```
 
 
-## Rename and edit run.sh.example
+## Install systemd unit files
 
 ```
-$ cp -i run.sh.example run.sh
-$ vim run.sh
+$ sudo cp -i unit-files/* /etc/systemd/system/
 ```
 
-
-## Create systemd unit file
-
-```
-$ sudo vim /etc/systemd/system/h64.service
-```
+Edit all unit files and replace "yourusername" with your user name. If needed,
+change the specified location of the h64 scripts.
 
 ```
-[Unit]
-Description=Unit file for running h64 family home data collection tools
-
-[Service]
-ExecStart=/home/<yourusername>/h64/run.sh
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
+$ sudo vim -p /etc/systemd/system/h64*
 ```
+
+Enable and start the daemons.
 
 ```
 $ sudo systemctl daemon-reload

@@ -1,0 +1,9 @@
+[Unit]
+Description=Unit file for running h64 family home data collection tools - inverter WebSocket server
+
+[Service]
+ExecStart=/usr/bin/sudo -u yourusername /home/yourusername/h64/inverter/insert_deye_data_into_db.py > /var/log/h64/insert_deye_data_into_db
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
