@@ -86,7 +86,7 @@ def close_connections(dry_run):
 
     def close():
         global conn, cur, ws_conn
-        print("Received SIGTERM. Closing connection to database and WebSocket server.")
+        print(f"[{datetime.now()}] Received SIGTERM. Closing connection to database and WebSocket server.")
         if not dry_run:
             cur.close()
             conn.close()
@@ -122,12 +122,12 @@ async def send_to_websocket_server(group, data, debug):
         await ws_conn.send(json.dumps(msg))
     except websockets.exceptions.ConnectionClosedError:
         # Connection was closed, reopen it
-        print("Reopening closed WS connection.")
+        print(f"[{datetime.now()}] Reopening closed WS connection.")
         try:
             await connect_to_websocket_server()
             await send_to_websocket_server(group, data, debug)
         except (ConnectionRefusedError, OSError):
-            print("WebSocket server is down. Not sending data. Trying again later.")
+            print(f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later.")
             ws_conn = None
 
 
@@ -137,7 +137,7 @@ async def sample(minute_of_last_slow_sampling, debug, dry_run):
         try:
             await connect_to_websocket_server()
         except (ConnectionRefusedError, OSError):
-            print("WebSocket server is down. Not sending data. Trying again later.")
+            print(f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later.")
             ws_conn = None
 
     now = datetime.now()
@@ -146,7 +146,7 @@ async def sample(minute_of_last_slow_sampling, debug, dry_run):
     if (now_minute - minute_of_last_slow_sampling) > (interval["slow"][0] + interval["slow"][1] / 60):
         # Last slow sampling is too much in the past,
         # do it right now!
-        print("Slow sampling was skipped, is now done before others.")
+        print(f"[{datetime.now()}] Slow sampling was skipped, is now done before others.")
         next_sampling_group = "slow"
         next_sampling_delta_t = 0
     else:
