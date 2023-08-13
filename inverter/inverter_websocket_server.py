@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 import configparser
+import datetime
 import os
 import sys
 import websockets
@@ -44,7 +45,7 @@ def on_connect_closure(debug):
     async def on_connect(conn):
         CONNECTIONS.add(conn)
         print(
-            f"New connection ({conn.id})! Number of open connections: {len(CONNECTIONS)}")
+            f"[{datetime.now()}] New connection ({conn.id})! Number of open connections: {len(CONNECTIONS)}")
         try:
             # Send the current values to the freshly connected client:
             await conn.send(json.dumps(CURR_VALUES))
@@ -84,7 +85,7 @@ async def on_message(conn, message, debug):
 async def on_close(conn):
     CONNECTIONS.remove(conn)
     print(
-        f"Connection ({conn.id}) closed. Number of open connections: {len(CONNECTIONS)}")
+        f"[{datetime.now()}] Connection ({conn.id}) closed. Number of open connections: {len(CONNECTIONS)}")
 
 
 async def main(debug):
