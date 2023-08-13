@@ -101,6 +101,7 @@ Edit file config.cfg and fill in your numbers.
 
 ```
 $ sudo mkdir /var/log/h64
+$ sudo chown yourusername:yourusername /var/log/h64/
 ```
 
 
