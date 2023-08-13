@@ -14,9 +14,6 @@ import asyncio
 import websockets
 from read_deye_inverter import data_for_psql
 
-# so that files like config.cfg are always found, no matter from where the script is being run
-os.chdir(os.path.dirname(sys.argv[0]))
-
 ########################
 ### global variables ###
 ########################
@@ -58,19 +55,23 @@ for group in start_point:
     sampling_points[group] = np.arange(
         minute_startpoint, 60, minute_interval)
 
-# create connection to DB that shall be persisted throughout
-conn = psycopg2.connect(
-    host=cfg_psql["host"],
-    port=cfg_psql["port"],
-    user=cfg_psql["user"],
-    database=cfg_psql["db"],
-    password=cfg_psql["password"]
-)
-cur = conn.cursor()
+# connection to DB that shall be persisted throughout
+conn, cur = None, None
 
-
-# create connection to WebSocket server that shall be persisted throughout
+# connection to WebSocket server that shall be persisted throughout
 ws_conn = None
+
+
+def connect_to_psql():
+    global conn, cur
+    conn = psycopg2.connect(
+        host=cfg_psql["host"],
+        port=cfg_psql["port"],
+        user=cfg_psql["user"],
+        database=cfg_psql["db"],
+        password=cfg_psql["password"]
+    )
+    cur = conn.cursor()
 
 
 async def connect_to_websocket_server():
@@ -80,29 +81,33 @@ async def connect_to_websocket_server():
 
 
 # close connection to database and WebSocket server when this script is terminated:
-def close_connections():
-    print("Received SIGTERM. Closing connection to database and WebSocket server.")
-    cur.close()
-    conn.close()
-    ws_conn.close()
+def close_connections(dry_run):
+    global conn, cur, ws_conn
 
-
-signal.signal(signal.SIGTERM, close_connections)
+    def close():
+        global conn, cur, ws_conn
+        print("Received SIGTERM. Closing connection to database and WebSocket server.")
+        if not dry_run:
+            cur.close()
+            conn.close()
+        ws_conn.close()
+    return close
 
 ###################
 ### end globals ###
 ###################
 
 
-def insert_into_psql(group, data, debug):
+def insert_into_psql(group, data, debug, dry_run):
     query = f'''
         INSERT INTO metrics_{group}({', '.join(data.keys())})
             VALUES ({', '.join(['%s'] * len(data.values()))});
     '''
     if debug:
         print(query, data.values())
-    cur.execute(query, tuple(data.values()))
-    conn.commit()
+    if not dry_run:
+        cur.execute(query, tuple(data.values()))
+        conn.commit()
 
 
 async def send_to_websocket_server(group, data, debug):
@@ -126,7 +131,7 @@ async def send_to_websocket_server(group, data, debug):
             ws_conn = None
 
 
-async def sample(minute_of_last_slow_sampling, debug):
+async def sample(minute_of_last_slow_sampling, debug, dry_run):
     global ws_conn
     if ws_conn == None:
         try:
@@ -169,12 +174,12 @@ async def sample(minute_of_last_slow_sampling, debug):
         minute_of_last_slow_sampling = now_minute
 
     data = data_for_psql(next_sampling_group)
-    insert_into_psql(next_sampling_group, data, debug)
+    insert_into_psql(next_sampling_group, data, debug, dry_run)
     if ws_conn != None:
         await send_to_websocket_server(next_sampling_group, data, debug)
 
     # Repeat the same process
-    await sample(minute_of_last_slow_sampling, debug)
+    await sample(minute_of_last_slow_sampling, debug, dry_run)
 
 
 if __name__ == "__main__":
@@ -189,8 +194,15 @@ if __name__ == "__main__":
 
     parser.add_argument('-d', '--debug', action='store_true',
                         help="Turn debug output on")
+    parser.add_argument('-n', '--dry-run', action='store_true',
+                        help="Turn debug output on")
 
     args = parser.parse_args()
 
+    if not args.dry_run:
+        connect_to_psql()
+
+    signal.signal(signal.SIGTERM, close_connections(args.dry_run))
+
     # Start the infinite sampling loop
-    asyncio.run(sample(minute_of_last_slow_sampling, args.debug))
+    asyncio.run(sample(minute_of_last_slow_sampling, args.debug, args.dry_run))
