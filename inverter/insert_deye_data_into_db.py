@@ -84,13 +84,13 @@ async def connect_to_websocket_server():
 def close_connections(dry_run):
     global conn, cur, ws_conn
 
-    def close(signalnum, stackframe):
+    async def close(signalnum, stackframe):
         global conn, cur, ws_conn
         print(f"[{datetime.now()}] Received SIGTERM. Closing connection to database and WebSocket server.")
         if not dry_run:
             cur.close()
             conn.close()
-        ws_conn.close()
+        await ws_conn.close()
     return close
 
 ###################
