@@ -4,7 +4,7 @@ Description=Unit file for running h64 family home data collection tools - invert
 [Service]
 User=yourusername
 Group=yourusername
-ExecStart=/usr/bin/python3 /home/yourusername/h64/inverter/insert_deye_data_into_db.py > /var/log/h64/insert_deye_data_into_db
+ExecStart=/usr/bin/python3 /home/yourusername/h64/inverter/insert_deye_data_into_db.py &> /var/log/h64/insert_deye_data_into_db
 Restart=on-failure
 
 [Install]

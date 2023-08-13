@@ -4,7 +4,7 @@ Description=Unit file for running h64 family home data collection tools - invert
 [Service]
 User=yourusername
 Group=yourusername
-ExecStart=/usr/bin/python3 /home/yourusername/h64/inverter/inverter_websocket_server.py > /var/log/h64/inverter_websocket_server
+ExecStart=/usr/bin/python3 /home/yourusername/h64/inverter/inverter_websocket_server.py &> /var/log/h64/inverter_websocket_server
 Restart=on-failure
 
 [Install]
