@@ -3,7 +3,7 @@
 import argparse
 import asyncio
 import configparser
-import datetime
+from datetime import datetime
 import os
 import sys
 import websockets
