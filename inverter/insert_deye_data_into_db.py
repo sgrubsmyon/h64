@@ -4,6 +4,8 @@ import argparse
 import configparser
 from datetime import datetime
 import json
+import os
+import sys
 import signal
 import time
 import numpy as np
@@ -11,6 +13,9 @@ import psycopg2
 import asyncio
 import websockets
 from read_deye_inverter import data_for_psql
+
+# so that files like config.cfg are always found, no matter from where the script is being run
+os.chdir(os.path.dirname(sys.argv[0]))
 
 ########################
 ### global variables ###

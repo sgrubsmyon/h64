@@ -3,6 +3,8 @@
 import argparse
 import asyncio
 import configparser
+import os
+import sys
 import websockets
 import json
 
@@ -19,7 +21,12 @@ conn.send(JSON.stringify({a: 1, b: 2, c: 5}))
 conn.send(JSON.stringify({group: "slow", values: {a: 1, b: 2, c: 5}}))
 '''
 
+# so that files like config.cfg are always found, no matter from where the script is being run
+os.chdir(os.path.dirname(sys.argv[0]))
+
+########################
 ### global variables ###
+########################
 
 CONNECTIONS = set()
 CURR_VALUES = {}
@@ -28,7 +35,10 @@ CONFIG = configparser.ConfigParser()
 CONFIG.read("../config.cfg")
 CONFIG = CONFIG["WebSocket"]
 
-### end global variables ###
+###################
+### end globals ###
+###################
+
 
 def on_connect_closure(debug):
     async def on_connect(conn):
