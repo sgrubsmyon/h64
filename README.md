@@ -121,6 +121,6 @@ Enable and start the daemons.
 
 ```
 $ sudo systemctl daemon-reload
-$ sudo systemctl enable h64.service
-$ sudo systemctl start h64.service
+$ sudo systemctl enable h64-inverter-websocket.service h64-inverter-insert.service
+$ sudo systemctl start h64-inverter-websocket.service h64-inverter-insert.service
 ```
