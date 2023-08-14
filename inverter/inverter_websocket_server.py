@@ -85,16 +85,15 @@ async def on_message(conn, message, debug):
             CURR_VALUES[group] = msg["values"]
     if "status" in msg:
         CURR_STATUS = msg["status"]
-    if debug:
-        print("Broadcasting message to connected clients:", json.dumps({
-            "values": CURR_VALUES,
-            "status": CURR_STATUS
-        }))
-    # Broadcast the new current values to all connected clients
-    websockets.broadcast(CONNECTIONS, json.dumps({
+
+    broadcast_msg = json.dumps({
         "values": CURR_VALUES,
         "status": CURR_STATUS
-    }))
+    })
+    if debug:
+        print("Broadcasting message to connected clients:", broadcast_msg)
+    # Broadcast the new current values to all connected clients
+    websockets.broadcast(CONNECTIONS, broadcast_msg)
 
 
 async def on_close(conn):

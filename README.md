@@ -107,6 +107,12 @@ Install latest listed LTS version (e.g.):
 $ nvm install v12.16.1
 ```
 
+Install dependencies:
+
+```
+$ cd inverter/node_ws_server
+$ npm install
+```
 
 
 ## Create and edit config file
