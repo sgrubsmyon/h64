@@ -87,6 +87,28 @@ $ pip install --upgrade websockets
 ```
 
 
+### Node.js
+
+Find latest curl command on https://github.com/nvm-sh/nvm, e.g.:
+
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
+```
+
+Close terminal and open new terminal for changes to apply.
+
+Show available installable node versions:
+```
+$ nvm ls-remote
+```
+
+Install latest listed LTS version (e.g.):
+```
+$ nvm install v12.16.1
+```
+
+
+
 ## Create and edit config file
 
 ```
