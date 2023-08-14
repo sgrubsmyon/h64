@@ -8,7 +8,7 @@ console.log("Server started");
  * Global variables *
  ********************/
 
-var CLIENTS = new Set();
+var CLIENT_AUTOINCREMENT = 0;
 var CURR_VALUES = {};
 var CURR_STATUS = {};
 
@@ -23,23 +23,20 @@ process.argv.forEach(arg => {
         DEBUG = true;
     }
 });
-// or:
-// if (
-//     process.argv.indexOf("-d") > -1 ||
-//     process.argv.indexOf("--debug") > -1
-// ) {
-//     DEBUG = true;
-// }
 
 /***************
  * End globals *
  ***************/
 
+function client_ids(clients) {
+    return [...clients].map(client => client.id);
+}
+
 var WebSocketServer = ws.Server;
 var wss = new WebSocketServer({ host: CONFIG.host, port: CONFIG.port });
 wss.on("connection", function (conn) {
-    CLIENTS.add(conn);
-    console.log(`[${new Date().toISOString()}] New connection (${conn})! Now ${CLIENTS.size} open connection${CLIENTS.size == 1 ? "" : "s"}:`, CLIENTS);
+    conn.id = CLIENT_AUTOINCREMENT++;
+    console.log(`[${new Date().toISOString()}] New connection (${conn.id})! Now ${wss.clients.size} open connection${wss.clients.size == 1 ? "" : "s"}:`, client_ids(wss.clients));
 
     // Send the current values to the freshly connected client:
     conn.send(JSON.stringify({
@@ -59,7 +56,7 @@ wss.on("connection", function (conn) {
     conn.on("message", function (message) {
         msg = JSON.parse(message);
         if (DEBUG) {
-            console.log(`[${new Date().toISOString()}] Message from (${conn}):`, msg);
+            console.log(`[${new Date().toISOString()}] Message from (${conn.id}):`, msg);
         }
         const msg_keys = Object.keys(msg);
         if (msg_keys.includes("group") && msg_keys.includes("values")) {
@@ -81,13 +78,13 @@ wss.on("connection", function (conn) {
             console.log(`[${new Date().toISOString()}] Broadcasting message to connected clients:`, broadcast_msg);
         }
         // Broadcast the new current values to all connected clients
-        CLIENTS.forEach(function (client) {
+        wss.clients.forEach(function (client) {
             client.send(broadcast_msg);
         })
     });
 
     conn.on("close", function () {
-        CLIENTS.delete(conn);
-        console.log(`[${new Date().toISOString()}] Connection (${conn}) closed. Now ${CLIENTS.size} open connection${CLIENTS.size == 1 ? "" : "s"}:`, CLIENTS);
+        // CLIENTS.delete(conn);
+        console.log(`[${new Date().toISOString()}] Connection (${conn.id}) closed. Now ${wss.clients.size} open connection${wss.clients.size == 1 ? "" : "s"}:`, client_ids(wss.clients));
     });
 });
