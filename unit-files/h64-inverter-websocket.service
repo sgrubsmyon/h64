@@ -4,7 +4,7 @@ Description=H64 data collection tools - inverter WebSocket server
 [Service]
 User=yourusername
 Group=yourusername
-ExecStart=/usr/bin/python3 /home/yourusername/h64/inverter/inverter_websocket_server.py
+ExecStart=node /home/yourusername/h64/inverter/node_ws_server/inverter_websocket_server.js
 StandardOutput=file:/var/log/h64/inverter_websocket_server
 StandardError=file:/var/log/h64/inverter_websocket_server
 Restart=on-failure
