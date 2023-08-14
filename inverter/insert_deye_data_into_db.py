@@ -169,8 +169,10 @@ async def sample(minute_of_last_slow_sampling, debug, dry_run):
             try:
                 delta_t = np.min(delta_ts)
             except ValueError:
-                # Probably, there are no sampling points in the future,
-                # just set delta_t to the group's interval
+                # Probably, there are no sampling points in the future.
+                # This happens at the end of every hour, since sampling
+                # points are only defined within each hour.
+                # Just set delta_t to the group's interval
                 status = {"type": "ERROR", "msg": "Problem with delta_t"}
                 print(f"[{datetime.now()}] Problem finding min of the delta_ts.")
                 print(f"[{datetime.now()}] group:", group)

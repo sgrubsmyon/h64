@@ -1,8 +1,12 @@
+const path = require("path");
 const ws = require("ws");
 const fs = require("fs");
 const ini = require("ini");
 
 console.log("Server started");
+
+// so that files like config.cfg are always found, no matter from where the script is being run
+process.chdir(path.dirname(process.argv[1]));
 
 /********************
  * Global variables *
