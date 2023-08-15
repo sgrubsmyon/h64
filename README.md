@@ -153,3 +153,60 @@ $ sudo systemctl daemon-reload
 $ sudo systemctl enable h64-inverter-websocket.service h64-inverter-insert.service
 $ sudo systemctl start h64-inverter-websocket.service h64-inverter-insert.service
 ```
+
+## Configure nginx proxy for WebSocket server
+
+Create a CNAME subdomain DNS entry for the inverterdata, e.g. `inverterdata.example.com`.
+
+Create file `/etc/nginx/sites-available/h64`:
+
+```
+map $http_upgrade $connection_upgrade {
+	default upgrade;
+	'' close;
+}
+
+upstream websocket {
+	server localhost:8765;
+}
+
+server {
+	server_name inverterdata.example.com;
+	listen 80;
+	location / {
+		proxy_pass http://websocket;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection $connection_upgrade;
+		proxy_set_header Host $host;
+	}
+}
+```
+
+Activate it and restart nginx:
+
+```
+$ cd /etc/nginx/sites-enabled/
+$ sudo ln -s ../sites-available/h64
+$ sudo systemctl restart nginx
+```
+
+Generate the Let's Encrypt TLS/SSL certificate with certbot.
+
+If not yet done, install certbot:
+
+```
+$ sudo apt-get remove certbot
+$ sudo snap install --classic certbot
+$ sudo ln -s /snap/bin/certbot /usr/bin/certbot
+```
+
+Run certbot to generate certificates and auto-edit the nginx config files:
+
+```
+$ sudo certbot --nginx
+```
+
+Certbot will modify the nginx config file appropriately.
+
+WebSocket server now accessible TLS encrypted under `wss://inverterdata.example.com`!
