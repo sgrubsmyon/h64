@@ -156,6 +156,8 @@ $ sudo systemctl start h64-inverter-websocket.service h64-inverter-insert.servic
 
 ## Configure nginx proxy for WebSocket server
 
+See: https://www.nginx.com/blog/websocket-nginx/
+
 Create a CNAME subdomain DNS entry for the inverterdata, e.g. `inverterdata.example.com`.
 
 Create file `/etc/nginx/sites-available/h64`:
@@ -210,3 +212,16 @@ $ sudo certbot --nginx
 Certbot will modify the nginx config file appropriately.
 
 WebSocket server now accessible TLS encrypted under `wss://inverterdata.example.com`!
+
+You can test the server by opening `about:blank` in web browser, pressing F12 and pasting this code into the JS console:
+
+```
+var conn = new WebSocket('wss://inverterdata.example.com');
+conn.onopen = function(e) {
+    console.log("Connection established!");
+};
+
+conn.onmessage = function(e) {
+    console.log(e.data);
+};
+```
