@@ -115,7 +115,63 @@ $ npm install
 ```
 
 
-## Create and edit config file
+### Vue.js
+
+<!--
+https://vuejs.org/guide/quick-start.html#creating-a-vue-application
+
+Here is how the project was created:
+
+```
+$ npm create vue@latest
+Need to install the following packages:
+create-vue@3.7.2
+Ok to proceed? (y) y
+
+Vue.js - The Progressive JavaScript Framework
+
+✔ Project name: … h64
+✔ Add TypeScript? … Yes
+✔ Add JSX Support? … No
+✔ Add Vue Router for Single Page Application development? … Yes
+✔ Add Pinia for state management? … No
+✔ Add Vitest for Unit Testing? … No
+✔ Add an End-to-End Testing Solution? › No
+✔ Add ESLint for code quality? … Yes
+✔ Add Prettier for code formatting? … Yes
+
+Scaffolding project in /home/mvoge/Documents/Markus/i/code/h64/frontend/h64...
+
+```
+cd h64
+npm install
+npm run format
+npm run dev
+```
+-->
+
+```
+$ cd frontend/h64
+$ npm install
+$ npm run format
+```
+
+Start the development server:
+
+```
+$ npm run dev
+```
+
+Ship to production:
+
+```
+$ npm run build
+```
+
+
+## Deploy
+
+### Create and edit config file
 
 ```
 $ cp -i config.cfg.example config.cfg
@@ -125,7 +181,7 @@ $ chmod 600 config.cfg
 Edit file config.cfg and fill in your numbers.
 
 
-## Create directory for log file(s)
+### Create directory for log file(s)
 
 ```
 $ sudo mkdir /var/log/h64
@@ -133,7 +189,7 @@ $ sudo chown yourusername:yourusername /var/log/h64/
 ```
 
 
-## Install systemd unit files
+### Install systemd unit files
 
 ```
 $ sudo cp -i unit-files/* /etc/systemd/system/
@@ -154,7 +210,8 @@ $ sudo systemctl enable h64-inverter-websocket.service h64-inverter-insert.servi
 $ sudo systemctl start h64-inverter-websocket.service h64-inverter-insert.service
 ```
 
-## Configure nginx proxy for WebSocket server
+
+### Configure nginx proxy for WebSocket server
 
 See: https://www.nginx.com/blog/websocket-nginx/
 
