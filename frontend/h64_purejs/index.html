@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H64 &ndash; Aktuelle Werte</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>H64 &ndash; Aktuelle Werte</h1>
+    <div id="timestamp" class="dashboard-item">
+        <span>Letzte Aktualisierung:</span>
+        <span class="timestamp"></span>
+    </div>
+    <h2>Main</h2>
+    <div id="value-container" class="flex-container">
+        <div id="grid-power" class="flex-item dashboard-item">
+            <span class="dashboard-value">--- W</span>
+            <img src="" alt="Grid power icon">
+            <span class="dashboard-label">Grid Power</span>
+        </div>
+        <div id="load-power" class="flex-item dashboard-item">
+            <span class="dashboard-value">--- W</span>
+            <img src="" alt="Load power icon">
+            <span class="dashboard-label">Load Power</span>
+        </div>
+        <div id="pv-power" class="flex-item dashboard-item">
+            <span class="dashboard-value">--- W</span>
+            <img src="" alt="PV power icon">
+            <span class="dashboard-label">PV Power</span>
+        </div>
+        <div id="battery-power" class="flex-item dashboard-item">
+            <span class="dashboard-value">--- W</span>
+            <img src="" alt="Battery power icon">
+            <span class="dashboard-label">Battery Power</span>
+        </div>
+    </div>
+    <h2>Details</h2>
+    <div id="value-container-details" class="flex-container">
+        <div id="pv1-power" class="flex-item dashboard-item">
+            <span class="dashboard-value">--- W</span>
+            <img src="" alt="PV power icon">
+            <span class="dashboard-label">PV1 Power</span>
+        </div>
+        <div id="pv2-power" class="flex-item dashboard-item">
+            <span class="dashboard-value">--- W</span>
+            <img src="" alt="PV power icon">
+            <span class="dashboard-label">PV2 Power</span>
+        </div>
+    </div>
+
+    <script src="ws-client.js"></script>
+</body>
+</html>
