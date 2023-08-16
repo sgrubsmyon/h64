@@ -56,22 +56,21 @@ for group in start_point:
         minute_startpoint, 60, minute_interval)
 
 # connection to DB that shall be persisted throughout
-conn, cur = None, None
+pg_conn = None
 
 # connection to WebSocket server that shall be persisted throughout
 ws_conn = None
 
 
 def connect_to_psql():
-    global conn, cur
-    conn = psycopg2.connect(
+    global pg_conn
+    pg_conn = psycopg2.connect(
         host=cfg_psql["host"],
         port=cfg_psql["port"],
         user=cfg_psql["user"],
         database=cfg_psql["db"],
         password=cfg_psql["password"]
     )
-    cur = conn.cursor()
 
 
 async def connect_to_websocket_server():
@@ -82,15 +81,14 @@ async def connect_to_websocket_server():
 
 # close connection to database and WebSocket server when this script is terminated:
 def close_connections(dry_run):
-    global conn, cur, ws_conn
+    global pg_conn, ws_conn
 
     def close(signalnum, stackframe):
-        global conn, cur, ws_conn
+        global pg_conn, ws_conn
         print(
             f"[{datetime.now()}] Received SIGTERM. Closing connection to database and WebSocket server.")
         if not dry_run:
-            cur.close()
-            conn.close()
+            pg_conn.close()
         # Not working:
         # await ws_conn.close()
     return close
@@ -108,8 +106,10 @@ def insert_into_psql(group, data, debug, dry_run):
     if debug:
         print(query, data.values())
     if not dry_run:
+        cur = pg_conn.cursor()
         cur.execute(query, tuple(data.values()))
-        conn.commit()
+        pg_conn.commit()
+        cur.close()
 
 
 async def send_to_websocket_server(group, data, status, debug):
