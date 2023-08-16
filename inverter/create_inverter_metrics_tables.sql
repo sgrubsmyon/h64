@@ -1,7 +1,7 @@
 -- Create tables inside PostgreSQL TimescaleDB database `inverter`
 
 -- Table with values changing slowly, enough to update only every 5 minutes
-CREATE TABLE metrics_slow (
+CREATE TABLE inverter_metrics_slow (
    time                          TIMESTAMPTZ      NOT NULL,
    daily_pv_production           DOUBLE PRECISION NULL,
    total_pv_production           DOUBLE PRECISION NULL,
@@ -24,7 +24,7 @@ CREATE TABLE metrics_slow (
 );
 
 -- Table with values changing fast, about every second. Table is updated every 10 seconds, because values are not that important
-CREATE TABLE metrics_fast (
+CREATE TABLE inverter_metrics_fast (
    time                 TIMESTAMPTZ      NOT NULL,
    load_voltage_l1      DOUBLE PRECISION NULL,
    load_voltage_l2      DOUBLE PRECISION NULL,
@@ -48,7 +48,7 @@ CREATE TABLE metrics_fast (
 );
 
 -- Table with values changing fast, about every second. Table is updated every 3 seconds
-CREATE TABLE metrics_faster (
+CREATE TABLE inverter_metrics_faster (
    time                 TIMESTAMPTZ      NOT NULL,
    total_load_power     DOUBLE PRECISION NULL,
    total_grid_power     DOUBLE PRECISION NULL,
@@ -65,6 +65,6 @@ CREATE TABLE metrics_faster (
 );
 
 -- Convert tables to TimescaleDB hypertables:
-SELECT create_hypertable('metrics_slow', 'time');
-SELECT create_hypertable('metrics_fast', 'time');
-SELECT create_hypertable('metrics_faster', 'time');
+SELECT create_hypertable('inverter_metrics_slow', 'time');
+SELECT create_hypertable('inverter_metrics_fast', 'time');
+SELECT create_hypertable('inverter_metrics_faster', 'time');

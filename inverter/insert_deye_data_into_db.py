@@ -102,7 +102,7 @@ def close_connections(dry_run):
 
 def insert_into_psql(group, data, debug, dry_run):
     query = f'''
-        INSERT INTO metrics_{group}({', '.join(data.keys())})
+        INSERT INTO inverter_metrics_{group}({', '.join(data.keys())})
             VALUES ({', '.join(['%s'] * len(data.values()))});
     '''
     if debug:
