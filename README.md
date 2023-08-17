@@ -282,3 +282,46 @@ conn.onmessage = function(e) {
     console.log(e.data);
 };
 ```
+
+### Configure nginx for frontend
+
+Copy frontend to web server's document root:
+
+```
+$ sudo rsync -rtlPvi ~/h64/frontend/h64_purejs/ /var/www/html/h64/
+```
+
+Create server config:
+
+```
+sudo vim /etc/nginx/sites-available/h64
+```
+
+Add:
+
+```
+server {
+    server_name h64.example.com;
+    root /var/www/html/h64;
+    access_log /var/log/nginx/h64-access.log;
+    #error_log /var/log/nginx/h64-error.log info;
+    error_log /var/log/nginx/h64-error.log;
+
+    listen 80;
+}
+
+```
+
+Restart nginx:
+
+```
+$ sudo systemctl restart nginx
+```
+
+Generate the Let's Encrypt TLS/SSL certificate with certbot.
+
+```
+$ sudo certbot --nginx
+```
+
+Certbot will modify the nginx config file appropriately.
