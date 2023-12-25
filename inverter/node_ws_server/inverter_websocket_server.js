@@ -84,7 +84,7 @@ wss.on("connection", function (conn) {
         // Broadcast the new current values to all connected clients
         wss.clients.forEach(function (client) {
             client.send(broadcast_msg);
-        })
+        });
     });
 
     conn.on("close", function () {

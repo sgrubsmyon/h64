@@ -16,9 +16,9 @@ const CONFIG = CONFIGFULL.WebSocket;
 
 var DEBUG = false;
 process.argv.forEach(arg => {
-    if (arg === "-d" || arg === "--debug") {
-        DEBUG = true;
-    }
+  if (arg === "-d" || arg === "--debug") {
+    DEBUG = true;
+  }
 });
 if (DEBUG) {
   console.log("DEBUG:", DEBUG);
@@ -36,7 +36,7 @@ var CURR_STATUS = {};
 const server = Bun.serve({
   hostname: CONFIG.host,
   port: CONFIG.port,
-  
+
   // Protocol upgrade logic
   fetch(req, server) {
     const success = server.upgrade(req);
@@ -59,10 +59,9 @@ const server = Bun.serve({
       if (DEBUG) {
         console.log(`[${new Date().toISOString()}] New connection (${CLIENT_AUTOINCREMENT}), now ${N_CONN_CLIENTS} open connection${N_CONN_CLIENTS == 1 ? "" : "s"}`);
       }
-      // Don't need the pub/sub model
-      // ws.subscribe("room");
-      
-      // Send the current values to the freshly connected client:
+      ws.subscribe("inverter");
+
+      // Send the current values only back to the freshly connected client
       ws.send(JSON.stringify({
         values: CURR_VALUES,
         status: CURR_STATUS
@@ -78,12 +77,34 @@ const server = Bun.serve({
     // All other clients (in web browser) only passively
     // receive the messages with current values and do
     // not send any messages.
-    message(ws, msg) {
-      // echo back the message
-      ws.send(msg);
-      // if (ws.publishText("room", out) !== out.length) {
-      //   throw new Error("Failed to publish message");
-      // }
+    message(ws, message) {
+      const msg = JSON.parse(message);
+      if (DEBUG) {
+        console.log(`[${new Date().toISOString()}] Received message:`, msg);
+      }
+      const msg_keys = Object.keys(msg);
+      if (msg_keys.includes("group") && msg_keys.includes("values")) {
+        // Update the current values with new ones:
+        const group = msg.group;
+        if (msg.values != null) {
+          CURR_VALUES[group] = msg.values;
+        }
+      }
+      if (msg_keys.includes("status")) {
+        CURR_STATUS = msg.status;
+      }
+
+      const broadcast_msg = JSON.stringify({
+        values: CURR_VALUES,
+        status: CURR_STATUS
+      });
+      if (DEBUG) {
+        console.log(`[${new Date().toISOString()}] Broadcasting message to connected clients:`, broadcast_msg);
+      }
+      // Broadcast the new current values to all connected clients
+      if (ws.publish("inverter", broadcast_msg) !== broadcast_msg.length) {
+        throw new Error("Failed to publish message");
+      }
     },
 
     close(ws) {
