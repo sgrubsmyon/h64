@@ -28,25 +28,70 @@ body {
     flex-wrap: wrap;
 }
 
+#value-container {
+    display: grid;
+    grid-template-areas:
+        "upper-left . upper-right"
+        ". grid-center ."
+        "lower-left . lower-right";
+    grid-template-columns: 150px auto 150px;
+    grid-template-rows: 150px 150px 150px;
+    margin: 20px;
+}
+
+#pv-power {
+    grid-area: upper-left;
+}
+
+#grid-power {
+    grid-area: upper-right;
+}
+
+#battery-power {
+    grid-area: lower-left;
+}
+
+#load-power {
+    grid-area: lower-right;
+}
+
+#inverter {
+    grid-area: grid-center;
+    justify-self: center;
+}
+
 .dashboard-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     width: 150px;
     height: 150px;
     border: 1px #aaa solid;
     box-shadow: 10px 5px 5px #aaa;
     margin-right: 20px;
     margin-bottom: 20px;
+}
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+.dashboard-item img {
+    width: 100px;
+    height: 100px;
 }
 
 .dashboard-value {
-    font-size: xx-large;
+    font-size: x-large;
+}
+
+.dashboard-value-small {
+    font-size: large;
 }
 
 #timestamp.dashboard-item {
     width: 300px;
     height: 70px;
+}
+
+.dashboard-item .icon-smaller {
+    width: 75px;
+    height: 75px;
 }

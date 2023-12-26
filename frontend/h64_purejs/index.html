@@ -13,26 +13,31 @@
         <span class="timestamp"></span>
     </div>
     <h2>Main</h2>
-    <div id="value-container" class="flex-container">
-        <div id="grid-power" class="flex-item dashboard-item">
+    <div id="value-container">
+        <div id="pv-power" class="dashboard-item">
+            <span class="dashboard-label">PV</span>
             <span class="dashboard-value">--- W</span>
-            <img src="" alt="Grid power icon">
-            <span class="dashboard-label">Grid Power</span>
+            <img src="assets/icons/dah-solar-blackvelvet-410w.png" alt="PV power icon">
         </div>
-        <div id="load-power" class="flex-item dashboard-item">
+        <div id="grid-power" class="dashboard-item">
+            <span class="dashboard-label">Grid</span>
             <span class="dashboard-value">--- W</span>
-            <img src="" alt="Load power icon">
-            <span class="dashboard-label">Load Power</span>
+            <img src="assets/icons/electric-tower.png" alt="Grid power icon" class="icon-smaller">
         </div>
-        <div id="pv-power" class="flex-item dashboard-item">
+        <div id="battery-power" class="dashboard-item">
+            <span class="dashboard-label">Battery</span>
             <span class="dashboard-value">--- W</span>
-            <img src="" alt="PV power icon">
-            <span class="dashboard-label">PV Power</span>
+            <span class="dashboard-value dashboard-value-2nd">--%</span>
+            <img src="assets/icons/battery.png" alt="Battery power icon" class="icon-smaller">
         </div>
-        <div id="battery-power" class="flex-item dashboard-item">
+        <div id="load-power" class="dashboard-item">
+            <span class="dashboard-label">Load</span>
             <span class="dashboard-value">--- W</span>
-            <img src="" alt="Battery power icon">
-            <span class="dashboard-label">Battery Power</span>
+            <img src="assets/icons/house.png" alt="Load power icon" class="icon-smaller">
+        </div>
+        <div id="inverter" class="dashboard-item">
+            <img src="assets/icons/sun-8-10-12k.png" alt="Inverter icon">
+            <span class="dashboard-label">Inverter</span>
         </div>
     </div>
     <h2>Details</h2>
