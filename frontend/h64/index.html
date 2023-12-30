@@ -4,10 +4,14 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>H64 &ndash; Aktuelle Werte</title>
+    <title>H64 &ndash; Übersicht</title>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <header></header>
+    <script type="module" src="/src/header.ts"></script>
+    <div id="current-values"></div>
+    <script type="module" src="/src/values/values.ts"></script>
+    <div id="daily-curves"></div>
+    <script type="module" src="/src/day/day.ts"></script>
   </body>
 </html>
