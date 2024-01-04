@@ -8,6 +8,8 @@ import gridIcon from '/icons/electric-tower.png'
 import batteryIcon from '/icons/battery.png'
 import loadIcon from '/icons/house.png'
 import inverterIcon from '/icons/sun-8-10-12k.png'
+// import ValueBox from './value-box.jsx'
+// ${ValueBox({id: "pv-power", label: "PV", unit: "W", icon: pvIcon})}
 
 document.querySelector<HTMLDivElement>('#current-values')!.innerHTML = `
   <!-- <button id="counter" type="button"></button> -->
