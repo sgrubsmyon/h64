@@ -4,77 +4,65 @@
  <defs>
   <linearGradient id="linearGradient16789">
    <stop offset="0"/>
-   <stop style="stop-opacity:0" offset="1"/>
+   <stop stop-opacity="0" offset="1"/>
   </linearGradient>
   <linearGradient id="linearGradient16791" x1="111.73" x2="71.177" y1="168.52" y2="134.08" gradientTransform="translate(-.0063622 .0059764)" gradientUnits="userSpaceOnUse" xlink:href="#linearGradient16789"/>
   <linearGradient id="linearGradient17936" x1="111.73" x2="71.177" y1="168.52" y2="134.08" gradientTransform="matrix(-1 0 0 1 210.04 1.9437e-5)" gradientUnits="userSpaceOnUse" xlink:href="#linearGradient16789"/>
   <linearGradient id="linearGradient18228" x1="111.73" x2="71.177" y1="168.52" y2="134.08" gradientTransform="rotate(180 105.02 94.323)" gradientUnits="userSpaceOnUse" xlink:href="#linearGradient16789"/>
   <linearGradient id="linearGradient20201" x1="111.73" x2="71.177" y1="168.52" y2="134.08" gradientTransform="matrix(1 0 0 -1 -.51471 188.65)" gradientUnits="userSpaceOnUse" xlink:href="#linearGradient16789"/>
  </defs>
- <g id="current-power-anim-battery-discharge" transform="translate(-15.346)">
-  <path d="m61.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
-  <path d="m66.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
-  <path d="m71.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
- </g>
- <g id="current-power-anim-battery-charge" transform="rotate(90 100.62 145.19)">
-  <path d="m61.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
-  <path d="m66.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
-  <path d="m71.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
- </g>
- <g id="current-power-anim-load" transform="matrix(0 1 1 0 -35.776 44.575)">
-  <path d="m61.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
-  <path d="m66.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
-  <path d="m71.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
- </g>
- <g id="current-power-anim-grid-buy" transform="rotate(180 112.69 94.323)">
-  <path d="m61.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
-  <path d="m66.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
-  <path d="m71.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
- </g>
- <g id="current-power-anim-grid-sell" transform="rotate(-90 54.941 90.717)">
-  <path d="m61.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
-  <path d="m66.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
-  <path d="m71.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
- </g>
- <g id="current-power-anim-pv" transform="matrix(1 0 0 -1 -15.331 188.65)">
-  <path d="m61.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
-  <path d="m66.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
-  <path d="m71.4 152.3v4l3.4637-2z" style="fill:#7ffefe"/>
- </g>
- <path id="current-power-arrow-path-grid" d="m164.89 34.339h-34.975c-7.1263 0-9.416 4.1037-9.416 4.1037-1.4589 1.5825-1.9771 4.7445-1.9771 8.1595v38.495" style="fill:none"/>
- <path id="current-power-arrow-path-pv" d="m44.595 34.316h34.975c7.1263 0 9.416 4.1037 9.416 4.1037 1.4589 1.5825 1.9771 4.7445 1.9771 8.1595v38.495" style="fill:none"/>
- <path id="current-power-arrow-path-battery" d="m45.048 154.4h34.975c7.1263 0 9.416-4.1037 9.416-4.1037 1.4589-1.5825 1.9771-4.7445 1.9771-8.1595v-38.495" style="fill:none"/>
- <path id="current-power-arrow-path-load" d="m164.9 154.58h-34.975c-7.1263 0-9.416-4.1037-9.416-4.1037-1.4589-1.5825-1.9771-4.7445-1.9771-8.1595v-38.495" style="fill:none"/>
- <g>
-  <path x="80.489998" y="70.489998" width="49.019997" height="49.019604" ry="6.9739275" d="m87.464 70.49h35.072c3.8636 0 6.9739 3.1104 6.9739 6.9739v35.072c0 3.8636-3.1104 6.9739-6.9739 6.9739h-35.072c-3.8636 0-6.9739-3.1104-6.9739-6.9739v-35.072c0-3.8636 3.1104-6.9739 6.9739-6.9739z" style="fill:#888;stroke-linecap:round;stroke-linejoin:round;stroke-width:.98;stroke:#888"/>
-  <path x="150.49001" y="10.490002" width="49.019997" height="49.019604" ry="6.9739275" d="m157.46 10.49h35.072c3.8636 0 6.9739 3.1104 6.9739 6.9739v35.072c0 3.8636-3.1104 6.9739-6.9739 6.9739h-35.072c-3.8636 0-6.9739-3.1104-6.9739-6.9739v-35.072c0-3.8636 3.1104-6.9739 6.9739-6.9739z" style="fill:#888;stroke-linecap:round;stroke-linejoin:round;stroke-width:.98;stroke:#888"/>
-  <path x="150.49001" y="130.49001" width="49.019997" height="49.019604" ry="6.9739275" d="m157.46 130.49h35.072c3.8636 0 6.9739 3.1104 6.9739 6.9739v35.072c0 3.8636-3.1104 6.9739-6.9739 6.9739h-35.072c-3.8636 0-6.9739-3.1104-6.9739-6.9739v-35.072c0-3.8636 3.1104-6.9739 6.9739-6.9739z" style="fill:#888;stroke-linecap:round;stroke-linejoin:round;stroke-width:.98;stroke:#888"/>
-  <path x="10.49" y="10.49" width="49.019608" height="49.019608" ry="6.973928" d="m17.464 10.49h35.072c3.8636 0 6.9739 3.1104 6.9739 6.9739v35.072c0 3.8636-3.1104 6.9739-6.9739 6.9739h-35.072c-3.8636 0-6.9739-3.1104-6.9739-6.9739v-35.072c0-3.8636 3.1104-6.9739 6.9739-6.9739z" style="fill:#888;stroke-linecap:round;stroke-linejoin:round;stroke-width:.98;stroke:#888"/>
-  <path x="10.490196" y="130.49019" width="49.019608" height="49.019608" ry="6.973928" d="m17.464 130.49h35.072c3.8636 0 6.9739 3.1104 6.9739 6.9739v35.072c0 3.8636-3.1104 6.9739-6.9739 6.9739h-35.072c-3.8636 0-6.9739-3.1104-6.9739-6.9739v-35.072c0-3.8636 3.1104-6.9739 6.9739-6.9739z" style="fill:#888;stroke-linecap:round;stroke-linejoin:round;stroke-width:.98;stroke:#888"/>
-  <text id="current-power-label-inverter" x="105.0033" y="79.629173" style="font-family:sans-serif;font-size:6.35px;line-height:1.25;stroke-width:.26458;text-align:center;text-anchor:middle" xml:space="preserve"><tspan x="105.0033" y="79.629173" style="font-size:6.35px;stroke-width:.26458;text-align:center;text-anchor:middle">Inverter</tspan></text>
-  <text id="current-power-label-grid" x="174.91551" y="19.629175" style="font-family:sans-serif;font-size:6.35px;line-height:1.25;stroke-width:.26458;text-align:center;text-anchor:middle" xml:space="preserve"><tspan x="174.91551" y="19.629175" style="font-size:6.35px;stroke-width:.26458;text-align:center;text-anchor:middle">Grid</tspan></text>
-  <text id="current-power-label-load" x="175.00655" y="139.82451" style="font-family:sans-serif;font-size:6.35px;line-height:1.25;stroke-width:.26458;text-align:center;text-anchor:middle" xml:space="preserve"><tspan x="175.00655" y="139.82451" style="font-size:6.35px;stroke-width:.26458;text-align:center;text-anchor:middle">Load</tspan></text>
-  <text id="current-power-label-pv" x="35.0033" y="19.629175" style="font-family:sans-serif;font-size:6.35px;line-height:1.25;stroke-width:.26458;text-align:center;text-anchor:middle" xml:space="preserve"><tspan x="35.0033" y="19.629175" style="font-size:6.35px;stroke-width:.26458;text-align:center;text-anchor:middle">PV</tspan></text>
-  <text id="current-power-pv" transform="scale(.99999 1)" x="51.651848" y="31.283495" style="font-family:sans-serif;font-size:8.4667px;line-height:1.25;stroke-width:.26458;text-align:end;text-anchor:end" xml:space="preserve"><tspan x="51.651848" y="31.283495" style="font-size:8.4667px;stroke-width:.26458;text-align:end;text-anchor:end">9999 W</tspan></text>
-  <text id="current-power-grid" transform="scale(.99999 1)" x="191.65387" y="31.283495" style="font-family:sans-serif;font-size:8.4667px;line-height:1.25;stroke-width:.26458;text-align:end;text-anchor:end" xml:space="preserve"><tspan x="191.65387" y="31.283495" style="font-size:8.4667px;stroke-width:.26458;text-align:end;text-anchor:end">-9999 W</tspan></text>
-  <text id="current-power-battery" transform="scale(.99999 1)" x="51.651848" y="151.28175" style="font-family:sans-serif;font-size:8.4667px;line-height:1.25;stroke-width:.26458;text-align:end;text-anchor:end" xml:space="preserve"><tspan x="51.651848" y="151.28175" style="font-size:8.4667px;stroke-width:.26458;text-align:end;text-anchor:end">-9999 W</tspan></text>
-  <text id="current-power-soc" transform="scale(.99999 1)" x="46.818291" y="161.28162" style="font-family:sans-serif;font-size:8.4667px;line-height:1.25;stroke-width:.26458;text-align:end;text-anchor:end" xml:space="preserve"><tspan x="46.818291" y="161.28162" style="font-size:8.4667px;stroke-width:.26458;text-align:end;text-anchor:end">100%</tspan></text>
-  <text id="current-power-label-battery" x="35.077782" y="139.62918" style="font-family:sans-serif;font-size:6.35px;line-height:1.25;stroke-width:.26458;text-align:center;text-anchor:middle" xml:space="preserve"><tspan x="35.077782" y="139.62918" style="font-size:6.35px;stroke-width:.26458;text-align:center;text-anchor:middle">Battery</tspan></text>
-  <path id="current-power-arrow-battery-discharge" d="m54.304 151.39h1.569l-0.0013-3.1201h1.0001l-1.7832-3.2692-1.7888 3.2692h1.0001l0.0041 3.1201" style="fill:#fe7f7f"/>
-  <path id="current-power-arrow-battery-charge" d="m54.304 145h1.5689l-0.0013 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l0.0041-3.1198" style="fill:#95fe7f"/>
-  <path id="current-power-arrow-pv" d="m54.304 25h1.569l-0.0013 3.1201h1.0001l-1.7832 3.2692-1.7888-3.2692h1.0001l0.0041-3.1201" style="fill:#fefe7f"/>
-  <rect id="current-power-bar-pv" x="12.899" y="22.399" width="2.7014" height="11.802" style="fill:none;stroke-linecap:square;stroke-linejoin:round;stroke-width:.19834;stroke:#000"/>
-  <rect id="current-power-bar-grid" x="152.9" y="22.399" width="2.7017" height="11.802" style="fill:none;stroke-linecap:square;stroke-linejoin:round;stroke-width:.19835;stroke:#000"/>
-  <rect id="current-power-bar-battery" x="12.899" y="142.4" width="2.7014" height="11.802" style="fill:none;stroke-linecap:square;stroke-linejoin:round;stroke-width:.19834;stroke:#000"/>
-  <rect id="current-power-bar-soc" transform="rotate(90)" x="164.1" y="-40.902" width="2.7016" height="11.803" style="fill:none;stroke-linecap:square;stroke-linejoin:round;stroke-width:.19836;stroke:#000"/>
-  <path id="current-power-arrow-grid-sell" d="m194.3 31.352h1.569l-1e-3 -3.1201h1.0001l-1.7832-3.2692-1.7888 3.2692h1.0001l4e-3 3.1201" style="fill:#95fe7f"/>
-  <path id="current-power-arrow-grid-buy" d="m194.3 24.963h1.5689l-1e-3 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l4e-3 -3.1198" style="fill:#fe7f7f"/>
-  <text id="current-power-load" transform="scale(.99999 1)" x="191.65387" y="151.28175" style="font-family:sans-serif;font-size:8.4667px;line-height:1.25;stroke-width:.26458;text-align:end;text-anchor:end" xml:space="preserve"><tspan x="191.65387" y="151.28175" style="font-size:8.4667px;stroke-width:.26458;text-align:end;text-anchor:end">9999 W</tspan></text>
-  <rect id="current-power-bar-load" x="152.9" y="142.4" width="2.7017" height="11.802" style="fill:none;stroke-linecap:square;stroke-linejoin:round;stroke-width:.19835;stroke:#000"/>
-  <path id="current-power-arrow-load" d="m194.3 145h1.5689l-1e-3 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l4e-3 -3.1198" style="fill:#fe7f7f"/>
-  <path d="m60.006 157.3h20.487c7.1263 0 10.55-4.1453 10.55-4.1453 1.4589-1.5825 3.3139-4.703 3.3139-8.118v-25.04m-5.7768 2e-3v25.038c-0.76682 2.6285-2.6287 6.3887-8.0867 6.3887h-20.487" style="fill:none;stroke:url(#linearGradient16791)"/>
-  <path d="m150 157.29h-20.457c-7.1263 0-10.55-4.1453-10.55-4.1453-1.4589-1.5825-3.3139-4.703-3.3139-8.118v-25.036m5.7768 5e-3v25.031c0.76682 2.6285 2.6287 6.3887 8.0868 6.3887h20.457" style="fill:none;stroke:url(#linearGradient17936)"/>
-  <path d="m150 31.352h-20.458c-7.1263 0-10.55 4.1453-10.55 4.1453-1.4589 1.5825-3.3139 4.703-3.3139 8.118v26.381m5.7768 0.0075v-26.388c0.76682-2.6285 2.6287-6.3887 8.0868-6.3887h20.473" style="fill:none;stroke:url(#linearGradient18228)"/>
-  <path d="m60.001 31.352h19.983c7.1263 0 10.55 4.1453 10.55 4.1453 1.4589 1.5825 3.3139 4.703 3.3139 8.118v26.381m-5.7768 0.0075v-26.388c-0.76682-2.6285-2.6287-6.3887-8.0868-6.3887h-19.998" style="fill:none;stroke:url(#linearGradient20201)"/>
- </g>
+ <path id="current-power-battery-discharge-arrow-one" class="current-power-battery-discharge-arrow" d="m46.054 152.3v4l3.4637-2z" fill="#7ffefe"/>
+ <path id="current-power-battery-discharge-arrow-two" class="current-power-battery-discharge-arrow" d="m51.054 152.3v4l3.4637-2z" fill="#7ffefe"/>
+ <path id="current-power-battery-discharge-arrow-three" class="current-power-battery-discharge-arrow" d="m56.054 152.3v4l3.4637-2z" fill="#7ffefe"/>
+ <path id="current-power-battery-charge-arrow-one" class="current-power-battery-charge-arrow" d="m93.51 105.97h-4l2 3.4637z" fill="#7ffefe"/>
+ <path id="current-power-battery-charge-arrow-two" class="current-power-battery-charge-arrow" d="m93.51 110.97h-4l2 3.4637z" fill="#7ffefe"/>
+ <path id="current-power-battery-charge-arrow-three" class="current-power-battery-charge-arrow" d="m93.51 115.97h-4l2 3.4637z" fill="#7ffefe"/>
+ <path id="current-power-load-arrow-one" class="current-power-load-arrow" d="m116.52 105.98h4l-2 3.4637z" fill="#7ffefe"/>
+ <path id="current-power-load-arrow-two" class="current-power-load-arrow" d="m116.52 110.98h4l-2 3.4637z" fill="#7ffefe"/>
+ <path id="current-power-load-arrow-three" class="current-power-load-arrow" d="m116.52 115.98h4l-2 3.4637z" fill="#7ffefe"/>
+ <path id="current-power-grid-buy-arrow-one" class="current-power-grid-buy-arrow" d="m163.98 36.346v-4l-3.4637 2z" fill="#7ffefe"/>
+ <path id="current-power-grid-buy-arrow-two" class="current-power-grid-buy-arrow" d="m158.98 36.346v-4l-3.4637 2z" fill="#7ffefe"/>
+ <path id="current-power-grid-buy-arrow-three" class="current-power-grid-buy-arrow" d="m153.98 36.346v-4l-3.4637 2z" fill="#7ffefe"/>
+ <path id="current-power-grid-sell-arrow-one" class="current-power-grid-sell-arrow" d="m116.52 84.258h4l-2-3.4637z" fill="#7ffefe"/>
+ <path id="current-power-grid-sell-arrow-two" class="current-power-grid-sell-arrow" d="m116.52 79.258h4l-2-3.4637z" fill="#7ffefe"/>
+ <path id="current-power-grid-sell-arrow-three" class="current-power-grid-sell-arrow" d="m116.52 74.258h4l-2-3.4637z" fill="#7ffefe"/>
+ <path id="current-power-pv-arrow-one" class="current-power-pv-arrow" d="m46.069 36.35v-4l3.4637 2z" fill="#7ffefe"/>
+ <path id="current-power-pv-arrow-two" class="current-power-pv-arrow" d="m51.069 36.35v-4l3.4637 2z" fill="#7ffefe"/>
+ <path id="current-power-pv-arrow-three" class="current-power-pv-arrow" d="m56.069 36.35v-4l3.4637 2z" fill="#7ffefe"/>
+ <path id="current-power-arrow-path-grid-buy" d="m164.89 34.339h-34.975c-7.1263 0-9.416 4.1037-9.416 4.1037-1.4589 1.5825-2.5063 4.7445-2.5063 8.1595v38.495" fill="none"/>
+ <path id="current-power-arrow-path-grid-sell" d="m119.05 85.097v-38.495c0-3.415-0.011-6.577 1.4479-8.1595 0 0 2.2897-3.5745 9.416-3.5745h34.975" fill="none"/>
+ <path id="current-power-arrow-path-pv" d="m44.595 34.316h34.975c7.1263 0 9.416 4.1037 9.416 4.1037 1.4589 1.5825 2.5063 4.7445 2.5063 8.1595v38.495" fill="none"/>
+ <path id="current-power-arrow-path-battery-discharge" d="m45.048 154.4h34.975c7.1263 0 9.416-4.1037 9.416-4.1037 1.4589-1.5825 2.5063-4.7445 2.5063-8.1595v-38.495" fill="none"/>
+ <path id="current-power-arrow-path-battery-charge" d="m90.887 103.64v38.495c0 3.415 0.01097 6.577-1.4479 8.1595 0 0-2.2897 3.5745-9.416 3.5745h-34.975" fill="none"/>
+ <path id="current-power-arrow-path-load" d="m118 103.82v38.495c0 3.415 1.0474 6.577 2.5063 8.1595 0 0 2.2897 4.1037 9.416 4.1037h34.975" fill="none"/>
+ <path x="80.489998" y="70.489998" width="49.019997" height="49.019604" ry="6.9739275" d="m87.464 70.49h35.072c3.8636 0 6.9739 3.1104 6.9739 6.9739v35.072c0 3.8636-3.1104 6.9739-6.9739 6.9739h-35.072c-3.8636 0-6.9739-3.1104-6.9739-6.9739v-35.072c0-3.8636 3.1104-6.9739 6.9739-6.9739z" fill="#888" stroke="#888" stroke-linecap="round" stroke-linejoin="round" stroke-width=".98"/>
+ <path x="150.49001" y="10.490002" width="49.019997" height="49.019604" ry="6.9739275" d="m157.46 10.49h35.072c3.8636 0 6.9739 3.1104 6.9739 6.9739v35.072c0 3.8636-3.1104 6.9739-6.9739 6.9739h-35.072c-3.8636 0-6.9739-3.1104-6.9739-6.9739v-35.072c0-3.8636 3.1104-6.9739 6.9739-6.9739z" fill="#888" stroke="#888" stroke-linecap="round" stroke-linejoin="round" stroke-width=".98"/>
+ <path x="150.49001" y="130.49001" width="49.019997" height="49.019604" ry="6.9739275" d="m157.46 130.49h35.072c3.8636 0 6.9739 3.1104 6.9739 6.9739v35.072c0 3.8636-3.1104 6.9739-6.9739 6.9739h-35.072c-3.8636 0-6.9739-3.1104-6.9739-6.9739v-35.072c0-3.8636 3.1104-6.9739 6.9739-6.9739z" fill="#888" stroke="#888" stroke-linecap="round" stroke-linejoin="round" stroke-width=".98"/>
+ <path x="10.49" y="10.49" width="49.019608" height="49.019608" ry="6.973928" d="m17.464 10.49h35.072c3.8636 0 6.9739 3.1104 6.9739 6.9739v35.072c0 3.8636-3.1104 6.9739-6.9739 6.9739h-35.072c-3.8636 0-6.9739-3.1104-6.9739-6.9739v-35.072c0-3.8636 3.1104-6.9739 6.9739-6.9739z" fill="#888" stroke="#888" stroke-linecap="round" stroke-linejoin="round" stroke-width=".98"/>
+ <path x="10.490196" y="130.49019" width="49.019608" height="49.019608" ry="6.973928" d="m17.464 130.49h35.072c3.8636 0 6.9739 3.1104 6.9739 6.9739v35.072c0 3.8636-3.1104 6.9739-6.9739 6.9739h-35.072c-3.8636 0-6.9739-3.1104-6.9739-6.9739v-35.072c0-3.8636 3.1104-6.9739 6.9739-6.9739z" fill="#888" stroke="#888" stroke-linecap="round" stroke-linejoin="round" stroke-width=".98"/>
+ <text id="current-power-label-inverter" x="105.0033" y="79.629173" font-family="sans-serif" font-size="6.35px" stroke-width=".26458" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="105.0033" y="79.629173" font-size="6.35px" stroke-width=".26458" text-align="center" text-anchor="middle">Inverter</tspan></text>
+ <text id="current-power-label-grid" x="174.91551" y="19.629175" font-family="sans-serif" font-size="6.35px" stroke-width=".26458" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="174.91551" y="19.629175" font-size="6.35px" stroke-width=".26458" text-align="center" text-anchor="middle">Grid</tspan></text>
+ <text id="current-power-label-load" x="175.00655" y="139.82451" font-family="sans-serif" font-size="6.35px" stroke-width=".26458" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="175.00655" y="139.82451" font-size="6.35px" stroke-width=".26458" text-align="center" text-anchor="middle">Load</tspan></text>
+ <text id="current-power-label-pv" x="35.0033" y="19.629175" font-family="sans-serif" font-size="6.35px" stroke-width=".26458" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="35.0033" y="19.629175" font-size="6.35px" stroke-width=".26458" text-align="center" text-anchor="middle">PV</tspan></text>
+ <text id="current-power-pv" transform="scale(.99999 1)" x="51.651848" y="31.283495" font-family="sans-serif" font-size="8.4667px" stroke-width=".26458" text-align="end" text-anchor="end" style="line-height:1.25" xml:space="preserve"><tspan x="51.651848" y="31.283495" font-size="8.4667px" stroke-width=".26458" text-align="end" text-anchor="end">9999 W</tspan></text>
+ <text id="current-power-grid" transform="scale(.99999 1)" x="191.65387" y="31.283495" font-family="sans-serif" font-size="8.4667px" stroke-width=".26458" text-align="end" text-anchor="end" style="line-height:1.25" xml:space="preserve"><tspan x="191.65387" y="31.283495" font-size="8.4667px" stroke-width=".26458" text-align="end" text-anchor="end">-9999 W</tspan></text>
+ <text id="current-power-battery" transform="scale(.99999 1)" x="51.651848" y="151.28175" font-family="sans-serif" font-size="8.4667px" stroke-width=".26458" text-align="end" text-anchor="end" style="line-height:1.25" xml:space="preserve"><tspan x="51.651848" y="151.28175" font-size="8.4667px" stroke-width=".26458" text-align="end" text-anchor="end">-9999 W</tspan></text>
+ <text id="current-power-soc" transform="scale(.99999 1)" x="46.818291" y="161.28162" font-family="sans-serif" font-size="8.4667px" stroke-width=".26458" text-align="end" text-anchor="end" style="line-height:1.25" xml:space="preserve"><tspan x="46.818291" y="161.28162" font-size="8.4667px" stroke-width=".26458" text-align="end" text-anchor="end">100%</tspan></text>
+ <text id="current-power-label-battery" x="35.077782" y="139.62918" font-family="sans-serif" font-size="6.35px" stroke-width=".26458" text-align="center" text-anchor="middle" style="line-height:1.25" xml:space="preserve"><tspan x="35.077782" y="139.62918" font-size="6.35px" stroke-width=".26458" text-align="center" text-anchor="middle">Battery</tspan></text>
+ <path id="current-power-arrow-battery-discharge" d="m54.304 151.39h1.569l-0.0013-3.1201h1.0001l-1.7832-3.2692-1.7888 3.2692h1.0001l0.0041 3.1201" fill="#fe7f7f"/>
+ <path id="current-power-arrow-battery-charge" d="m54.304 145h1.5689l-0.0013 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l0.0041-3.1198" fill="#95fe7f"/>
+ <path id="current-power-arrow-pv" d="m54.304 25h1.569l-0.0013 3.1201h1.0001l-1.7832 3.2692-1.7888-3.2692h1.0001l0.0041-3.1201" fill="#fefe7f"/>
+ <rect id="current-power-bar-pv" x="12.899" y="22.399" width="2.7014" height="11.802" fill="none" stroke="#000" stroke-linecap="square" stroke-linejoin="round" stroke-width=".19834"/>
+ <rect id="current-power-bar-grid" x="152.9" y="22.399" width="2.7017" height="11.802" fill="none" stroke="#000" stroke-linecap="square" stroke-linejoin="round" stroke-width=".19835"/>
+ <rect id="current-power-bar-battery" x="12.899" y="142.4" width="2.7014" height="11.802" fill="none" stroke="#000" stroke-linecap="square" stroke-linejoin="round" stroke-width=".19834"/>
+ <rect id="current-power-bar-soc" transform="rotate(90)" x="164.1" y="-40.902" width="2.7016" height="11.803" fill="none" stroke="#000" stroke-linecap="square" stroke-linejoin="round" stroke-width=".19836"/>
+ <path id="current-power-arrow-grid-sell" d="m194.3 31.352h1.569l-1e-3 -3.1201h1.0001l-1.7832-3.2692-1.7888 3.2692h1.0001l4e-3 3.1201" fill="#95fe7f"/>
+ <path id="current-power-arrow-grid-buy" d="m194.3 24.963h1.5689l-1e-3 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l4e-3 -3.1198" fill="#fe7f7f"/>
+ <text id="current-power-load" transform="scale(.99999 1)" x="191.65387" y="151.28175" font-family="sans-serif" font-size="8.4667px" stroke-width=".26458" text-align="end" text-anchor="end" style="line-height:1.25" xml:space="preserve"><tspan x="191.65387" y="151.28175" font-size="8.4667px" stroke-width=".26458" text-align="end" text-anchor="end">9999 W</tspan></text>
+ <rect id="current-power-bar-load" x="152.9" y="142.4" width="2.7017" height="11.802" fill="none" stroke="#000" stroke-linecap="square" stroke-linejoin="round" stroke-width=".19835"/>
+ <path id="current-power-arrow-load" d="m194.3 145h1.5689l-1e-3 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l4e-3 -3.1198" fill="#fe7f7f"/>
+ <path d="m60.006 157.3h20.487c7.1263 0 10.55-4.1453 10.55-4.1453 1.4589-1.5825 3.3139-4.703 3.3139-8.118v-25.04m-5.7768 2e-3v25.038c-0.76682 2.6285-2.6287 6.3887-8.0867 6.3887h-20.487" fill="none" stroke="url(#linearGradient16791)"/>
+ <path d="m150 157.29h-20.457c-7.1263 0-10.55-4.1453-10.55-4.1453-1.4589-1.5825-3.3139-4.703-3.3139-8.118v-25.036m5.7768 5e-3v25.031c0.76682 2.6285 2.6287 6.3887 8.0868 6.3887h20.457" fill="none" stroke="url(#linearGradient17936)"/>
+ <path d="m150 31.352h-20.458c-7.1263 0-10.55 4.1453-10.55 4.1453-1.4589 1.5825-3.3139 4.703-3.3139 8.118v26.381m5.7768 0.0075v-26.388c0.76682-2.6285 2.6287-6.3887 8.0868-6.3887h20.473" fill="none" stroke="url(#linearGradient18228)"/>
+ <path d="m60.001 31.352h19.983c7.1263 0 10.55 4.1453 10.55 4.1453 1.4589 1.5825 3.3139 4.703 3.3139 8.118v26.381m-5.7768 0.0075v-26.388c-0.76682-2.6285-2.6287-6.3887-8.0868-6.3887h-19.998" fill="none" stroke="url(#linearGradient20201)"/>
 </svg>

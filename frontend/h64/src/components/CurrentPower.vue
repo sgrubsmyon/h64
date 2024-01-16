@@ -6,52 +6,60 @@ import { onMounted } from "vue";
 gsap.registerPlugin(MotionPathPlugin);
 
 onMounted(() => {
-  gsap.to("#current-power-anim-load", {
+  gsap.to(".current-power-load-arrow", {
     motionPath: {
       path: "#current-power-arrow-path-load",
       align: "#current-power-arrow-path-load",
       alignOrigin: [0.5, 0.5],
-      autoRotate: true,
+      autoRotate: 30,
     },
     transformOrigin: "50% 50%",
-    duration: 3,
-    repeat: -1
+    duration: 10,
+    repeat: -1,
+    stagger: 0.6,
+    ease: "none",
   });
 
-  gsap.to("#current-power-anim-pv", {
+  gsap.to(".current-power-pv-arrow", {
     motionPath: {
       path: "#current-power-arrow-path-pv",
       align: "#current-power-arrow-path-pv",
       alignOrigin: [0.5, 0.5],
-      autoRotate: true,
+      autoRotate: 0,
     },
     transformOrigin: "50% 50%",
-    duration: 3,
-    repeat: -1
+    duration: 10,
+    repeat: -1,
+    stagger: 0.6,
+    ease: "none",
   });
 
-  gsap.to("#current-power-anim-battery-charge", {
+  gsap.to(".current-power-battery-charge-arrow", {
     motionPath: {
-      path: "#current-power-arrow-path-battery",
-      align: "#current-power-arrow-path-battery",
+      path: "#current-power-arrow-path-battery-charge",
+      align: "#current-power-arrow-path-battery-charge",
       alignOrigin: [0.5, 0.5],
-      autoRotate: true,
+      autoRotate: 30,
     },
     transformOrigin: "50% 50%",
-    duration: 3,
-    repeat: -1
+    duration: 10,
+    repeat: -1,
+    stagger: 0.6,
+    ease: "none",
   });
 
-  gsap.to("#current-power-anim-grid-sell", {
+  gsap.to(".current-power-grid-sell-arrow", {
     motionPath: {
-      path: "#current-power-arrow-path-grid",
-      align: "#current-power-arrow-path-grid",
+      path: "#current-power-arrow-path-grid-sell",
+      align: "#current-power-arrow-path-grid-sell",
       alignOrigin: [0.5, 0.5],
-      autoRotate: true,
+      autoRotate: 210,
     },
     transformOrigin: "50% 50%",
-    duration: 3,
-    repeat: -1
+    duration: 10,
+    repeat: -1,
+    stagger: 0.6,
+    ease: "none",
   });
 });
 </script>
@@ -77,48 +85,55 @@ onMounted(() => {
         <stop offset="100%" stop-color="#666666" />
       </linearGradient>
     </defs>
-    <g id="current-power-anim-battery-discharge" transform="translate(-15.346)">
-      <path d="m61.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-      <path d="m66.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-      <path d="m71.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-    </g>
-    <g id="current-power-anim-battery-charge" transform="rotate(90 100.62 145.19)">
-      <path d="m61.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-      <path d="m66.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-      <path d="m71.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-    </g>
-    <g id="current-power-anim-load" transform="matrix(0 1 1 0 -35.776 44.575)">
-      <path d="m61.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-      <path d="m66.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-      <path d="m71.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-    </g>
-    <g id="current-power-anim-grid-buy" transform="rotate(180 112.69 94.323)">
-      <path d="m61.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-      <path d="m66.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-      <path d="m71.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-    </g>
-    <g id="current-power-anim-grid-sell" transform="rotate(-90 54.941 90.717)">
-      <path d="m61.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-      <path d="m66.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-      <path d="m71.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-    </g>
-    <g id="current-power-anim-pv" transform="matrix(1 0 0 -1 -15.331 188.65)">
-      <path d="m61.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-      <path d="m66.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-      <path d="m71.4 152.3v4l3.4637-2z" style="fill:#7ffefe" />
-    </g>
-    <path id="current-power-arrow-path-grid"
+    <path id="current-power-battery-discharge-arrow-one" class="current-power-battery-discharge-arrow"
+      d="m46.054 152.3v4l3.4637-2z" fill="#7ffefe" />
+    <path id="current-power-battery-discharge-arrow-two" class="current-power-battery-discharge-arrow"
+      d="m51.054 152.3v4l3.4637-2z" fill="#7ffefe" />
+    <path id="current-power-battery-discharge-arrow-three" class="current-power-battery-discharge-arrow"
+      d="m56.054 152.3v4l3.4637-2z" fill="#7ffefe" />
+    <path id="current-power-battery-charge-arrow-one" class="current-power-battery-charge-arrow"
+      d="m93.51 105.97h-4l2 3.4637z" fill="#7ffefe" />
+    <path id="current-power-battery-charge-arrow-two" class="current-power-battery-charge-arrow"
+      d="m93.51 110.97h-4l2 3.4637z" fill="#7ffefe" />
+    <path id="current-power-battery-charge-arrow-three" class="current-power-battery-charge-arrow"
+      d="m93.51 115.97h-4l2 3.4637z" fill="#7ffefe" />
+    <path id="current-power-load-arrow-one" class="current-power-load-arrow" d="m116.52 105.98h4l-2 3.4637z"
+      fill="#7ffefe" />
+    <path id="current-power-load-arrow-two" class="current-power-load-arrow" d="m116.52 110.98h4l-2 3.4637z"
+      fill="#7ffefe" />
+    <path id="current-power-load-arrow-three" class="current-power-load-arrow" d="m116.52 115.98h4l-2 3.4637z"
+      fill="#7ffefe" />
+    <path id="current-power-grid-buy-arrow-one" class="current-power-grid-buy-arrow" d="m163.98 36.346v-4l-3.4637 2z"
+      fill="#7ffefe" />
+    <path id="current-power-grid-buy-arrow-two" class="current-power-grid-buy-arrow" d="m158.98 36.346v-4l-3.4637 2z"
+      fill="#7ffefe" />
+    <path id="current-power-grid-buy-arrow-three" class="current-power-grid-buy-arrow" d="m153.98 36.346v-4l-3.4637 2z"
+      fill="#7ffefe" />
+    <path id="current-power-grid-sell-arrow-one" class="current-power-grid-sell-arrow" d="m116.52 84.258h4l-2-3.4637z"
+      fill="#7ffefe" />
+    <path id="current-power-grid-sell-arrow-two" class="current-power-grid-sell-arrow" d="m116.52 79.258h4l-2-3.4637z"
+      fill="#7ffefe" />
+    <path id="current-power-grid-sell-arrow-three" class="current-power-grid-sell-arrow" d="m116.52 74.258h4l-2-3.4637z"
+      fill="#7ffefe" />
+    <path id="current-power-pv-arrow-one" class="current-power-pv-arrow" d="m46.069 36.35v-4l3.4637 2z" fill="#7ffefe" />
+    <path id="current-power-pv-arrow-two" class="current-power-pv-arrow" d="m51.069 36.35v-4l3.4637 2z" fill="#7ffefe" />
+    <path id="current-power-pv-arrow-three" class="current-power-pv-arrow" d="m56.069 36.35v-4l3.4637 2z"
+      fill="#7ffefe" />
+    <path id="current-power-arrow-path-grid-buy"
       d="m164.89 34.339h-34.975c-7.1263 0-9.416 4.1037-9.416 4.1037-1.4589 1.5825-1.9771 4.7445-1.9771 8.1595v38.495"
-      style="fill:none" />
+      fill="none" />
+    <path id="current-power-arrow-path-grid-sell"
+      d="m119.05 85.097v-38.495c0-3.415-0.011-6.577 1.4479-8.1595 0 0 2.2897-3.5745 9.416-3.5745h34.975" fill="none" />
     <path id="current-power-arrow-path-pv"
       d="m44.595 34.316h34.975c7.1263 0 9.416 4.1037 9.416 4.1037 1.4589 1.5825 1.9771 4.7445 1.9771 8.1595v38.495"
-      style="fill:none" />
-    <path id="current-power-arrow-path-battery"
+      fill="none" />
+    <path id="current-power-arrow-path-battery-discharge"
       d="m45.048 154.4h34.975c7.1263 0 9.416-4.1037 9.416-4.1037 1.4589-1.5825 1.9771-4.7445 1.9771-8.1595v-38.495"
-      style="fill:none" />
+      fill="none" />
+    <path id="current-power-arrow-path-battery-charge"
+      d="m90.887 103.64v38.495c0 3.415 0.01097 6.577-1.4479 8.1595 0 0-2.2897 3.5745-9.416 3.5745h-34.975" fill="none" />
     <path id="current-power-arrow-path-load"
-      d="m164.9 154.58h-34.975c-7.1263 0-9.416-4.1037-9.416-4.1037-1.4589-1.5825-1.9771-4.7445-1.9771-8.1595v-38.495"
-      style="fill:none" />
+      d="m118 103.82v38.495c0 3.415 1.0474 6.577 2.5063 8.1595 0 0 2.2897 4.1037 9.416 4.1037h34.975" fill="none" />
     <g>
       <path id="current-power-box-inverter" x="80" y="70" width="50" height="50" ry="7"
         d="m87.464 70.49h35.072c3.8636 0 6.9739 3.1104 6.9739 6.9739v35.072c0 3.8636-3.1104 6.9739-6.9739 6.9739h-35.072c-3.8636 0-6.9739-3.1104-6.9739-6.9739v-35.072c0-3.8636 3.1104-6.9739 6.9739-6.9739z"
@@ -175,32 +190,34 @@ onMounted(() => {
         style="fill:#fefe7f" />
       <path id="current-power-arrow-grid-sell"
         d="m194.3 31.352h1.569l-1e-3 -3.1201h1.0001l-1.7832-3.2692-1.7888 3.2692h1.0001l4e-3 3.1201"
-      style="fill:#95fe7f" />
-    <path id="current-power-arrow-grid-buy"
-      d="m194.3 24.963h1.5689l-1e-3 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l4e-3 -3.1198" style="fill:#fe7f7f" />
-    <path id="current-power-arrow-load" d="m194.3 145h1.5689l-1e-3 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l4e-3 -3.1198"
-      style="fill:#fe7f7f" />
-    <path id="current-power-arrow-battery-discharge"
-      d="m54.304 151.39h1.569l-0.0013-3.1201h1.0001l-1.7832-3.2692-1.7888 3.2692h1.0001l0.0041 3.1201"
-      style="fill:#fe7f7f" />
-    <path id="current-power-arrow-battery-charge"
-      d="m54.304 145h1.5689l-0.0013 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l0.0041-3.1198" style="fill:#95fe7f" />
-    <path
-      d="m60.006 157.3h20.487c7.1263 0 10.55-4.1453 10.55-4.1453 1.4589-1.5825 3.3139-4.703 3.3139-8.118v-25.04m-5.7768 2e-3v25.038c-0.76682 2.6285-2.6287 6.3887-8.0867 6.3887h-20.487"
-      style="fill:none;stroke:url(#linearGradientPipeBattery)" />
-    <path
-      d="m150 157.29h-20.457c-7.1263 0-10.55-4.1453-10.55-4.1453-1.4589-1.5825-3.3139-4.703-3.3139-8.118v-25.036m5.7768 5e-3v25.031c0.76682 2.6285 2.6287 6.3887 8.0868 6.3887h20.457"
-      style="fill:none;stroke:url(#linearGradientPipeLoad)" />
-    <path
-      d="m150 31.352h-20.458c-7.1263 0-10.55 4.1453-10.55 4.1453-1.4589 1.5825-3.3139 4.703-3.3139 8.118v26.381m5.7768 0.0075v-26.388c0.76682-2.6285 2.6287-6.3887 8.0868-6.3887h20.473"
-      style="fill:none;stroke:url(#linearGradientPipeGrid)" />
-    <path
-      d="m60.001 31.352h19.983c7.1263 0 10.55 4.1453 10.55 4.1453 1.4589 1.5825 3.3139 4.703 3.3139 8.118v26.381m-5.7768 0.0075v-26.388c-0.76682-2.6285-2.6287-6.3887-8.0868-6.3887h-19.998"
-      style="fill:none;stroke:url(#linearGradientPipePV)" />
-  </g>
-</svg></template>
+        style="fill:#95fe7f" />
+      <path id="current-power-arrow-grid-buy"
+        d="m194.3 24.963h1.5689l-1e-3 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l4e-3 -3.1198" style="fill:#fe7f7f" />
+      <path id="current-power-arrow-load" d="m194.3 145h1.5689l-1e-3 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l4e-3 -3.1198"
+        style="fill:#fe7f7f" />
+      <path id="current-power-arrow-battery-discharge"
+        d="m54.304 151.39h1.569l-0.0013-3.1201h1.0001l-1.7832-3.2692-1.7888 3.2692h1.0001l0.0041 3.1201"
+        style="fill:#fe7f7f" />
+      <path id="current-power-arrow-battery-charge"
+        d="m54.304 145h1.5689l-0.0013 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l0.0041-3.1198" style="fill:#95fe7f" />
+      <path
+        d="m60.006 157.3h20.487c7.1263 0 10.55-4.1453 10.55-4.1453 1.4589-1.5825 3.3139-4.703 3.3139-8.118v-25.04m-5.7768 2e-3v25.038c-0.76682 2.6285-2.6287 6.3887-8.0867 6.3887h-20.487"
+        style="fill:none;stroke:url(#linearGradientPipeBattery)" />
+      <path
+        d="m150 157.29h-20.457c-7.1263 0-10.55-4.1453-10.55-4.1453-1.4589-1.5825-3.3139-4.703-3.3139-8.118v-25.036m5.7768 5e-3v25.031c0.76682 2.6285 2.6287 6.3887 8.0868 6.3887h20.457"
+        style="fill:none;stroke:url(#linearGradientPipeLoad)" />
+      <path
+        d="m150 31.352h-20.458c-7.1263 0-10.55 4.1453-10.55 4.1453-1.4589 1.5825-3.3139 4.703-3.3139 8.118v26.381m5.7768 0.0075v-26.388c0.76682-2.6285 2.6287-6.3887 8.0868-6.3887h20.473"
+        style="fill:none;stroke:url(#linearGradientPipeGrid)" />
+      <path
+        d="m60.001 31.352h19.983c7.1263 0 10.55 4.1453 10.55 4.1453 1.4589 1.5825 3.3139 4.703 3.3139 8.118v26.381m-5.7768 0.0075v-26.388c-0.76682-2.6285-2.6287-6.3887-8.0868-6.3887h-19.998"
+        style="fill:none;stroke:url(#linearGradientPipePV)" />
+    </g>
+  </svg>
+</template>
 
-<style scoped>svg text {
+<style scoped>
+svg text {
   fill: var(--color-text);
 }
 
@@ -229,4 +246,5 @@ onMounted(() => {
   stroke-linejoin: round;
   stroke-width: .19834;
   stroke: var(--color-border);
-}</style>
+}
+</style>
