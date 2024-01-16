@@ -6,7 +6,7 @@ import { onMounted } from "vue";
 gsap.registerPlugin(MotionPathPlugin);
 
 onMounted(() => {
-  gsap.to(".current-power-load-arrow", {
+  let anim_load = gsap.to(".current-power-load-arrow", {
     motionPath: {
       path: "#current-power-arrow-path-load",
       align: "#current-power-arrow-path-load",
@@ -20,7 +20,7 @@ onMounted(() => {
     ease: "none",
   });
 
-  gsap.to(".current-power-pv-arrow", {
+  let anim_pv = gsap.to(".current-power-pv-arrow", {
     motionPath: {
       path: "#current-power-arrow-path-pv",
       align: "#current-power-arrow-path-pv",
@@ -34,21 +34,21 @@ onMounted(() => {
     ease: "none",
   });
 
-  // gsap.to(".current-power-battery-charge-arrow", {
-  //   motionPath: {
-  //     path: "#current-power-arrow-path-battery-charge",
-  //     align: "#current-power-arrow-path-battery-charge",
-  //     alignOrigin: [0.5, 0.5],
-  //     autoRotate: 30,
-  //   },
-  //   transformOrigin: "50% 50%",
-  //   duration: 10,
-  //   repeat: -1,
-  //   stagger: 0.6,
-  //   ease: "none",
-  // });
+  let anim_battery_charge = gsap.to(".current-power-battery-charge-arrow", {
+    motionPath: {
+      path: "#current-power-arrow-path-battery-charge",
+      align: "#current-power-arrow-path-battery-charge",
+      alignOrigin: [0.5, 0.5],
+      autoRotate: 30,
+    },
+    transformOrigin: "50% 50%",
+    duration: 10,
+    repeat: -1,
+    stagger: 0.6,
+    ease: "none",
+  });
 
-  gsap.to(".current-power-battery-discharge-arrow", {
+  let anim_battery_discharge = gsap.to(".current-power-battery-discharge-arrow", {
     motionPath: {
       path: "#current-power-arrow-path-battery-discharge",
       align: "#current-power-arrow-path-battery-discharge",
@@ -62,21 +62,28 @@ onMounted(() => {
     ease: "none",
   });
 
-  // gsap.to(".current-power-grid-sell-arrow", {
-  //   motionPath: {
-  //     path: "#current-power-arrow-path-grid-sell",
-  //     align: "#current-power-arrow-path-grid-sell",
-  //     alignOrigin: [0.5, 0.5],
-  //     autoRotate: 210,
-  //   },
-  //   transformOrigin: "50% 50%",
-  //   duration: 10,
-  //   repeat: -1,
-  //   stagger: 0.6,
-  //   ease: "none",
-  // });
+  let anim_grid_sell = gsap.to(".current-power-grid-sell-arrow", {
+    motionPath: {
+      path: "#current-power-arrow-path-grid-sell",
+      align: "#current-power-arrow-path-grid-sell",
+      alignOrigin: [0.5, 0.5],
+      autoRotate: 210,
+    },
+    transformOrigin: "50% 50%",
+    duration: 10,
+    repeat: -1,
+    stagger: 0.6,
+    ease: "none",
+  });
+  anim_grid_sell.pause();
+  anim_grid_sell.seek(0);
+  setTimeout(() => {
+    anim_grid_buy.pause();
+    anim_grid_buy.seek(0);
+    anim_grid_sell.restart();
+  }, 3000);
 
-  gsap.to(".current-power-grid-buy-arrow", {
+  let anim_grid_buy = gsap.to(".current-power-grid-buy-arrow", {
     motionPath: {
       path: "#current-power-arrow-path-grid-buy",
       align: "#current-power-arrow-path-grid-buy",
