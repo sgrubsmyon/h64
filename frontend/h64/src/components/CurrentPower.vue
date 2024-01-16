@@ -34,12 +34,26 @@ onMounted(() => {
     ease: "none",
   });
 
-  gsap.to(".current-power-battery-charge-arrow", {
+  // gsap.to(".current-power-battery-charge-arrow", {
+  //   motionPath: {
+  //     path: "#current-power-arrow-path-battery-charge",
+  //     align: "#current-power-arrow-path-battery-charge",
+  //     alignOrigin: [0.5, 0.5],
+  //     autoRotate: 30,
+  //   },
+  //   transformOrigin: "50% 50%",
+  //   duration: 10,
+  //   repeat: -1,
+  //   stagger: 0.6,
+  //   ease: "none",
+  // });
+
+  gsap.to(".current-power-battery-discharge-arrow", {
     motionPath: {
-      path: "#current-power-arrow-path-battery-charge",
-      align: "#current-power-arrow-path-battery-charge",
+      path: "#current-power-arrow-path-battery-discharge",
+      align: "#current-power-arrow-path-battery-discharge",
       alignOrigin: [0.5, 0.5],
-      autoRotate: 30,
+      autoRotate: 0,
     },
     transformOrigin: "50% 50%",
     duration: 10,
@@ -48,12 +62,26 @@ onMounted(() => {
     ease: "none",
   });
 
-  gsap.to(".current-power-grid-sell-arrow", {
+  // gsap.to(".current-power-grid-sell-arrow", {
+  //   motionPath: {
+  //     path: "#current-power-arrow-path-grid-sell",
+  //     align: "#current-power-arrow-path-grid-sell",
+  //     alignOrigin: [0.5, 0.5],
+  //     autoRotate: 210,
+  //   },
+  //   transformOrigin: "50% 50%",
+  //   duration: 10,
+  //   repeat: -1,
+  //   stagger: 0.6,
+  //   ease: "none",
+  // });
+
+  gsap.to(".current-power-grid-buy-arrow", {
     motionPath: {
-      path: "#current-power-arrow-path-grid-sell",
-      align: "#current-power-arrow-path-grid-sell",
+      path: "#current-power-arrow-path-grid-buy",
+      align: "#current-power-arrow-path-grid-buy",
       alignOrigin: [0.5, 0.5],
-      autoRotate: 210,
+      autoRotate: 180,
     },
     transformOrigin: "50% 50%",
     duration: 10,
