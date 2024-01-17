@@ -75,13 +75,6 @@ onMounted(() => {
     stagger: 0.6,
     ease: "none",
   });
-  anim_grid_sell.pause();
-  anim_grid_sell.seek(0);
-  setTimeout(() => {
-    anim_grid_buy.pause();
-    anim_grid_buy.seek(0);
-    anim_grid_sell.restart();
-  }, 3000);
 
   let anim_grid_buy = gsap.to(".current-power-grid-buy-arrow", {
     motionPath: {
@@ -96,6 +89,84 @@ onMounted(() => {
     stagger: 0.6,
     ease: "none",
   });
+
+  let battery_state = "discharge";
+  let grid_state = "buy";
+
+  function batteryCharge() {
+    anim_battery_discharge.pause();
+    anim_battery_discharge.seek(0);
+    anim_battery_charge.restart();
+    restartOthersFrom("battery");
+    document.querySelector("#current-power-arrow-battery-discharge").classList.add("hidden");
+    document.querySelector("#current-power-arrow-battery-charge").classList.remove("hidden");
+    battery_state = "charge";
+  }
+
+  function batteryDischarge() {
+    anim_battery_charge.pause();
+    anim_battery_charge.seek(0);
+    anim_battery_discharge.restart();
+    restartOthersFrom("battery");
+    document.querySelector("#current-power-arrow-battery-charge").classList.add("hidden");
+    document.querySelector("#current-power-arrow-battery-discharge").classList.remove("hidden");
+    battery_state = "discharge";
+  }
+  batteryDischarge();
+  setTimeout(() => {
+    batteryCharge();
+  }, 15000);
+  setTimeout(() => {
+    batteryDischarge();
+  }, 20000);
+
+  function gridSell() {
+    anim_grid_buy.pause();
+    anim_grid_buy.seek(0);
+    anim_grid_sell.restart();
+    restartOthersFrom("grid");
+    document.querySelector("#current-power-arrow-grid-buy").classList.add("hidden");
+    document.querySelector("#current-power-arrow-grid-sell").classList.remove("hidden");
+    grid_state = "sell";
+  }
+
+  function gridBuy() {
+    anim_grid_sell.pause();
+    anim_grid_sell.seek(0);
+    anim_grid_buy.restart();
+    restartOthersFrom("grid");
+    document.querySelector("#current-power-arrow-grid-sell").classList.add("hidden");
+    document.querySelector("#current-power-arrow-grid-buy").classList.remove("hidden");
+    grid_state = "buy";
+  }
+  gridBuy();
+  setTimeout(() => {
+    gridSell();
+  }, 5000);
+  setTimeout(() => {
+    gridBuy();
+  }, 10000);
+
+  function restartOthersFrom(type) {
+    anim_pv.restart();
+    anim_load.restart();
+    
+    if (type === "battery") {
+      if (grid_state == "buy") {
+        anim_grid_buy.restart();
+      } else if (grid_state == "sell") {
+        anim_grid_sell.restart();
+      }
+    }
+
+    if (type === "grid") {
+      if (battery_state == "charge") {
+        anim_battery_charge.restart();
+      } else if (battery_state == "discharge") {
+        anim_battery_discharge.restart();
+      }
+    }
+  }
 });
 </script>
 
@@ -223,18 +294,18 @@ onMounted(() => {
       <path id="current-power-arrow-pv"
         d="m54.304 25h1.569l-0.0013 3.1201h1.0001l-1.7832 3.2692-1.7888-3.2692h1.0001l0.0041-3.1201"
         style="fill:#fefe7f" />
-      <path id="current-power-arrow-grid-sell"
+      <path id="current-power-arrow-grid-sell" class="hidden"
         d="m194.3 31.352h1.569l-1e-3 -3.1201h1.0001l-1.7832-3.2692-1.7888 3.2692h1.0001l4e-3 3.1201"
         style="fill:#95fe7f" />
       <path id="current-power-arrow-grid-buy"
         d="m194.3 24.963h1.5689l-1e-3 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l4e-3 -3.1198" style="fill:#fe7f7f" />
       <path id="current-power-arrow-load" d="m194.3 145h1.5689l-1e-3 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l4e-3 -3.1198"
         style="fill:#fe7f7f" />
+      <path id="current-power-arrow-battery-charge" class="hidden"
+        d="m54.304 145h1.5689l-0.0013 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l0.0041-3.1198" style="fill:#95fe7f" />
       <path id="current-power-arrow-battery-discharge"
         d="m54.304 151.39h1.569l-0.0013-3.1201h1.0001l-1.7832-3.2692-1.7888 3.2692h1.0001l0.0041 3.1201"
         style="fill:#fe7f7f" />
-      <path id="current-power-arrow-battery-charge"
-        d="m54.304 145h1.5689l-0.0013 3.1198h1l-1.783 3.2689-1.7887-3.2689h1l0.0041-3.1198" style="fill:#95fe7f" />
       <path
         d="m60.006 157.3h20.487c7.1263 0 10.55-4.1453 10.55-4.1453 1.4589-1.5825 3.3139-4.703 3.3139-8.118v-25.04m-5.7768 2e-3v25.038c-0.76682 2.6285-2.6287 6.3887-8.0867 6.3887h-20.487"
         style="fill:none;stroke:url(#linearGradientPipeBattery)" />
@@ -281,5 +352,9 @@ svg text {
   stroke-linejoin: round;
   stroke-width: .19834;
   stroke: var(--color-border);
+}
+
+.hidden {
+  display: none;
 }
 </style>
