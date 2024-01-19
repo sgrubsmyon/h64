@@ -5,22 +5,20 @@ import { onMounted } from "vue";
 
 gsap.registerPlugin(MotionPathPlugin);
 
-onMounted(() => {
-  let anim_load = gsap.to(".current-power-load-arrow", {
-    motionPath: {
-      path: "#current-power-arrow-path-load",
-      align: "#current-power-arrow-path-load",
-      alignOrigin: [0.5, 0.5],
-      autoRotate: 30,
-    },
-    transformOrigin: "50% 50%",
-    duration: 10,
-    repeat: -1,
-    stagger: 0.6,
-    ease: "none",
-  });
+const anim_duration = 4;
+const anim_stagger = anim_duration / 15;
 
-  let anim_pv = gsap.to(".current-power-pv-arrow", {
+let anim_load, anim_pv,
+  anim_battery_charge, anim_battery_discharge,
+  anim_grid_sell, anim_grid_buy,
+  pv_state = "down",
+  grid_state = "sell",
+  battery_state = "charge",
+  load_state = "up";
+
+// set up the animations
+onMounted(() => {
+  anim_pv = gsap.to(".current-power-pv-arrow", {
     motionPath: {
       path: "#current-power-arrow-path-pv",
       align: "#current-power-arrow-path-pv",
@@ -28,55 +26,13 @@ onMounted(() => {
       autoRotate: 0,
     },
     transformOrigin: "50% 50%",
-    duration: 10,
+    duration: anim_duration,
     repeat: -1,
-    stagger: 0.6,
+    stagger: anim_stagger,
     ease: "none",
   });
 
-  let anim_battery_charge = gsap.to(".current-power-battery-charge-arrow", {
-    motionPath: {
-      path: "#current-power-arrow-path-battery-charge",
-      align: "#current-power-arrow-path-battery-charge",
-      alignOrigin: [0.5, 0.5],
-      autoRotate: 30,
-    },
-    transformOrigin: "50% 50%",
-    duration: 10,
-    repeat: -1,
-    stagger: 0.6,
-    ease: "none",
-  });
-
-  let anim_battery_discharge = gsap.to(".current-power-battery-discharge-arrow", {
-    motionPath: {
-      path: "#current-power-arrow-path-battery-discharge",
-      align: "#current-power-arrow-path-battery-discharge",
-      alignOrigin: [0.5, 0.5],
-      autoRotate: 0,
-    },
-    transformOrigin: "50% 50%",
-    duration: 10,
-    repeat: -1,
-    stagger: 0.6,
-    ease: "none",
-  });
-
-  let anim_grid_sell = gsap.to(".current-power-grid-sell-arrow", {
-    motionPath: {
-      path: "#current-power-arrow-path-grid-sell",
-      align: "#current-power-arrow-path-grid-sell",
-      alignOrigin: [0.5, 0.5],
-      autoRotate: 210,
-    },
-    transformOrigin: "50% 50%",
-    duration: 10,
-    repeat: -1,
-    stagger: 0.6,
-    ease: "none",
-  });
-
-  let anim_grid_buy = gsap.to(".current-power-grid-buy-arrow", {
+  anim_grid_buy = gsap.to(".current-power-grid-buy-arrow", {
     motionPath: {
       path: "#current-power-arrow-path-grid-buy",
       align: "#current-power-arrow-path-grid-buy",
@@ -84,61 +40,68 @@ onMounted(() => {
       autoRotate: 180,
     },
     transformOrigin: "50% 50%",
-    duration: 10,
+    duration: anim_duration,
     repeat: -1,
-    stagger: 0.6,
+    stagger: anim_stagger,
     ease: "none",
   });
 
-  let battery_state = "discharge";
-  let grid_state = "buy";
+  anim_grid_sell = gsap.to(".current-power-grid-sell-arrow", {
+    motionPath: {
+      path: "#current-power-arrow-path-grid-sell",
+      align: "#current-power-arrow-path-grid-sell",
+      alignOrigin: [0.5, 0.5],
+      autoRotate: 210,
+    },
+    transformOrigin: "50% 50%",
+    duration: anim_duration,
+    repeat: -1,
+    stagger: anim_stagger,
+    ease: "none",
+  });
 
-  function batteryCharge() {
-    anim_battery_discharge.pause();
-    anim_battery_discharge.seek(0);
-    anim_battery_charge.restart();
-    restartOthersFrom("battery");
-    document.querySelector("#current-power-arrow-battery-discharge").classList.add("hidden");
-    document.querySelector("#current-power-arrow-battery-charge").classList.remove("hidden");
-    battery_state = "charge";
-  }
+  anim_battery_discharge = gsap.to(".current-power-battery-discharge-arrow", {
+    motionPath: {
+      path: "#current-power-arrow-path-battery-discharge",
+      align: "#current-power-arrow-path-battery-discharge",
+      alignOrigin: [0.5, 0.5],
+      autoRotate: 0,
+    },
+    transformOrigin: "50% 50%",
+    duration: anim_duration,
+    repeat: -1,
+    stagger: anim_stagger,
+    ease: "none",
+  });
 
-  function batteryDischarge() {
-    anim_battery_charge.pause();
-    anim_battery_charge.seek(0);
-    anim_battery_discharge.restart();
-    restartOthersFrom("battery");
-    document.querySelector("#current-power-arrow-battery-charge").classList.add("hidden");
-    document.querySelector("#current-power-arrow-battery-discharge").classList.remove("hidden");
-    battery_state = "discharge";
-  }
-  batteryDischarge();
-  setTimeout(() => {
-    batteryCharge();
-  }, 15000);
-  setTimeout(() => {
-    batteryDischarge();
-  }, 20000);
+  anim_battery_charge = gsap.to(".current-power-battery-charge-arrow", {
+    motionPath: {
+      path: "#current-power-arrow-path-battery-charge",
+      align: "#current-power-arrow-path-battery-charge",
+      alignOrigin: [0.5, 0.5],
+      autoRotate: 30,
+    },
+    transformOrigin: "50% 50%",
+    duration: anim_duration,
+    repeat: -1,
+    stagger: anim_stagger,
+    ease: "none",
+  });
+    
+  anim_load = gsap.to(".current-power-load-arrow", {
+    motionPath: {
+      path: "#current-power-arrow-path-load",
+      align: "#current-power-arrow-path-load",
+      alignOrigin: [0.5, 0.5],
+      autoRotate: 30,
+    },
+    transformOrigin: "50% 50%",
+    duration: anim_duration,
+    repeat: -1,
+    stagger: anim_stagger,
+    ease: "none",
+  });
 
-  function gridSell() {
-    anim_grid_buy.pause();
-    anim_grid_buy.seek(0);
-    anim_grid_sell.restart();
-    restartOthersFrom("grid");
-    document.querySelector("#current-power-arrow-grid-buy").classList.add("hidden");
-    document.querySelector("#current-power-arrow-grid-sell").classList.remove("hidden");
-    grid_state = "sell";
-  }
-
-  function gridBuy() {
-    anim_grid_sell.pause();
-    anim_grid_sell.seek(0);
-    anim_grid_buy.restart();
-    restartOthersFrom("grid");
-    document.querySelector("#current-power-arrow-grid-sell").classList.add("hidden");
-    document.querySelector("#current-power-arrow-grid-buy").classList.remove("hidden");
-    grid_state = "buy";
-  }
   gridBuy();
   setTimeout(() => {
     gridSell();
@@ -147,27 +110,173 @@ onMounted(() => {
     gridBuy();
   }, 10000);
 
-  function restartOthersFrom(type) {
-    anim_pv.restart();
-    anim_load.restart();
-    
-    if (type === "battery") {
-      if (grid_state == "buy") {
-        anim_grid_buy.restart();
-      } else if (grid_state == "sell") {
-        anim_grid_sell.restart();
-      }
-    }
+  batteryDischarge();
+  setTimeout(() => {
+    batteryCharge();
+  }, 15000);
+  setTimeout(() => {
+    batteryDischarge();
+  }, 20000);
+});
 
-    if (type === "grid") {
-      if (battery_state == "charge") {
-        anim_battery_charge.restart();
-      } else if (battery_state == "discharge") {
-        anim_battery_discharge.restart();
-      }
+function pvUp() {
+  anim_pv.restart();
+  restartOthersFrom("pv");
+  document.querySelector("#current-power-arrow-pv").classList.remove("hidden");
+  pv_state = "up";
+}
+
+function pvDown() {
+  anim_pv.pause();
+  anim_pv.seek(0);
+  document.querySelector("#current-power-arrow-pv").classList.add("hidden");
+  pv_state = "down";
+}
+
+function gridSell() {
+  anim_grid_buy.pause();
+  anim_grid_buy.seek(0);
+  anim_grid_sell.restart();
+  restartOthersFrom("grid");
+  document.querySelector("#current-power-arrow-grid-buy").classList.add("hidden");
+  document.querySelector("#current-power-arrow-grid-sell").classList.remove("hidden");
+  grid_state = "sell";
+}
+
+function gridBuy() {
+  anim_grid_sell.pause();
+  anim_grid_sell.seek(0);
+  anim_grid_buy.restart();
+  restartOthersFrom("grid");
+  document.querySelector("#current-power-arrow-grid-sell").classList.add("hidden");
+  document.querySelector("#current-power-arrow-grid-buy").classList.remove("hidden");
+  grid_state = "buy";
+}
+
+function batteryCharge() {
+  anim_battery_discharge.pause();
+  anim_battery_discharge.seek(0);
+  anim_battery_charge.restart();
+  restartOthersFrom("battery");
+  document.querySelector("#current-power-arrow-battery-discharge").classList.add("hidden");
+  document.querySelector("#current-power-arrow-battery-charge").classList.remove("hidden");
+  battery_state = "charge";
+}
+
+function batteryDischarge() {
+  anim_battery_charge.pause();
+  anim_battery_charge.seek(0);
+  anim_battery_discharge.restart();
+  restartOthersFrom("battery");
+  document.querySelector("#current-power-arrow-battery-charge").classList.add("hidden");
+  document.querySelector("#current-power-arrow-battery-discharge").classList.remove("hidden");
+  battery_state = "discharge";
+}
+
+function loadUp() {
+  anim_load.restart();
+  restartOthersFrom("load");
+  document.querySelector("#current-power-arrow-load").classList.remove("hidden");
+  load_state = "up";
+}
+
+function loadDown() {
+  anim_load.pause();
+  anim_load.seek(0);
+  document.querySelector("#current-power-arrow-load").classList.add("hidden");
+  load_state = "down";
+}
+
+function restartOthersFrom(type) {
+  if (type === "pv") {
+    grid_state === "buy" ? anim_grid_buy.restart() : anim_grid_sell.restart();
+    battery_state === "charge" ? anim_battery_charge.restart() : anim_battery_discharge.restart();
+    load_state === "up" ? anim_load.restart() : anim_load.pause();
+  } else if (type === "grid") {
+    pv_state === "up" ? anim_pv.restart() : anim_pv.pause();
+    battery_state === "charge" ? anim_battery_charge.restart() : anim_battery_discharge.restart();
+    load_state === "up" ? anim_load.restart() : anim_load.pause();
+  } else if (type === "battery") {
+    pv_state === "up" ? anim_pv.restart() : anim_pv.pause();
+    grid_state === "buy" ? anim_grid_buy.restart() : anim_grid_sell.restart();
+    load_state === "up" ? anim_load.restart() : anim_load.pause();
+  } else if (type === "load") {
+    pv_state === "up" ? anim_pv.restart() : anim_pv.pause();
+    grid_state === "buy" ? anim_grid_buy.restart() : anim_grid_sell.restart();
+    load_state === "up" ? anim_load.restart() : anim_load.pause();
+  }
+}
+
+const conn = new WebSocket("wss://inverterdata.h64.viridian-project.org");
+
+conn.onopen = function () {
+  console.log("Connection established!");
+};
+
+conn.onmessage = function (e) {
+  const data = JSON.parse(e.data);
+  console.log(data);
+
+  updateCurrentValues(data);
+};
+
+function updateCurrentValues(data) {
+  // const timestamp = new Date(data.values.faster.time + "Z");
+  // const timestamp_str = timestamp.toLocaleString("de-DE", {
+  //   dateStyle: "medium", timeStyle: "medium"
+  // });
+  // updateValueBox("timestamp", timestamp_str, "", "timestamp");
+
+  updatePV(data);
+  updateGrid(data);
+  // updateBattery(data);
+  // updateLoad(data);
+
+  // updateValueBox("grid-power", data.values.faster["total_grid_power"], "W");
+  // updateValueBox("load-power", data.values.faster["total_load_power"], "W");
+  // updateValueBox("battery-power", data.values.faster["battery_power"], "W");
+  // updateValueBox("battery-power", `${data.values.slow["battery_soc"]}%`, "",
+  //   "dashboard-value-2nd");
+  // updateValueBox("pv1-power", data.values.faster["pv1_power"], "W");
+  // updateValueBox("pv2-power", data.values.faster["pv2_power"], "W");
+}
+
+function updatePV(data) {
+  const pv_power = data.values.faster.pv1_power + data.values.faster.pv2_power;
+  updateValue("current-power-pv", pv_power, "W");
+  if (pv_power > 0) {
+    if (pv_state === "down") {
+      pvUp();
+    }
+  } else {
+    if (pv_state === "up") {
+      pvDown();
     }
   }
-});
+}
+
+function updateGrid(data) {
+  const grid_power = data.values.faster.total_grid_power;
+  updateValue("current-power-grid", grid_power, "W");
+  if (grid_power > 0) {
+    if (grid_state === "sell") {
+      gridBuy();
+    }
+  } else {
+    if (grid_state === "buy") {
+      gridSell();
+    }
+  }
+}
+
+function updateValue(id, value, unit) {
+  const value_text = document.querySelector(`#${id} > tspan`);
+  if (unit !== "") {
+    value_text.innerHTML = `${value} ${unit}`;
+  } else {
+    value_text.innerHTML = `${value}`;
+  }
+}
 </script>
 
 <template>
