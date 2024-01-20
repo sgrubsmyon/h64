@@ -4,6 +4,10 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <template>
   <header>
+    <h1>
+      <div class="logo"></div>
+      H64
+    </h1>
     <nav>
       <RouterLink to="/">Home</RouterLink>
       <RouterLink to="/about">About</RouterLink>
@@ -19,9 +23,23 @@ header {
   max-height: 100vh;
 }
 
+h1 {
+  display: flex;
+  align-items: center;
+}
+
 .logo {
   display: block;
-  margin: 0 auto 2rem;
+  margin: 0 1rem 0 0;
+  width: 75px;
+  height: 75px;
+  background-size: 75px 75px;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #486efeaa);
 }
 
 nav {
@@ -56,8 +74,15 @@ nav a:first-of-type {
     padding-right: calc(var(--section-gap) / 2);
   }
 
+  h1 {
+    font-size: 3rem;
+  }
+
   .logo {
     margin: 0 2rem 0 0;
+    width: 100px;
+    height: 100px;
+    background-size: 100px 100px;
   }
 
   nav {

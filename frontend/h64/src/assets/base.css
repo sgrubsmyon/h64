@@ -36,6 +36,10 @@
   --section-gap: 160px;
 }
 
+.logo {
+  background-image: url('/svgs/H64_Logo.svg');
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: var(--vt-c-black);
@@ -47,6 +51,10 @@
 
     --color-heading: var(--vt-c-text-dark-1);
     --color-text: var(--vt-c-text-dark-2);
+  }
+
+  .logo {
+    background-image: url('/svgs/H64_Logo_For_Dark.svg');
   }
 }
 
