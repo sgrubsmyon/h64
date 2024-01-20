@@ -368,32 +368,32 @@ function updateValue(id, value, unit) {
       <text id="current-power-label-inverter" x="105" y="80">
         <tspan x="105" y="80" class="current-power-label-text">Inverter</tspan>
       </text>
+      <text id="current-power-label-pv" x="35" y="20">
+        <tspan x="35" y="20" class="current-power-label-text">PV</tspan>
+      </text>
       <text id="current-power-label-grid" x="175" y="20">
         <tspan x="175" y="20" class="current-power-label-text">Grid</tspan>
+      </text>
+      <text id="current-power-label-battery" x="35" y="139.6">
+        <tspan x="35" y="139.6" class="current-power-label-text">Battery</tspan>
       </text>
       <text id="current-power-label-load" x="175" y="140">
         <tspan x="175" y="140" class="current-power-label-text">Load</tspan>
       </text>
-      <text id="current-power-label-pv" x="35" y="20">
-        <tspan x="35" y="20" class="current-power-label-text">PV</tspan>
+      <text id="current-power-pv" x="35" y="31.3">
+        <tspan x="35" y="31.3" class="current-power-text">9999 W</tspan>
       </text>
-      <text id="current-power-pv" x="51.6" y="31.3">
-        <tspan x="51.6" y="31.3" class="current-power-text">9999 W</tspan>
+      <text id="current-power-grid" x="175" y="31.3">
+        <tspan x="175" y="31.3" class="current-power-text">-9999 W</tspan>
       </text>
-      <text id="current-power-grid" x="191.6" y="31.3">
-        <tspan x="191.6" y="31.3" class="current-power-text">-9999 W</tspan>
+      <text id="current-power-battery" x="35" y="151.3">
+        <tspan x="35" y="151.3" class="current-power-text">-9999 W</tspan>
       </text>
-      <text id="current-power-load" x="191.6" y="151.3">
-        <tspan x="191.6" y="151.3" class="current-power-text">9999 W</tspan>
+      <text id="current-power-soc" x="35" y="161.3">
+        <tspan x="35" y="161.3" class="current-power-text">100%</tspan>
       </text>
-      <text id="current-power-battery" x="51.6" y="151.3">
-        <tspan x="51.6" y="151.3" class="current-power-text">-9999 W</tspan>
-      </text>
-      <text id="current-power-soc" x="46.8" y="161.3">
-        <tspan x="46.8" y="161.3" class="current-power-text">100%</tspan>
-      </text>
-      <text id="current-power-label-battery" x="35" y="139.6">
-        <tspan x="35" y="139.6" class="current-power-label-text">Battery</tspan>
+      <text id="current-power-load" x="175" y="151.3">
+        <tspan x="175" y="151.3" class="current-power-text">9999 W</tspan>
       </text>
       <rect id="current-power-bar-pv" x="14" y="22" width="4" height="15" class="current-power-bar" />
       <rect id="current-power-bar-grid" x="154" y="22" width="4" height="15" class="current-power-bar" />
@@ -451,8 +451,8 @@ svg text {
 .current-power-text {
   font-size: 8.4667px;
   stroke-width: .26458;
-  text-align: end;
-  text-anchor: end;
+  text-align: center;
+  text-anchor: middle;
 }
 
 .current-power-bar {
