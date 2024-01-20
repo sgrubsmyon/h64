@@ -12,8 +12,8 @@ let anim_load, anim_pv,
   anim_battery_charge, anim_battery_discharge,
   anim_grid_sell, anim_grid_buy,
   pv_state = "down",
-  grid_state = "sell",
-  battery_state = "charge",
+  grid_state = "buy",
+  battery_state = "discharge",
   load_state = "up";
 
 // set up the animations
@@ -102,21 +102,10 @@ onMounted(() => {
     ease: "none",
   });
 
+  pvDown();
   gridBuy();
-  setTimeout(() => {
-    gridSell();
-  }, 5000);
-  setTimeout(() => {
-    gridBuy();
-  }, 10000);
-
   batteryDischarge();
-  setTimeout(() => {
-    batteryCharge();
-  }, 15000);
-  setTimeout(() => {
-    batteryDischarge();
-  }, 20000);
+  loadUp();
 });
 
 function pvUp() {
@@ -203,7 +192,7 @@ function restartOthersFrom(type) {
   } else if (type === "load") {
     pv_state === "up" ? anim_pv.restart() : anim_pv.pause();
     grid_state === "buy" ? anim_grid_buy.restart() : anim_grid_sell.restart();
-    load_state === "up" ? anim_load.restart() : anim_load.pause();
+    battery_state === "charge" ? anim_battery_charge.restart() : anim_battery_discharge.restart();
   }
 }
 
@@ -221,24 +210,19 @@ conn.onmessage = function (e) {
 };
 
 function updateCurrentValues(data) {
-  // const timestamp = new Date(data.values.faster.time + "Z");
-  // const timestamp_str = timestamp.toLocaleString("de-DE", {
-  //   dateStyle: "medium", timeStyle: "medium"
-  // });
-  // updateValueBox("timestamp", timestamp_str, "", "timestamp");
-
+  updateTimestamp(data);
   updatePV(data);
   updateGrid(data);
-  // updateBattery(data);
-  // updateLoad(data);
+  updateBattery(data);
+  updateLoad(data);
+}
 
-  // updateValueBox("grid-power", data.values.faster["total_grid_power"], "W");
-  // updateValueBox("load-power", data.values.faster["total_load_power"], "W");
-  // updateValueBox("battery-power", data.values.faster["battery_power"], "W");
-  // updateValueBox("battery-power", `${data.values.slow["battery_soc"]}%`, "",
-  //   "dashboard-value-2nd");
-  // updateValueBox("pv1-power", data.values.faster["pv1_power"], "W");
-  // updateValueBox("pv2-power", data.values.faster["pv2_power"], "W");
+function updateTimestamp(data) {
+  const timestamp = new Date(data.values.faster.time + "Z");
+  const timestamp_str = timestamp.toLocaleString("de-DE", {
+    dateStyle: "medium", timeStyle: "medium"
+  });
+  updateValue("current-power-timestamp", timestamp_str, "", "");
 }
 
 function updatePV(data) {
@@ -269,8 +253,38 @@ function updateGrid(data) {
   }
 }
 
-function updateValue(id, value, unit) {
-  const value_text = document.querySelector(`#${id} > tspan`);
+function updateBattery(data) {
+  const battery_power = data.values.faster.battery_power;
+  const battery_soc = data.values.slow.battery_soc;
+  updateValue("current-power-battery", battery_power, "W");
+  updateValue("current-power-soc", `${battery_soc}%`, "");
+  if (battery_power > 0) {
+    if (battery_state === "charge") {
+      batteryDischarge();
+    }
+  } else {
+    if (grid_state === "discharge") {
+      batteryCharge();
+    }
+  }
+}
+
+function updateLoad(data) {
+  const load_power = data.values.faster.total_load_power;
+  updateValue("current-power-load", load_power, "W");
+  if (load_power > 0) {
+    if (load_state === "down") {
+      loadUp();
+    }
+  } else {
+    if (load_state === "up") {
+      loadDown();
+    }
+  }
+}
+
+function updateValue(id, value, unit, subtag = "tspan") {
+  const value_text = document.querySelector(subtag ? `#${id} > ${subtag}` : `#${id}`);
   if (unit !== "") {
     value_text.innerHTML = `${value} ${unit}`;
   } else {
@@ -280,6 +294,7 @@ function updateValue(id, value, unit) {
 </script>
 
 <template>
+  <p>Letzte Aktualisierung: <span id="current-power-timestamp"></span></p>
   <svg width="100%" height="100%" version="1.1" viewBox="0 0 210 190" xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs>
@@ -381,13 +396,13 @@ function updateValue(id, value, unit) {
         <tspan x="175" y="140" class="current-power-label-text">Load</tspan>
       </text>
       <text id="current-power-pv" x="35" y="31.3">
-        <tspan x="35" y="31.3" class="current-power-text">9999 W</tspan>
+        <tspan x="35" y="31.3" class="current-power-text">0 W</tspan>
       </text>
       <text id="current-power-grid" x="175" y="31.3">
-        <tspan x="175" y="31.3" class="current-power-text">-9999 W</tspan>
+        <tspan x="175" y="31.3" class="current-power-text">9999 W</tspan>
       </text>
       <text id="current-power-battery" x="35" y="151.3">
-        <tspan x="35" y="151.3" class="current-power-text">-9999 W</tspan>
+        <tspan x="35" y="151.3" class="current-power-text">9999 W</tspan>
       </text>
       <text id="current-power-soc" x="35" y="161.3">
         <tspan x="35" y="161.3" class="current-power-text">100%</tspan>
@@ -400,7 +415,7 @@ function updateValue(id, value, unit) {
       <rect id="current-power-bar-load" x="154" y="142" width="4" height="15" class="current-power-bar" />
       <rect id="current-power-bar-battery" x="14" y="142" width="4" height="15" class="current-power-bar" />
       <rect id="current-power-bar-soc" x="27.5" y="164.5" width="15" height="4" class="current-power-bar" />
-      <path id="current-power-arrow-pv"
+      <path id="current-power-arrow-pv" class="hidden"
         d="m54.304 25h1.569l-0.0013 3.1201h1.0001l-1.7832 3.2692-1.7888-3.2692h1.0001l0.0041-3.1201"
         style="fill:#fefe7f" />
       <path id="current-power-arrow-grid-sell" class="hidden"
