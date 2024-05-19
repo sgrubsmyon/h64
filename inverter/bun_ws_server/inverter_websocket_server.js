@@ -14,7 +14,7 @@ const configtext = await configfile.text();
 const CONFIGFULL = parse(configtext);
 const CONFIG = CONFIGFULL.WebSocket;
 
-var DEBUG = true;
+var DEBUG = false;
 process.argv.forEach(arg => {
   if (arg === "-d" || arg === "--debug") {
     DEBUG = true;
