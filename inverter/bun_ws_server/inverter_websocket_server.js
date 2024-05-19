@@ -3,18 +3,18 @@
 // var remainingClients = CLIENTS_TO_WAIT_FOR;
 // const COMPRESS = process.env.COMPRESS === "1";
 
-const ini = require("ini");
+import { parse } from "ini";
 
 /********************
  * Global variables *
  ********************/
 
-const configfile = Bun.file("../../config.cfg");
+const configfile = Bun.file(`${import.meta.dir}/../../config.cfg`);
 const configtext = await configfile.text();
-const CONFIGFULL = ini.parse(configtext);
+const CONFIGFULL = parse(configtext);
 const CONFIG = CONFIGFULL.WebSocket;
 
-var DEBUG = false;
+var DEBUG = true;
 process.argv.forEach(arg => {
   if (arg === "-d" || arg === "--debug") {
     DEBUG = true;
