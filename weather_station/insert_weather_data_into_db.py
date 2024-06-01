@@ -9,6 +9,9 @@ import signal
 import psycopg2
 import websockets
 
+# Code for reading data from Bresser 5-in-1 weather station via RTL-SDR antenna
+# See https://www.vromans.org/johan/articles/hass_bresser51/index.html for inspiration
+
 ########################
 ### global variables ###
 ########################
@@ -126,10 +129,20 @@ if __name__ == "__main__":
     # Start the infinite sampling loop
     # asyncio.run(sample(args.debug, args.dry_run))
 
+    command_array = [
+        cfg_weather["command"],
+        cfg_weather["frequency_opt"], cfg_weather["frequency"],
+        cfg_weather["format_opt"], cfg_weather["format"]
+    ]
+    
+    if (cfg_weather["other_options"]):
+        command_array += cfg_weather["other_options"].split(" ")
+    
+    if args.debug:
+        print("Running command array:", command_array)
+
     proc = subprocess.Popen(
-        [cfg_weather["command"],
-         cfg_weather["frequency_opt"], cfg_weather["frequency"],
-         cfg_weather["format_opt"], cfg_weather["format"]],
+        command_array,
         stdout=subprocess.PIPE)
 
     while True:

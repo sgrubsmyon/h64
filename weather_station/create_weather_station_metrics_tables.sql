@@ -1,4 +1,5 @@
 -- Create tables inside PostgreSQL TimescaleDB database `weather`
+-- for holding data read via RTL-SDR antenna from a Bresser 5-in-1 weather station
 
 -- Table is written to every 12 seconds
 -- time,id/location,Battery,Temperature,Humidity,Wind Gust,Wind Speed,Direction,Rain

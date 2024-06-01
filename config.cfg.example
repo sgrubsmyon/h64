@@ -18,6 +18,14 @@ sampling_interval_fast_second = 15
 sampling_interval_slow_minute = 5
 sampling_interval_slow_second = 0
 
+[WeatherStation]
+command = /usr/bin/rtl_433
+frequency_opt = -f
+frequency = 868M
+format_opt = -F
+format =  json
+other_options = 
+
 [PostgreSQL]
 host = localhost
 port = 5432
