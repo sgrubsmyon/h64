@@ -210,7 +210,7 @@ if __name__ == "__main__":
         prog="insert_deye_data_into_db",
         description="""
         Insert Deye inverter data read with `read_deye_inverter.py`
-        into an SQL DB and also send it to WebSocket server `inverter_websocket_server.py`
+        into an SQL DB and also send it to WebSocket server `inverter_websocket_server.js`
         """,
         epilog=""
     )
