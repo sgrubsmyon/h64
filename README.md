@@ -34,12 +34,12 @@ $ sudo -u postgres psql
 > \q
 ```
 
-Create database:
+#### Create database for inverter
 
 ```
 $ psql -U postgres -h localhost
-> CREATE database yourdatabasename;
-> \c yourdatabasename
+> CREATE database inverter;
+> \c inverter
 > CREATE EXTENSION IF NOT EXISTS timescaledb;
 > \dx
                                                 List of installed extensions
@@ -51,17 +51,47 @@ $ psql -U postgres -h localhost
 > \q
 ```
 
-Create tables for h64:
+Create tables for inverter data:
 
 ```
 $ cd inverter
-$ psql -U postgres -h localhost -d yourdatabasename -f create_inverter_metrics_tables.sql
+$ psql -U postgres -h localhost -d inverter -f create_inverter_metrics_tables.sql
 ```
 
-Open h64 database in psql:
+Open inverter database in psql:
 
 ```
-$ psql -U postgres -h localhost -d yourdatabasename
+$ psql -U postgres -h localhost -d inverter
+```
+
+#### Create database for weather station
+
+```
+$ psql -U postgres -h localhost
+> CREATE database weather;
+> \c weather
+> CREATE EXTENSION IF NOT EXISTS timescaledb;
+> \dx
+                                                List of installed extensions
+    Name     | Version |   Schema   |                                      Description                                      
+-------------+---------+------------+---------------------------------------------------------------------------------------
+ plpgsql     | 1.0     | pg_catalog | PL/pgSQL procedural language
+ timescaledb | 2.11.1  | public     | Enables scalable inserts and complex queries for time-series data (Community Edition)
+(2 rows)
+> \q
+```
+
+Create tables for weather data:
+
+```
+$ cd weather
+$ psql -U postgres -h localhost -d weather -f create_weather_metrics_tables.sql
+```
+
+Open weather database in psql:
+
+```
+$ psql -U postgres -h localhost -d weather
 ```
 
 
