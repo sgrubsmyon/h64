@@ -6,13 +6,13 @@
 CREATE TABLE weather_metrics (
    time                          TIMESTAMPTZ   NOT NULL,
    location                      CHARACTER (5) NULL, -- either 'bshed' for bike shed or 'bport' for bike port or 'gshed' for garden shed or whatever
-   battery                       REAL          NULL,
-   temperature                   REAL          NULL,
+   battery_ok                    REAL          NULL,
+   temperature_C                 REAL          NULL,
    humidity                      REAL          NULL,
-   wind_gust                     REAL          NULL,
-   wind_speed                    REAL          NULL,
-   wind_direction                REAL          NULL,
-   rain                          REAL          NULL
+   wind_max_m_s                  REAL          NULL,
+   wind_avg_m_s                  REAL          NULL,
+   wind_dir_deg                  SMALLINT      NULL,
+   rain_mm                       REAL          NULL
 );
 
 -- Convert tables to TimescaleDB hypertables:
