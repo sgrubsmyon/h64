@@ -149,8 +149,14 @@ if __name__ == "__main__":
         line = proc.stdout.readline().decode("utf-8")
         if not line:
             break
-        if args.debug:
-            print(line)
+        try:
+            ljson = json.loads(line)
+            if args.debug:
+                print(ljson)
+        except json.decoder.JSONDecodeError:
+            if args.debug:
+                print(line)
+            continue
         if not args.dry_run:
             data = json.loads(line)
             group = "weather"
