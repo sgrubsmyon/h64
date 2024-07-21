@@ -5,7 +5,6 @@ import configparser
 from datetime import datetime
 import json
 import os
-import sys
 import signal
 import time
 import numpy as np
@@ -21,7 +20,8 @@ from read_deye_inverter import data_for_psql
 # load config file
 
 config = configparser.ConfigParser()
-config.read("../config.cfg")
+basepath = os.path.dirname(os.path.abspath(__file__))
+config.read(basepath + "/../config.cfg")
 cfg_deye = config["DeyeInverter"]
 cfg_psql = config["PostgreSQL"]
 cfg_ws = config["DeyeInverter_WebSocket"]

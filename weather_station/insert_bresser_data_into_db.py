@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import argparse
 import asyncio
 import configparser
@@ -20,7 +21,8 @@ import websockets
 # load config file
 
 config = configparser.ConfigParser()
-config.read("../config.cfg")
+basepath = os.path.dirname(os.path.abspath(__file__))
+config.read(basepath + "/../config.cfg")
 cfg_weather = config["WeatherStation"]
 cfg_psql = config["PostgreSQL"]
 cfg_ws = config["WeatherStation_WebSocket"]
