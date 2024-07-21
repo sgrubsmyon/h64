@@ -27,7 +27,7 @@ cfg_weather = config["WeatherStation"]
 cfg_psql = config["PostgreSQL"]
 cfg_ws = config["WeatherStation_WebSocket"]
 
-cfg_weather["id"] = int(cfg_weather["id"])
+cfg_weather_id = int(cfg_weather["id"])
 
 # connection to DB that shall be persisted throughout
 pg_conn = None
@@ -147,10 +147,10 @@ async def sample(debug, dry_run):
 
                 # check if this message comes from the weather station with the correct ID (configured in config.cfg)
                 # otherwise ignore it
-                if data["id"] != cfg_weather["id"]:
+                if data["id"] != cfg_weather_id:
                     if debug:
                         print(("    => Ignoring message from unknown weather station with ID {data_id}, " +
-                              "differing from the configured ID {conf_id}.").format(data_id = data["id"], conf_id = cfg_weather["id"]))
+                              "differing from the configured ID {conf_id}.").format(data_id = data["id"], conf_id = cfg_weather_id))
                     continue
 
                 # Prepare the data for the DB
