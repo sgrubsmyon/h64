@@ -67,8 +67,8 @@ $ psql -U postgres -h localhost -d h64 -f create_inverter_metrics_tables.sql
 ##### Create tables for weather data:
 
 ```
-$ cd weather
-$ psql -U postgres -h localhost -d weather -f create_weather_station_metrics_tables.sql
+$ cd weather_station
+$ psql -U postgres -h localhost -d h64 -f create_weather_station_metrics_tables.sql
 ```
 
 
