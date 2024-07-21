@@ -19,7 +19,7 @@ var CURR_STATUS = {};
 const CONFIGFULL = ini.parse(
     fs.readFileSync('../../config.cfg', 'utf-8')
 );
-const CONFIG = CONFIGFULL.WebSocket;
+const CONFIG = CONFIGFULL.DeyeInverter_WebSocket;
 
 var DEBUG = false;
 process.argv.forEach(arg => {

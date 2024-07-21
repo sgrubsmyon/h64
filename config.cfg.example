@@ -18,7 +18,15 @@ sampling_interval_fast_second = 15
 sampling_interval_slow_minute = 5
 sampling_interval_slow_second = 0
 
+[DeyeInverter_WebSocket]
+host = localhost
+port = 6789
+compress = false
+send_token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+recv_token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
 [WeatherStation]
+id = 12345678
 command = /usr/bin/rtl_433
 frequency_opt = -f
 frequency = 868M
@@ -26,13 +34,16 @@ format_opt = -F
 format =  json
 other_options = 
 
+[WeatherStation_WebSocket]
+host = localhost
+port = 6790
+compress = false
+send_token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+recv_token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
 [PostgreSQL]
 host = localhost
 port = 5432
 user = postgres
 db = yourdatabasename
 password = password
-
-[WebSocket]
-host = localhost
-port = 6789

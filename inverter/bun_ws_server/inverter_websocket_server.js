@@ -12,7 +12,7 @@ import { parse } from "ini";
 const configfile = Bun.file(`${import.meta.dir}/../../config.cfg`);
 const configtext = await configfile.text();
 const CONFIGFULL = parse(configtext);
-const CONFIG = CONFIGFULL.WebSocket;
+const CONFIG = CONFIGFULL.DeyeInverter_WebSocket;
 
 var DEBUG = false;
 process.argv.forEach(arg => {
@@ -83,6 +83,10 @@ const server = Bun.serve({
         console.log(`[${new Date().toISOString()}] Received message:`, msg);
       }
       const msg_keys = Object.keys(msg);
+      if (!msg_keys.includes("token") && msg.token !== CONFIG.send_token) {
+        // ignore message
+        return;
+      }
       if (msg_keys.includes("group") && msg_keys.includes("values")) {
         // Update the current values with new ones:
         const group = msg.group;
