@@ -109,6 +109,10 @@ async def send_to_websocket_server(data, status, debug):
             ws_conn = None
 
 
+def isoformat(dt):
+    # convert from format '2024-07-20 14:44:52' to isoformat '2024-07-21T11:53:18'
+    return dt[0:10] + "T" + dt[11:]
+
 async def sample(debug, dry_run):
     command_array = [
         cfg_weather["command"],
@@ -147,7 +151,7 @@ async def sample(debug, dry_run):
 
                 # Prepare the data for the DB
                 psql_data = {
-                    "time": data["time"],
+                    "time": isoformat(data["time"]),
                     "location": cfg_weather["location"],
                     "id": data["id"],
                     "battery_ok": data["battery_ok"],
@@ -161,7 +165,7 @@ async def sample(debug, dry_run):
 
                 insert_into_psql(psql_data, debug, dry_run)
                 status = {"type": "OK", "msg": "OK"}
-                await send_to_websocket_server("weather", data, status, debug)
+                await send_to_websocket_server(data, status, debug)
         except json.decoder.JSONDecodeError:
             if debug:
                 print(line)
