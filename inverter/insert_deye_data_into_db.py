@@ -24,7 +24,7 @@ config = configparser.ConfigParser()
 config.read("../config.cfg")
 cfg_deye = config["DeyeInverter"]
 cfg_psql = config["PostgreSQL"]
-cfg_ws = config["WebSocket"]
+cfg_ws = config["DeyeInverter_WebSocket"]
 
 start_point = {
     # 0 minutes, 0 seconds
@@ -115,6 +115,7 @@ def insert_into_psql(group, data, debug, dry_run):
 async def send_to_websocket_server(group, data, status, debug):
     global ws_conn
     msg = {
+        "token": cfg_ws["send_token"],
         "group": group,
         "values": data,
         "status": status
@@ -201,7 +202,7 @@ async def sample(minute_of_last_slow_sampling, debug, dry_run):
     if ws_conn != None:
         await send_to_websocket_server(next_sampling_group, data, status, debug)
 
-    # Repeat the same process
+    # Repeat the same process (infinite sampling loop)
     await sample(minute_of_last_slow_sampling, debug, dry_run)
 
 
