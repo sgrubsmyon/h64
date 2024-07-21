@@ -118,6 +118,18 @@ def isoformat(dt):
     return dt[0:10] + "T" + dt[11:]
 
 async def sample(debug, dry_run):
+    global ws_conn
+    if ws_conn == None:
+        try:
+            await connect_to_websocket_server()
+        except (ConnectionRefusedError, OSError):
+            print(
+                f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later.")
+            ws_conn = None
+
+    status = {"type": "NORMAL", "msg": ""}
+
+    # command to receive signal from weather station
     command_array = [
         cfg_weather["command"],
         cfg_weather["frequency_opt"], cfg_weather["frequency"],
@@ -168,8 +180,8 @@ async def sample(debug, dry_run):
                 }
 
                 insert_into_psql(psql_data, debug, dry_run)
-                status = {"type": "OK", "msg": "OK"}
-                await send_to_websocket_server(data, status, debug)
+                if ws_conn != None:
+                    await send_to_websocket_server(data, status, debug)
         except json.decoder.JSONDecodeError:
             if debug:
                 print(line)
