@@ -147,8 +147,8 @@ async def sample(debug, dry_run):
                 # otherwise ignore it
                 if data["id"] != cfg_weather["id"]:
                     if debug:
-                        print("    => Ignoring message from uknown weather station with ID " +
-                              data["id"] + ", differing from the configured ID " + cfg_weather["id"] + ".")
+                        print(("    => Ignoring message from unknown weather station with ID {data_id}, " +
+                              "differing from the configured ID {conf_id}.").format(data_id = data["id"], conf_id = cfg_weather["id"]))
                     continue
 
                 # Prepare the data for the DB
