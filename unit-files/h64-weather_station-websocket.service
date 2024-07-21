@@ -1,0 +1,13 @@
+[Unit]
+Description=H64 data collection tools - weather station WebSocket server
+
+[Service]
+User=yourusername
+Group=yourusername
+ExecStart=/home/yourusername/.bun/bin/bun /home/yourusername/h64/weather_station/bun_ws_server/weather_station_websocket_server.js
+StandardOutput=file:/var/log/h64/weather_station_websocket_server
+StandardError=file:/var/log/h64/weather_station_websocket_server
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
