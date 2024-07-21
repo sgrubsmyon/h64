@@ -85,7 +85,7 @@ Create tables for weather data:
 
 ```
 $ cd weather
-$ psql -U postgres -h localhost -d weather -f create_weather_metrics_tables.sql
+$ psql -U postgres -h localhost -d weather -f create_weather_station_metrics_tables.sql
 ```
 
 Open weather database in psql:
@@ -116,7 +116,7 @@ $ pip install psycopg2
 $ pip install --upgrade websockets
 ```
 
-
+<!-- (deprecated, now using Bun for the websocket servers)
 ### Node.js
 
 Find latest curl command on https://github.com/nvm-sh/nvm, e.g.:
@@ -137,13 +137,28 @@ Install latest listed LTS version (e.g.):
 $ nvm install v12.16.1
 ```
 
-Install dependencies:
+Install node packages:
 
 ```
 $ cd inverter/node_ws_server
 $ npm install
 ```
+-->
 
+### Bun
+
+See https://bun.sh/.
+
+```
+$ curl -fsSL https://bun.sh/install | bash
+```
+
+Install packages:
+
+```
+$ cd inverter/bun_ws_server
+$ bun install
+```
 
 ### Vue.js
 

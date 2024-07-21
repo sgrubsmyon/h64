@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import asyncio
 import configparser
 from datetime import datetime
 import subprocess
@@ -22,9 +23,15 @@ config = configparser.ConfigParser()
 config.read("../config.cfg")
 cfg_weather = config["WeatherStation"]
 cfg_psql = config["PostgreSQL"]
-cfg_ws = config["WebSocket"]
+cfg_ws = config["WeatherStation_WebSocket"]
 
+# connection to DB that shall be persisted throughout
+pg_conn = None
 
+# connection to WebSocket server that shall be persisted throughout
+ws_conn = None
+
+# open connection to DB
 def connect_to_psql():
     global pg_conn
     pg_conn = psycopg2.connect(
@@ -36,6 +43,7 @@ def connect_to_psql():
     )
 
 
+# open connection to WebSocket server
 async def connect_to_websocket_server():
     global ws_conn
     uri = f"ws://{cfg_ws['host']}:{cfg_ws['port']}"
@@ -52,8 +60,8 @@ def close_connections(dry_run):
             f"[{datetime.now()}] Received SIGTERM. Closing connection to database and WebSocket server.")
         if not dry_run:
             pg_conn.close()
-        # Not working:
-        # await ws_conn.close()
+            # Not working:
+            # await ws_conn.close()
     return close
 
 
@@ -62,9 +70,9 @@ def close_connections(dry_run):
 ###################
 
 
-def insert_into_psql(group, data, debug, dry_run):
+def insert_into_psql(data, debug, dry_run):
     query = f'''
-        INSERT INTO inverter_metrics_{group}({', '.join(data.keys())})
+        INSERT INTO weather_station_metrics
             VALUES ({', '.join(['%s'] * len(data.values()))});
     '''
     if debug:
@@ -76,10 +84,10 @@ def insert_into_psql(group, data, debug, dry_run):
         cur.close()
 
 
-async def send_to_websocket_server(group, data, status, debug):
+async def send_to_websocket_server(data, status, debug):
     global ws_conn
     msg = {
-        "group": group,
+        "token": cfg_ws["send_token"],
         "values": data,
         "status": status
     }
@@ -94,19 +102,75 @@ async def send_to_websocket_server(group, data, status, debug):
                   "msg": "Had to reopen closed WebSocket connection"}
         try:
             await connect_to_websocket_server()
-            await send_to_websocket_server(group, data, status, debug)
+            await send_to_websocket_server(data, status, debug)
         except (ConnectionRefusedError, OSError):
             print(
                 f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later.")
             ws_conn = None
 
 
-# async def sample(debug, dry_run):
+async def sample(debug, dry_run):
+    command_array = [
+        cfg_weather["command"],
+        cfg_weather["frequency_opt"], cfg_weather["frequency"],
+        cfg_weather["format_opt"], cfg_weather["format"]
+    ]
+    
+    if (cfg_weather["other_options"]):
+        command_array += cfg_weather["other_options"].split(" ")
+    
+    if debug:
+        print("Running command array:", command_array)
+
+    proc = subprocess.Popen(
+        command_array,
+        stdout=subprocess.PIPE)
+
+    while True: # infinite sampling loop
+        line = proc.stdout.readline().decode("utf-8")
+        if not line:
+            break
+        try:
+            ljson = json.loads(line)
+            if debug:
+                print("    => JSON:", ljson)
+            if not dry_run:
+                data = json.loads(line)
+
+                # check if this message comes from the weather station with the correct ID (configured in config.cfg)
+                # otherwise ignore it
+                if data["id"] != cfg_weather["id"]:
+                    if debug:
+                        print("    => Ignoring message from uknown weather station with ID " +
+                              data["id"] + ", differing from the configured ID " + cfg_weather["id"] + ".")
+                    continue
+
+                # Prepare the data for the DB
+                psql_data = {
+                    "time": data["time"],
+                    "location": cfg_weather["location"],
+                    "id": data["id"],
+                    "battery_ok": data["battery_ok"],
+                    "temperature_C": data["temperature_C"],
+                    "humidity": data["humidity"],
+                    "wind_max_m_s": data["wind_max_m_s"],
+                    "wind_avg_m_s": data["wind_avg_m_s"],
+                    "wind_dir_deg": data["wind_dir_deg"],
+                    "rain_mm": data["rain_mm"],
+                }
+
+                insert_into_psql(psql_data, debug, dry_run)
+                status = {"type": "OK", "msg": "OK"}
+                await send_to_websocket_server("weather", data, status, debug)
+        except json.decoder.JSONDecodeError:
+            if debug:
+                print(line)
+            continue
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog="insert_deye_data_into_db",
+        prog="insert_bresser_data_into_db",
         description="""
         Insert Bresser 5-in-1 weather station data read with shell command `rtl_433`
         into an SQL DB and also send it to WebSocket server `inverter_websocket_server.js`
@@ -127,37 +191,4 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, close_connections(args.dry_run))
 
     # Start the infinite sampling loop
-    # asyncio.run(sample(args.debug, args.dry_run))
-
-    command_array = [
-        cfg_weather["command"],
-        cfg_weather["frequency_opt"], cfg_weather["frequency"],
-        cfg_weather["format_opt"], cfg_weather["format"]
-    ]
-    
-    if (cfg_weather["other_options"]):
-        command_array += cfg_weather["other_options"].split(" ")
-    
-    if args.debug:
-        print("Running command array:", command_array)
-
-    proc = subprocess.Popen(
-        command_array,
-        stdout=subprocess.PIPE)
-
-    while True:
-        line = proc.stdout.readline().decode("utf-8")
-        if not line:
-            break
-        try:
-            ljson = json.loads(line)
-            if args.debug:
-                print(ljson)
-        except json.decoder.JSONDecodeError:
-            if args.debug:
-                print(line)
-            continue
-        if not args.dry_run:
-            data = json.loads(line)
-            group = "weather"
-            status = {"type": "OK", "msg": "OK"}
+    asyncio.run(sample(args.debug, args.dry_run))
