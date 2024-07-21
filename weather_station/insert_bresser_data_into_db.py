@@ -27,6 +27,8 @@ cfg_weather = config["WeatherStation"]
 cfg_psql = config["PostgreSQL"]
 cfg_ws = config["WeatherStation_WebSocket"]
 
+cfg_weather["id"] = int(cfg_weather["id"])
+
 # connection to DB that shall be persisted throughout
 pg_conn = None
 
