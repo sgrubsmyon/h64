@@ -119,15 +119,6 @@ def isoformat(dt):
 
 async def sample(debug, dry_run):
     global ws_conn
-    if ws_conn == None:
-        try:
-            await connect_to_websocket_server()
-        except (ConnectionRefusedError, OSError):
-            print(
-                f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later.")
-            ws_conn = None
-
-    status = {"type": "NORMAL", "msg": ""}
 
     # command to receive signal from weather station
     command_array = [
@@ -147,6 +138,16 @@ async def sample(debug, dry_run):
         stdout=subprocess.PIPE)
 
     while True: # infinite sampling loop
+        if ws_conn == None:
+            try:
+                await connect_to_websocket_server()
+            except (ConnectionRefusedError, OSError):
+                print(
+                    f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later.")
+                ws_conn = None
+
+        status = {"type": "NORMAL", "msg": ""}
+
         line = proc.stdout.readline().decode("utf-8")
         if not line:
             break
