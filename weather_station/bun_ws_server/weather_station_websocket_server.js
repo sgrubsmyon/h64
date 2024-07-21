@@ -87,7 +87,7 @@ const server = Bun.serve({
         // ignore message
         return;
       }
-      if (msg_keys.includes("values") && msg.values !== null) {
+      if (msg_keys.includes("values") && msg.values !== null && msg.values !== undefined) {
         // Update the current values with new ones:
         for (const [key, value] of msg.values) {
           // if the value is valid, adopt it as new value
