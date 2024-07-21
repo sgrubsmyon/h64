@@ -49,19 +49,19 @@ CREATE TABLE inverter_metrics_fast (
 
 -- Table with values changing fast, about every second. Table is updated every 3 seconds
 CREATE TABLE inverter_metrics_faster (
-   time                 TIMESTAMPTZ      NOT NULL,
-   total_load_power     DOUBLE PRECISION NULL,
-   total_grid_power     DOUBLE PRECISION NULL,
-   load_power_l1        DOUBLE PRECISION NULL,
-   load_power_l2        DOUBLE PRECISION NULL,
-   load_power_l3        DOUBLE PRECISION NULL,
-   pv1_power            DOUBLE PRECISION NULL,
-   pv2_power            DOUBLE PRECISION NULL,
-   pv1_voltage          DOUBLE PRECISION NULL,
-   pv2_voltage          DOUBLE PRECISION NULL,
-   pv1_current          DOUBLE PRECISION NULL,
-   pv2_current          DOUBLE PRECISION NULL,
-   battery_power        DOUBLE PRECISION NULL
+   time             TIMESTAMPTZ      NOT NULL,
+   total_load_power DOUBLE PRECISION NULL,
+   total_grid_power DOUBLE PRECISION NULL,
+   load_power_l1    DOUBLE PRECISION NULL,
+   load_power_l2    DOUBLE PRECISION NULL,
+   load_power_l3    DOUBLE PRECISION NULL,
+   pv1_power        DOUBLE PRECISION NULL,
+   pv2_power        DOUBLE PRECISION NULL,
+   pv1_voltage      DOUBLE PRECISION NULL,
+   pv2_voltage      DOUBLE PRECISION NULL,
+   pv1_current      DOUBLE PRECISION NULL,
+   pv2_current      DOUBLE PRECISION NULL,
+   battery_power    DOUBLE PRECISION NULL
 );
 
 -- Convert tables to TimescaleDB hypertables:
