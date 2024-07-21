@@ -158,13 +158,13 @@ async def sample(debug, dry_run):
                     "time": isoformat(data["time"]),
                     "location": cfg_weather["location"],
                     "id": data["id"],
-                    "battery_ok": data["battery_ok"],
-                    "temperature_C": data["temperature_C"],
-                    "humidity": data["humidity"],
-                    "wind_max_m_s": data["wind_max_m_s"],
-                    "wind_avg_m_s": data["wind_avg_m_s"],
-                    "wind_dir_deg": data["wind_dir_deg"],
-                    "rain_mm": data["rain_mm"],
+                    "battery_ok": data["battery_ok"] if "battery_ok" in data else None,
+                    "temperature_C": data["temperature_C"] if "temperature_C" in data else None,
+                    "humidity": data["humidity"] if "humidity" in data else None,
+                    "wind_max_m_s": data["wind_max_m_s"] if "wind_max_m_s" in data else None,
+                    "wind_avg_m_s": data["wind_avg_m_s"] if "wind_avg_m_s" in data else None,
+                    "wind_dir_deg": data["wind_dir_deg"] if "wind_dir_deg" in data else None,
+                    "rain_mm": data["rain_mm"] if "rain_mm" in data else None,
                 }
 
                 insert_into_psql(psql_data, debug, dry_run)
