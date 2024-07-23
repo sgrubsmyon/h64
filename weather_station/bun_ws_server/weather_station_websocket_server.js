@@ -91,7 +91,7 @@ const server = Bun.serve({
         console.log("Message:", msg);
         console.log("Message values:", msg.values);
         // Update the current values with new ones:
-        for (const [key, value] of msg.values) {
+        for (const [key, value] of Object.entries(msg.values)) {
           console.log("Message key:", key);
           console.log("Message value:", value);
           // if the value is valid, adopt it as new value
