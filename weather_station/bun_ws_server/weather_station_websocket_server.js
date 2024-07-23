@@ -88,11 +88,8 @@ const server = Bun.serve({
         return;
       }
       if (msg_keys.includes("values") && msg.values !== null) {
-        console.log("Message:", msg);
-        console.log("Message values:", msg.values);
         // Update the current values with new ones:
         for (const [key, value] of Object.entries(msg.values)) {
-          console.log(key, value);
           // if the value is valid, adopt it as new value
           if (value !== null && value !== undefined) {
             CURR_VALUES[key] = value;
