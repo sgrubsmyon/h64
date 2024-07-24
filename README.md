@@ -135,6 +135,8 @@ Install packages:
 ```
 $ cd inverter/bun_ws_server
 $ bun install
+$ cd weather_station/bun_ws_server
+$ bun install
 ```
 
 ### Vue.js
@@ -237,7 +239,7 @@ $ sudo systemctl start h64-inverter-websocket.service h64-inverter-insert.servic
 
 See: https://www.nginx.com/blog/websocket-nginx/
 
-Create a CNAME subdomain DNS entry for the inverterdata, e.g. `inverterdata.example.com`.
+Create a CNAME subdomain DNS entry for `[inverterdata, weatherdata, ...]`, e.g. `[inverterdata.example.com, weatherdata.example.com, ...]`.
 
 Create file `/etc/nginx/sites-available/h64`:
 
@@ -247,21 +249,41 @@ map $http_upgrade $connection_upgrade {
 	'' close;
 }
 
-upstream websocket {
+upstream websocket_inverter {
 	server localhost:8765;
 }
+
+upstream websocket_weather {
+	server localhost:8766;
+}
+
+# ...
 
 server {
 	server_name inverterdata.example.com;
 	listen 80;
 	location / {
-		proxy_pass http://websocket;
+		proxy_pass http://websocket_inverter;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade $http_upgrade;
 		proxy_set_header Connection $connection_upgrade;
 		proxy_set_header Host $host;
 	}
 }
+
+server {
+	server_name weatherdata.example.com;
+	listen 80;
+	location / {
+		proxy_pass http://websocket_weather;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection $connection_upgrade;
+		proxy_set_header Host $host;
+	}
+}
+
+# ...
 ```
 
 Activate it and restart nginx:
