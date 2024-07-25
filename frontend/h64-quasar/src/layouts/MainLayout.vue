@@ -5,9 +5,9 @@
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+            <img src="src/assets/H64_Logo_For_Dark.svg">
           </q-avatar>
-          Title
+          H64
         </q-toolbar-title>
       </q-toolbar>
 
