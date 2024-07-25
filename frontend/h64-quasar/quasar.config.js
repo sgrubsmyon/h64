@@ -101,7 +101,21 @@ module.exports = configure(function (/* ctx */) {
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
     framework: {
-      config: {},
+      config: {
+        brand: {
+          primary: '#486efe',
+          secondary: '#48c9fe',
+          accent: '#9C27B0',
+  
+          dark: '#333333',
+          'dark-page': '#121212',
+  
+          positive: '#069330',
+          negative: '#fe2015',
+          info: '#31CCEC',
+          warning: '#ffc001'
+        }
+      },
 
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
@@ -218,3 +232,25 @@ module.exports = configure(function (/* ctx */) {
     }
   }
 });
+
+// quasar.config file
+
+return {
+  framework: {
+    config: {
+      brand: {
+        primary: '#486efe',
+        secondary: '#48c9fe',
+        accent: '#9C27B0',
+
+        dark: '#333333',
+        'dark-page': '#121212',
+
+        positive: '#069330',
+        negative: '#fe2015',
+        info: '#31CCEC',
+        warning: '#ffc001'
+      }
+    }
+  }
+}
