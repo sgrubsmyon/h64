@@ -17,9 +17,9 @@
         </q-toolbar-title>
         <q-space />
         <q-tabs shrink> <!-- shrink property because child of QToolbar-->
-          <q-route-tab to="/page1" label="Page One" />
-          <q-route-tab to="/page2" label="Page Two" />
-          <q-route-tab to="/page3" label="Page Three" />
+          <q-route-tab to="/" label="Dashboard" />
+          <q-route-tab to="/weather" label="Weather" />
+          <q-route-tab to="/pv" label="PV" />
         </q-tabs>
       </q-toolbar>
     </q-footer>
