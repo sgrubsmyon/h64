@@ -9,7 +9,7 @@
       <q-toolbar>
         <q-toolbar-title>
           <q-img
-            src="src/assets/H64_Logo_For_Dark.svg"
+            src="~assets/H64_Logo_For_Dark.svg"
             style="height: 40px; width: 40px;"
             fit="contain"
           />
