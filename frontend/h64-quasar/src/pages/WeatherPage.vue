@@ -1,6 +1,16 @@
 <template>
-  <q-page padding>
-    <!-- content -->
+  <q-page>
+    <q-tabs elevated
+        inline-label
+        outside-arrows
+        mobile-arrows
+        class="bg-secondary text-white shadow-2"
+      >
+        <q-route-tab to="/weather/overview" icon="dashboard" label="Overview" />
+        <q-route-tab to="/weather/current" icon="alarm" label="Current" />
+        <q-route-tab to="/weather/archive" icon="archive" label="Archive" />
+      </q-tabs>
+      <router-view />
   </q-page>
 </template>
 

@@ -11,11 +11,39 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'weather',
-        component: () => import('pages/WeatherPage.vue')
+        component: () => import('pages/WeatherPage.vue'),
+        children: [
+          {
+            path: 'overview',
+            component: () => import('pages/WeatherOverview.vue')
+          },
+          {
+            path: 'current',
+            component: () => import('pages/WeatherCurrent.vue')
+          },
+          {
+            path: 'archive',
+            component: () => import('pages/WeatherArchive.vue')
+          },
+        ]
       },
       {
         path: 'pv',
-        component: () => import('pages/PVPage.vue')
+        component: () => import('pages/PVPage.vue'),
+        children: [
+          {
+            path: 'overview',
+            component: () => import('pages/PVOverview.vue')
+          },
+          {
+            path: 'current',
+            component: () => import('pages/PVCurrent.vue')
+          },
+          {
+            path: 'archive',
+            component: () => import('pages/PVArchive.vue')
+          },
+        ]
       },
     ],
   },

@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh lpr fFf">
     
     <q-page-container>
       <router-view />
@@ -18,8 +18,8 @@
         <q-space />
         <q-tabs shrink> <!-- shrink property because child of QToolbar-->
           <q-route-tab to="/" label="Dashboard" icon="home" />
-          <q-route-tab to="/weather" label="Weather" icon="thermostat" />
-          <q-route-tab to="/pv" label="PV" icon="solar_power" />
+          <q-route-tab to="/weather/current" label="Weather" icon="thermostat" />
+          <q-route-tab to="/pv/current" label="PV" icon="solar_power" />
         </q-tabs>
       </q-toolbar>
     </q-footer>
