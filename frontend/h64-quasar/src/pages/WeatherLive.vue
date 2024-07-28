@@ -4,7 +4,12 @@ import { ref } from 'vue';
 const values = ref({
   temperature_C: NaN,
   humidity: NaN,
-})
+});
+
+const socket = new WebSocket('wss://weatherdata.h64.viridian-project.org');
+socket.onmessage = function (e) {
+  values.value = JSON.parse(e.data.values);
+}
 </script>
 
 <template>
