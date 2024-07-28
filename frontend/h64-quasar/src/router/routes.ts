@@ -18,8 +18,8 @@ const routes: RouteRecordRaw[] = [
             component: () => import('pages/WeatherOverview.vue')
           },
           {
-            path: 'current',
-            component: () => import('pages/WeatherCurrent.vue')
+            path: 'live',
+            component: () => import('pages/WeatherLive.vue')
           },
           {
             path: 'archive',
@@ -36,8 +36,8 @@ const routes: RouteRecordRaw[] = [
             component: () => import('pages/PVOverview.vue')
           },
           {
-            path: 'current',
-            component: () => import('pages/PVCurrent.vue')
+            path: 'live',
+            component: () => import('pages/PVLive.vue')
           },
           {
             path: 'archive',

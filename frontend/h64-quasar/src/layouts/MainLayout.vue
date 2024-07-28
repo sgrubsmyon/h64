@@ -18,8 +18,8 @@
         <q-space />
         <q-tabs shrink> <!-- shrink property because child of QToolbar-->
           <q-route-tab to="/" label="Dashboard" icon="home" />
-          <q-route-tab to="/weather/current" label="Weather" icon="thermostat" />
-          <q-route-tab to="/pv/current" label="PV" icon="solar_power" />
+          <q-route-tab to="/weather/live" label="Weather" icon="thermostat" />
+          <q-route-tab to="/pv/live" label="PV" icon="solar_power" />
         </q-tabs>
       </q-toolbar>
     </q-footer>
