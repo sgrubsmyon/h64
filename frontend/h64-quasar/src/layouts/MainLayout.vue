@@ -1,11 +1,7 @@
 <template>
   <q-layout view="hHh lpr fFf">
     
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-    
-    <q-footer elevated class="bg-primary text-white" height-hint="98">
+    <q-header elevated class="bg-primary text-white" height-hint="98">
       <q-toolbar>
         <q-toolbar-title>
           <q-img
@@ -22,7 +18,11 @@
           <q-route-tab to="/pv/live" label="PV" icon="solar_power" />
         </q-tabs>
       </q-toolbar>
-    </q-footer>
+    </q-header>
+
+    <q-page-container>
+      <router-view />
+    </q-page-container>
 
   </q-layout>
 </template>
