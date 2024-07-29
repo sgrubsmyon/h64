@@ -14,8 +14,8 @@
         <q-space />
         <q-tabs shrink> <!-- shrink property because child of QToolbar-->
           <q-route-tab to="/" label="Dashboard" icon="home" />
-          <q-route-tab to="/weather/live" label="Weather" icon="thermostat" />
-          <q-route-tab to="/pv/live" label="PV" icon="solar_power" />
+          <q-route-tab :to="`/weather/${last_visited_page.weather}`" label="Weather" icon="thermostat" />
+          <q-route-tab :to="`/pv/${last_visited_page.pv}`" label="PV" icon="solar_power" />
         </q-tabs>
       </q-toolbar>
     </q-header>
@@ -28,15 +28,28 @@
 </template>
 
 <script setup lang="ts">
-// import { ref } from 'vue';
+import { watch } from 'vue';
+import { ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 defineOptions({
   name: 'MainLayout'
 });
 
-// const tabsShown = ref(false);
+const last_visited_page = ref({
+  weather: 'live',
+  pv: 'live',
+});
 
-// function toggleTabsShown () {
-//   tabsShown.value = !tabsShown.value;
-// }
+const route = useRoute();
+
+watch(route, () => {
+  const fp = route.fullPath;
+  if (fp.startsWith('/weather')) {
+    last_visited_page.value.weather = fp.replace('/weather/', '');
+  }
+  if (fp.startsWith('/pv')) {
+    last_visited_page.value.pv = fp.replace('/pv/', '');
+  }
+});
 </script>
