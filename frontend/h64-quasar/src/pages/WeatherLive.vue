@@ -8,7 +8,8 @@ const values = ref({
 
 const socket = new WebSocket('wss://weatherdata.h64.viridian-project.org');
 socket.onmessage = function (e) {
-  values.value = JSON.parse(e.data.values);
+  console.log(JSON.parse(e.data).values);
+  values.value = JSON.parse(e.data).values;
 }
 </script>
 
