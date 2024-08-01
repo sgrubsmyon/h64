@@ -154,8 +154,11 @@ async def sample(debug, dry_run):
         line = proc.stdout.readline().decode("utf-8")
         if not line:
             print(
-                f"[{datetime.now()}] Ignoring empty, undefined or null line."
+                f"[{datetime.now()}] Encountered empty, undefined or null line. Will restart the command."
             )
+            proc = subprocess.Popen(
+                command_array,
+                stdout=subprocess.PIPE)
             continue
         try:
             ljson = json.loads(line)
