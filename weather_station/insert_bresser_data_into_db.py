@@ -61,7 +61,8 @@ def close_connections(dry_run):
     def close(signalnum, stackframe):
         global pg_conn, ws_conn
         print(
-            f"[{datetime.now()}] Received SIGTERM. Closing connection to database and WebSocket server.")
+            f"[{datetime.now()}] Received SIGTERM. Closing connection to database and WebSocket server."
+        )
         if not dry_run:
             pg_conn.close()
             # Not working:
@@ -80,7 +81,7 @@ def insert_into_psql(data, debug, dry_run):
             VALUES ({', '.join(['%s'] * len(data.values()))});
     '''
     if debug:
-        print(query, data.values())
+        print("Query: ", query, ", Values: ", data.values())
     if not dry_run:
         cur = pg_conn.cursor()
         cur.execute(query, tuple(data.values()))
@@ -109,7 +110,8 @@ async def send_to_websocket_server(data, status, debug):
             await send_to_websocket_server(data, status, debug)
         except (ConnectionRefusedError, OSError):
             print(
-                f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later.")
+                f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later."
+            )
             ws_conn = None
 
 
@@ -143,14 +145,18 @@ async def sample(debug, dry_run):
                 await connect_to_websocket_server()
             except (ConnectionRefusedError, OSError):
                 print(
-                    f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later.")
+                    f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later."
+                )
                 ws_conn = None
 
         status = {"type": "NORMAL", "msg": ""}
 
         line = proc.stdout.readline().decode("utf-8")
         if not line:
-            break
+            print(
+                f"[{datetime.now()}] Ignoring empty, undefined or null line."
+            )
+            continue
         try:
             ljson = json.loads(line)
             if debug:
@@ -161,9 +167,11 @@ async def sample(debug, dry_run):
                 # check if this message comes from the weather station with the correct ID (configured in config.cfg)
                 # otherwise ignore it
                 if data["id"] != cfg_weather_id:
-                    if debug:
-                        print(("    => Ignoring message from unknown weather station with ID {data_id}, " +
-                              "differing from the configured ID {conf_id}.").format(data_id = data["id"], conf_id = cfg_weather_id))
+                    # if debug:
+                    print(
+                        f"[{datetime.now()}] Ignoring message from unknown weather station with ID {data['id']}, " +
+                        f"differing from the configured ID {cfg_weather_id}."
+                    )
                     continue
 
                 # Prepare the data for the DB
@@ -184,8 +192,9 @@ async def sample(debug, dry_run):
                 if ws_conn != None:
                     await send_to_websocket_server(data, status, debug)
         except json.decoder.JSONDecodeError:
-            if debug:
-                print(line)
+            print(
+                f"[{datetime.now()}] JSON decoding error on this line: {line}."
+            )
             continue
 
 
