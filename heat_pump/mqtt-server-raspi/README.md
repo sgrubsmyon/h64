@@ -64,4 +64,16 @@ sudo apt update
 sudo apt install mosquitto-clients
 ```
 
-## 
+## Test MQTT message delivery
+
+Terminal 1 on laptop: (receiving messages)
+
+```
+mosquitto_sub -h 192.168.1.1 -t /home/heat_pump/electric_power_pulse
+```
+
+Terminal 2 on laptop: (sending messages)
+
+```
+mosquitto_pub -h 192.168.1.1 -t /home/heat_pump/electric_power_pulse -m "Hello World!"
+```
