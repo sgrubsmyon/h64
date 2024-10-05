@@ -74,7 +74,7 @@ void onMqttConnect(bool sessionPresent) {
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-  Serial.println("Disconnected from MQTT, reason: " + reason + ".");
+  Serial.printf("Disconnected from MQTT, reason: %s.", reason);
 
   if (WiFi.isConnected()) {
     mqttReconnectTimer.once(2, connectToMqtt);
@@ -163,7 +163,7 @@ void loop() {
 
     // Publish an MQTT message on topic esp/dht/temperature
     uint16_t packetIdPub = mqttClient.publish(MQTT_TOPIC, qos, true, "Hello World!");
-    Serial.printf("Publishing on topic %s at QoS 1, packetId: %i ", MQTT_PUB_TEMP, packetIdPub1);
+    Serial.printf("Publishing on topic %s at QoS %i, packetId: %i ", MQTT_TOPIC, qos, packetIdPub);
     Serial.printf("Message: %.2f \n", "Hello World!");
   }
 }
