@@ -17,8 +17,8 @@
 //#define MQTT_HOST "example.com"
 #define MQTT_PORT 1883
 
-// Temperature MQTT Topics
-#define MQTT_TOPIC "home/heat_pump/electric_power"
+// MQTT Topics
+#define MQTT_TOPIC "/home/heat_pump/electric_power_pulse"
 
 // Digital pin connected to the DHT sensor
 // #define DHTPIN 14
@@ -43,7 +43,8 @@ WiFiEventHandler wifiDisconnectHandler;
 Ticker wifiReconnectTimer;
 
 unsigned long previousMillis = 0;  // Stores last time temperature was published
-const long interval = 10000;       // Interval at which to publish sensor readings
+const long interval = 5000;       // Interval at which to publish sensor readings
+const uint8_t qos = 2;
 
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
@@ -73,7 +74,7 @@ void onMqttConnect(bool sessionPresent) {
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-  Serial.println("Disconnected from MQTT.");
+  Serial.println("Disconnected from MQTT, reason: " + reason + ".");
 
   if (WiFi.isConnected()) {
     mqttReconnectTimer.once(2, connectToMqtt);
@@ -104,7 +105,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println();
 
-  dht.begin();
+  // dht.begin();
 
   wifiConnectHandler = WiFi.onStationModeGotIP(onWifiConnect);
   wifiDisconnectHandler = WiFi.onStationModeDisconnected(onWifiDisconnect);
@@ -128,21 +129,41 @@ void loop() {
   if (currentMillis - previousMillis >= interval) {
     // Save the last time a new reading was published
     previousMillis = currentMillis;
-    // New DHT sensor readings
-    hum = dht.readHumidity();
-    // Read temperature as Celsius (the default)
-    temp = dht.readTemperature();
-    // Read temperature as Fahrenheit (isFahrenheit = true)
-    //temp = dht.readTemperature(true);
+    
+    // // New DHT sensor readings
+    // hum = dht.readHumidity();
+    // // Read temperature as Celsius (the default)
+    // temp = dht.readTemperature();
+    // // Read temperature as Fahrenheit (isFahrenheit = true)
+    // //temp = dht.readTemperature(true);
+
+    // // Publish an MQTT message on topic esp/dht/temperature
+    // uint16_t packetIdPub1 = mqttClient.publish(MQTT_PUB_TEMP, 1, true, String(temp).c_str());
+    // Serial.printf("Publishing on topic %s at QoS 1, packetId: %i ", MQTT_PUB_TEMP, packetIdPub1);
+    // Serial.printf("Message: %.2f \n", temp);
+
+    // // Publish an MQTT message on topic esp/dht/humidity
+    // uint16_t packetIdPub2 = mqttClient.publish(MQTT_PUB_HUM, 1, true, String(hum).c_str());
+    // Serial.printf("Publishing on topic %s at QoS 1, packetId %i: ", MQTT_PUB_HUM, packetIdPub2);
+    // Serial.printf("Message: %.2f \n", hum);
+
+    // Basically, use the publish() method on the mqttClient object to publish data on a topic. The publish() method accepts the following arguments, in order:
+
+    // * MQTT topic (const char*)
+    // * QoS (uint8_t): quality of service – it can be 0, 1 or 2
+    // * retain flag (bool): retain flag
+    // * payload (const char*) – in this case, the payload corresponds to the sensor reading
+
+    // The QoS (quality of service) is a way to guarantee that the message is delivered. It can be one of the following levels:
+
+    // 0: the message will be delivered once or not at all. The message is not acknowledged. There is no possibility of duplicated messages;
+    // 1: the message will be delivered at least once, but may be delivered more than once;
+    // 2: the message is always delivered exactly once;
+    // Learn about MQTT QoS: https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_8.0.0/com.ibm.mq.dev.doc/q029090_.htm
 
     // Publish an MQTT message on topic esp/dht/temperature
-    uint16_t packetIdPub1 = mqttClient.publish(MQTT_PUB_TEMP, 1, true, String(temp).c_str());
+    uint16_t packetIdPub = mqttClient.publish(MQTT_TOPIC, qos, true, "Hello World!");
     Serial.printf("Publishing on topic %s at QoS 1, packetId: %i ", MQTT_PUB_TEMP, packetIdPub1);
-    Serial.printf("Message: %.2f \n", temp);
-
-    // Publish an MQTT message on topic esp/dht/humidity
-    uint16_t packetIdPub2 = mqttClient.publish(MQTT_PUB_HUM, 1, true, String(hum).c_str());
-    Serial.printf("Publishing on topic %s at QoS 1, packetId %i: ", MQTT_PUB_HUM, packetIdPub2);
-    Serial.printf("Message: %.2f \n", hum);
+    Serial.printf("Message: %.2f \n", "Hello World!");
   }
 }
