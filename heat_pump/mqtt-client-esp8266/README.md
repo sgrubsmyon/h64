@@ -38,3 +38,13 @@ Read the docs inside `/docs`.
 1. Download latest release, link is in `1.-Getting-started.md`
 2. Load the .zip with Sketch → Include Library → Add .ZIP Library
 3. Download dependency (link also on Markdown file) and install it in same way
+
+### Set permissions for writing to ESP8266
+
+(If permission denied error when connecting to ESP8266)
+
+https://support.arduino.cc/hc/en-us/articles/360016495679-Fix-port-access-on-Linux
+
+```
+sudo usermod -a -G dialout <username>
+```
