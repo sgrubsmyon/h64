@@ -165,11 +165,18 @@ void loop() {
     // Learn about MQTT QoS: https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_8.0.0/com.ibm.mq.dev.doc/q029090_.htm
 
     // Publish an MQTT message on topic esp/dht/temperature
-    String message = String("{ 'token': 'bfed7b62-980d-46e7-90d5-5cf0fe8179cf', 's0_pin': ");
-    message += digitalRead(S0_PIN);
+    String message = String("{ 'token': 'bfed7b62-980d-46e7-90d5-5cf0fe8179cf'");
+    message += String(", 'millis': ");
+    message += millis();
+    message += String(", 's0_pin': ");
+    message += pin_state;
+    message += String(", 'pulse_counter': ");
+    message += pulse_counter;
     message += " }";
     uint16_t packetIdPub = mqttClient.publish(MQTT_TOPIC, qos, true, message.c_str());
     Serial.printf("Publishing on topic %s at QoS %i, packetId: %i\n", MQTT_TOPIC, qos, packetIdPub);
     Serial.printf("Message: %s\n", message);
+
+    previous_pin_state = pin_state;
   }
 }
