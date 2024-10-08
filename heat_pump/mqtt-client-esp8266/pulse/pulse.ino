@@ -20,6 +20,9 @@
 // MQTT Topics
 #define MQTT_TOPIC "/home/heat_pump/electric_power_pulse"
 
+// The GPIO pin that the power meter S0 interface is connected to
+#define S0_PIN 4 // GPIO4 is labeled D2 on the NodeMCU ESP8266 (see pinput diagrams PDF)
+
 // Digital pin connected to the DHT sensor
 // #define DHTPIN 14
 
@@ -162,8 +165,11 @@ void loop() {
     // Learn about MQTT QoS: https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_8.0.0/com.ibm.mq.dev.doc/q029090_.htm
 
     // Publish an MQTT message on topic esp/dht/temperature
-    uint16_t packetIdPub = mqttClient.publish(MQTT_TOPIC, qos, true, "Hello World!");
-    Serial.printf("Publishing on topic %s at QoS %i, packetId: %i ", MQTT_TOPIC, qos, packetIdPub);
-    Serial.printf("Message: %.2f \n", "Hello World!");
+    String message = String("{ 'token': 'bfed7b62-980d-46e7-90d5-5cf0fe8179cf', 's0_pin': ");
+    message += digitalRead(S0_PIN);
+    message += " }";
+    uint16_t packetIdPub = mqttClient.publish(MQTT_TOPIC, qos, true, message.c_str());
+    Serial.printf("Publishing on topic %s at QoS %i, packetId: %i\n", MQTT_TOPIC, qos, packetIdPub);
+    Serial.printf("Message: %s\n", message);
   }
 }
