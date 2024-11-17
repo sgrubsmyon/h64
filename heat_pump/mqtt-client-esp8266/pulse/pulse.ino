@@ -19,6 +19,7 @@
 
 // MQTT Topics
 #define MQTT_TOPIC "/home/heat_pump/electric_power_pulse"
+#define MQTT_TOKEN "bfed7b62-980d-46e7-90d5-5cf0fe8179cf"
 
 // The GPIO pin that the power meter S0 interface is connected to
 #define S0_PIN 4 // GPIO4 is labeled D2 on the NodeMCU ESP8266 (see pinput diagrams PDF)
@@ -105,8 +106,9 @@ void onMqttPublish(uint16_t packetId) {
 }
 
 String buildMessage(int pin_state) {
-  String message = String("{ 'token': 'bfed7b62-980d-46e7-90d5-5cf0fe8179cf'");
-  message += String(", 'millis': ");
+  String message = String("{ 'token': '");
+  message += String(MQTT_TOKEN);
+  message += String("', 'millis': ");
   message += millis();
   message += String(", 's0_pin': ");
   message += pin_state;
