@@ -7,6 +7,7 @@
 #include <ESP8266WiFi.h>
 #include <Ticker.h>
 #include <AsyncMqttClient.h>
+#include "time.h"
 
 #define WIFI_SSID "REPLACE_WITH_YOUR_SSID"
 #define WIFI_PASSWORD "REPLACE_WITH_YOUR_PASSWORD"
@@ -23,6 +24,11 @@
 
 // The GPIO pin that the power meter S0 interface is connected to
 #define S0_PIN 4 // GPIO4 is labeled D2 on the NodeMCU ESP8266 (see pinput diagrams PDF)
+
+// Time server (see https://microcontrollerslab.com/current-date-time-esp8266-nodemcu-ntp-server/)
+#define NTP_SERVER "pool.ntp.org"
+#define UTC_OFFSET_SEC 0 // I want to get always the UTC time, for Germany it would be 3600 seconds
+#define DAYLIGHT_OFFSET_SEC 0 // I want to get always the UTC time, for Germany it would be 3600 seconds (1 hour extra during DST)
 
 // Digital pin connected to the DHT sensor
 // #define DHTPIN 14
@@ -57,6 +63,8 @@ void connectToWifi() {
 
 void onWifiConnect(const WiFiEventStationModeGotIP& event) {
   Serial.println("Connected to Wi-Fi.");
+  configTime(UTC_OFFSET_SEC, DAYLIGHT_OFFSET_SEC, NTP_SERVER);
+  Serial.println(getLocalTime());
   connectToMqtt();
 }
 
@@ -105,9 +113,19 @@ void onMqttPublish(uint16_t packetId) {
   Serial.println(packetId);
 }
 
+String getLocalTime() {
+  time_t rawtime;
+  struct tm* timeinfo;
+  time(&rawtime);
+  timeinfo = localtime(&rawtime);
+  return asctime(timeinfo);
+}
+
 String buildMessage(int pin_state) {
   String message = String("{ 'token': '");
   message += String(MQTT_TOKEN);
+  message += String("', 'time': '");
+  message += getLocalTime();
   message += String("', 'millis': ");
   message += millis();
   message += String(", 's0_pin': ");
