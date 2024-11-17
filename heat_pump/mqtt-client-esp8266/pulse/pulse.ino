@@ -45,9 +45,9 @@ WiFiEventHandler wifiConnectHandler;
 WiFiEventHandler wifiDisconnectHandler;
 Ticker wifiReconnectTimer;
 
-unsigned long previousMillis = 0;  // Stores last time temperature was published
-const long interval = 5000;       // Interval at which to publish sensor readings
-const uint8_t qos = 2;
+const uint8_t qos = 2; // QoS = 2 means: make sure that the MQTT message is delivered, but only once
+unsigned long pulse_counter = 0; // As extra precaution: send an incremental counter value with each pulse,
+                                 // just in case that in spite of QoS = 2 duplicate messages are received
 
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
@@ -104,6 +104,26 @@ void onMqttPublish(uint16_t packetId) {
   Serial.println(packetId);
 }
 
+String buildMessage(int pin_state) {
+  String message = String("{ 'token': 'bfed7b62-980d-46e7-90d5-5cf0fe8179cf'");
+  message += String(", 'millis': ");
+  message += millis();
+  message += String(", 's0_pin': ");
+  message += pin_state;
+  message += String(", 'pulse_counter': ");
+  message += pulse_counter;
+  message += " }";
+
+  return message;
+}
+
+void sendMessage(int pin_state) {
+  String message = buildMessage(pin_state);
+  uint16_t packetIdPub = mqttClient.publish(MQTT_TOPIC, qos, true, message.c_str());
+  Serial.printf("Publishing on topic %s at QoS %i, packetId: %i\n", MQTT_TOPIC, qos, packetIdPub);
+  Serial.printf("Message: %s\n", message);
+}
+
 void setup() {
   Serial.begin(115200);
   Serial.println();
@@ -125,30 +145,16 @@ void setup() {
   connectToWifi();
 }
 
+int previous_pin_state = 1; // inital pin state is 1, which means there is no pulse
+
 void loop() {
-  unsigned long currentMillis = millis();
-  // Every X number of seconds (interval = 10 seconds)
-  // it publishes a new MQTT message
-  if (currentMillis - previousMillis >= interval) {
-    // Save the last time a new reading was published
-    previousMillis = currentMillis;
-    
-    // // New DHT sensor readings
-    // hum = dht.readHumidity();
-    // // Read temperature as Celsius (the default)
-    // temp = dht.readTemperature();
-    // // Read temperature as Fahrenheit (isFahrenheit = true)
-    // //temp = dht.readTemperature(true);
-
-    // // Publish an MQTT message on topic esp/dht/temperature
-    // uint16_t packetIdPub1 = mqttClient.publish(MQTT_PUB_TEMP, 1, true, String(temp).c_str());
-    // Serial.printf("Publishing on topic %s at QoS 1, packetId: %i ", MQTT_PUB_TEMP, packetIdPub1);
-    // Serial.printf("Message: %.2f \n", temp);
-
-    // // Publish an MQTT message on topic esp/dht/humidity
-    // uint16_t packetIdPub2 = mqttClient.publish(MQTT_PUB_HUM, 1, true, String(hum).c_str());
-    // Serial.printf("Publishing on topic %s at QoS 1, packetId %i: ", MQTT_PUB_HUM, packetIdPub2);
-    // Serial.printf("Message: %.2f \n", hum);
+  int pin_state = digitalRead(S0_PIN);
+  if (pin_state != previous_pin_state) {
+    // Send an MQTT message
+    if (pin_state == 0) {
+      // New pulse!
+      pulse_counter += 1;
+    }
 
     // Basically, use the publish() method on the mqttClient object to publish data on a topic. The publish() method accepts the following arguments, in order:
 
@@ -165,17 +171,7 @@ void loop() {
     // Learn about MQTT QoS: https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_8.0.0/com.ibm.mq.dev.doc/q029090_.htm
 
     // Publish an MQTT message on topic esp/dht/temperature
-    String message = String("{ 'token': 'bfed7b62-980d-46e7-90d5-5cf0fe8179cf'");
-    message += String(", 'millis': ");
-    message += millis();
-    message += String(", 's0_pin': ");
-    message += pin_state;
-    message += String(", 'pulse_counter': ");
-    message += pulse_counter;
-    message += " }";
-    uint16_t packetIdPub = mqttClient.publish(MQTT_TOPIC, qos, true, message.c_str());
-    Serial.printf("Publishing on topic %s at QoS %i, packetId: %i\n", MQTT_TOPIC, qos, packetIdPub);
-    Serial.printf("Message: %s\n", message);
+    sendMessage(pin_state);
 
     previous_pin_state = pin_state;
   }
