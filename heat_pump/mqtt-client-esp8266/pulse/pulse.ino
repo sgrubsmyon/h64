@@ -120,30 +120,44 @@ String getLocalTime() {
   struct tm* timeinfo;
   time(&rawtime);
   timeinfo = localtime(&rawtime);
+  // for time formatting, see https://randomnerdtutorials.com/esp32-date-time-ntp-client-server-arduino/
   char time_string[19];
   // strftime(time_string, 19, "%Y-%m-%d %H:%M:%S", timeinfo); // example: 2024-11-18 20:28:16
   strftime(time_string, 19, "%F %T", timeinfo); // equivalent to the line above
   return time_string;
 }
 
-String buildMessage(int pin_state) {
-  String message = String("{ 'token': '");
-  message += String(MQTT_TOKEN);
-  message += String("', 'time': '");
+String buildMessage() {
+  // String message = String("{'token': '");
+  // message += String(MQTT_TOKEN);
+  // message += String("', 'time': '");
+  String message = String("{'time': '");
   message += getLocalTime();
   message += String("', 'millis': ");
   message += millis();
-  message += String(", 's0_pin': ");
-  message += pin_state;
   message += String(", 'pulse_counter': ");
   message += pulse_counter;
-  message += " }";
+  message += "}";
 
   return message;
 }
 
-void sendMessage(int pin_state) {
-  String message = buildMessage(pin_state);
+// Basically, use the publish() method on the mqttClient object to publish data on a topic. The publish() method accepts the following arguments, in order:
+
+// * MQTT topic (const char*)
+// * QoS (uint8_t): quality of service – it can be 0, 1 or 2
+// * retain flag (bool): retain flag
+// * payload (const char*) – in this case, the payload corresponds to the sensor reading
+
+// The QoS (quality of service) is a way to guarantee that the message is delivered. It can be one of the following levels:
+
+// 0: the message will be delivered once or not at all. The message is not acknowledged. There is no possibility of duplicated messages;
+// 1: the message will be delivered at least once, but may be delivered more than once;
+// 2: the message is always delivered exactly once;
+// Learn about MQTT QoS: https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_8.0.0/com.ibm.mq.dev.doc/q029090_.htm
+
+void sendMessage() {
+  String message = buildMessage();
   uint16_t packetIdPub = mqttClient.publish(MQTT_TOPIC, qos, true, message.c_str());
   Serial.printf("Publishing on topic %s at QoS %i, packetId: %i\n", MQTT_TOPIC, qos, packetIdPub);
   Serial.printf("Message: %s\n", message);
@@ -175,28 +189,14 @@ int previous_pin_state = 1; // inital pin state is 1, which means there is no pu
 void loop() {
   int pin_state = digitalRead(S0_PIN);
   if (pin_state != previous_pin_state) {
-    // Send an MQTT message
+    // There is a change (a pulse has either started or ended)
     if (pin_state == 0) {
-      // New pulse!
+      // A new pulse has started!
       pulse_counter += 1;
+
+      // Send an MQTT message
+      sendMessage();
     }
-
-    // Basically, use the publish() method on the mqttClient object to publish data on a topic. The publish() method accepts the following arguments, in order:
-
-    // * MQTT topic (const char*)
-    // * QoS (uint8_t): quality of service – it can be 0, 1 or 2
-    // * retain flag (bool): retain flag
-    // * payload (const char*) – in this case, the payload corresponds to the sensor reading
-
-    // The QoS (quality of service) is a way to guarantee that the message is delivered. It can be one of the following levels:
-
-    // 0: the message will be delivered once or not at all. The message is not acknowledged. There is no possibility of duplicated messages;
-    // 1: the message will be delivered at least once, but may be delivered more than once;
-    // 2: the message is always delivered exactly once;
-    // Learn about MQTT QoS: https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_8.0.0/com.ibm.mq.dev.doc/q029090_.htm
-
-    // Publish an MQTT message on topic esp/dht/temperature
-    sendMessage(pin_state);
 
     previous_pin_state = pin_state;
   }
