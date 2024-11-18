@@ -26,7 +26,9 @@
 #define S0_PIN 4 // GPIO4 is labeled D2 on the NodeMCU ESP8266 (see pinput diagrams PDF)
 
 // Time server (see https://microcontrollerslab.com/current-date-time-esp8266-nodemcu-ntp-server/)
-#define NTP_SERVER "pool.ntp.org"
+#define NTP_SERVER "pool.ntp.org" // default, https://www.ntppool.org/zone/de: "In most cases it's best to use pool.ntp.org to find an NTP server (or 0.pool.ntp.org, 1.pool.ntp.org, etc if you need multiple server names). The system will try finding the closest available servers for you."
+// #define NTP_SERVER "de.pool.ntp.org" // https://www.zeitserver.de/deutschland/deutsche-pool-zeitserver/, https://www.ntppool.org/zone/de
+// #define NTP_SERVER "ptbtime4.ptb.de" // https://www.ptb.de/cms/ptb/fachabteilungen/abtq/gruppe-q4/ref-q42/zeitsynchronisation-von-rechnern-mit-hilfe-des-network-time-protocol-ntp.html
 #define UTC_OFFSET_SEC 0 // I want to get always the UTC time, for Germany it would be 3600 seconds
 #define DAYLIGHT_OFFSET_SEC 0 // I want to get always the UTC time, for Germany it would be 3600 seconds (1 hour extra during DST)
 
