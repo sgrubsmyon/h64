@@ -65,7 +65,7 @@ void connectToWifi() {
 
 void onWifiConnect(const WiFiEventStationModeGotIP& event) {
   Serial.println("Connected to Wi-Fi.");
-  configTime(UTC_OFFSET_SEC, DAYLIGHT_OFFSET_SEC, NTP_SERVER);
+  configTime(UTC_OFFSET_SEC, DAYLIGHT_OFFSET_SEC, NTP_SERVER); // connect to NTP server
   Serial.println(getLocalTime());
   connectToMqtt();
 }
@@ -120,7 +120,10 @@ String getLocalTime() {
   struct tm* timeinfo;
   time(&rawtime);
   timeinfo = localtime(&rawtime);
-  return asctime(timeinfo);
+  char time_string[19];
+  // strftime(time_string, 19, "%Y-%m-%d %H:%M:%S", timeinfo); // example: 2024-11-18 20:28:16
+  strftime(time_string, 19, "%F %T", timeinfo); // equivalent to the line above
+  return time_string;
 }
 
 String buildMessage(int pin_state) {
