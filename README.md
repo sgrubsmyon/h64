@@ -71,6 +71,14 @@ $ cd weather_station
 $ psql -U postgres -h localhost -d h64 -f create_weather_station_metrics_tables.sql
 ```
 
+##### Create tables for heat pump data:
+
+```
+$ cd heat_pump
+$ psql -U postgres -h localhost -d h64 -f create_heat_pump_metrics_tables.sql
+```
+
+
 
 ### Python
 

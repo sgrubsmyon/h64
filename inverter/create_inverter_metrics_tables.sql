@@ -1,4 +1,4 @@
--- Create tables inside PostgreSQL TimescaleDB database `inverter`
+-- Create tables inside PostgreSQL TimescaleDB database `h64`
 
 -- Table with values changing slowly, enough to update only every 5 minutes
 CREATE TABLE inverter_metrics_slow (
