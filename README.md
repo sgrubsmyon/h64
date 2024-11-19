@@ -74,7 +74,7 @@ $ psql -U postgres -h localhost -d h64 -f create_weather_station_metrics_tables.
 ##### Create tables for heat pump data:
 
 ```
-$ cd heat_pump
+$ cd heat_pump/mqtt-server-raspi
 $ psql -U postgres -h localhost -d h64 -f create_heat_pump_metrics_tables.sql
 ```
 
