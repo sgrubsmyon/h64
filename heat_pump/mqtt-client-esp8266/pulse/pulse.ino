@@ -9,11 +9,11 @@
 #include <AsyncMqttClient.h>
 #include "time.h"
 
-#define WIFI_SSID "REPLACE_WITH_YOUR_SSID"
-#define WIFI_PASSWORD "REPLACE_WITH_YOUR_PASSWORD"
+#define WIFI_SSID "aloevera"
+#define WIFI_PASSWORD "MfoYMdFcbujmVxpHMq4PJndhbAE4KjvPHEC"
 
 // Raspberri Pi Mosquitto MQTT Broker
-#define MQTT_HOST IPAddress(192, 168, 1, 1)
+#define MQTT_HOST IPAddress(192, 168, 178, 100)
 // For a cloud MQTT broker, type the domain name
 //#define MQTT_HOST "example.com"
 #define MQTT_PORT 1883
@@ -66,7 +66,6 @@ void connectToWifi() {
 void onWifiConnect(const WiFiEventStationModeGotIP& event) {
   Serial.println("Connected to Wi-Fi.");
   configTime(UTC_OFFSET_SEC, DAYLIGHT_OFFSET_SEC, NTP_SERVER); // connect to NTP server
-  Serial.println(getLocalTime());
   connectToMqtt();
 }
 
@@ -115,26 +114,52 @@ void onMqttPublish(uint16_t packetId) {
   Serial.println(packetId);
 }
 
-String getLocalTime() {
+void setTimestampToParams(String& datetime, unsigned long& ms) { // , String& usec
+  // for datetime
   time_t rawtime;
   struct tm* timeinfo;
+  // for subseconds
+  struct timeval tv;
+
+  // get datetime
   time(&rawtime);
-  timeinfo = localtime(&rawtime);
+  
+  // get subseconds
+  if (gettimeofday(&tv, NULL) != 0) {
+    Serial.println("Failed to obtain time");
+    return;
+  }
+
+  // get milliseconds since device started up
+  ms = millis();
+
   // for time formatting, see https://randomnerdtutorials.com/esp32-date-time-ntp-client-server-arduino/
-  char time_string[19];
-  // strftime(time_string, 19, "%Y-%m-%d %H:%M:%S", timeinfo); // example: 2024-11-18 20:28:16
-  strftime(time_string, 19, "%F %T", timeinfo); // equivalent to the line above
-  return time_string;
+  timeinfo = localtime(&rawtime);
+  char time_string[27];
+  // strftime(time_string, 27, "%Y-%m-%d %H:%M:%S", timeinfo); // example: 2024-11-18 20:28:16
+  strftime(time_string, 27, "%F %T", timeinfo); // equivalent to the line above
+  char subseconds[6];
+  sprintf(subseconds, "%06d", tv.tv_usec);
+  
+  // "return" statements
+  datetime = String(time_string) + "." + String(subseconds); // add the microseconds
+  // usec = tv.tv_usec;
 }
 
 String buildMessage() {
   // String message = String("{'token': '");
   // message += String(MQTT_TOKEN);
   // message += String("', 'time': '");
+  String datetime = "";
+  // String usec = "";
+  unsigned long ms = 0;
+  setTimestampToParams(datetime, ms); // , usec, ms
   String message = String("{'time': '");
-  message += getLocalTime();
+  message += datetime;
+  // message += String("', 'usec': ");
+  // message += usec;
   message += String("', 'millis': ");
-  message += millis();
+  message += ms;
   message += String(", 'pulse_counter': ");
   message += pulse_counter;
   message += "}";
