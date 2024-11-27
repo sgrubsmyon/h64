@@ -99,6 +99,7 @@ $ pip install libscrc
 $ sudo apt install libpq-dev
 $ pip install psycopg2
 $ pip install --upgrade websockets
+$ pip install paho-mqtt
 ```
 
 <!-- (deprecated, now using Bun for the websocket servers)
