@@ -19,7 +19,7 @@ import datetime
 
 config = configparser.ConfigParser()
 basepath = os.path.dirname(os.path.abspath(__file__))
-config.read(basepath + "/../config.cfg")
+config.read(basepath + "/../../config.cfg")
 cfg_mqtt = config["MQTT"]
 cfg_heatpump = config["HeatPump"]
 cfg_psql = config["PostgreSQL"]
