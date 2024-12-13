@@ -9,7 +9,7 @@ import psycopg2
 import websockets
 import json
 import signal
-import datetime
+from datetime import datetime
 
 # Code for reading data from heat pump power meter via MQTT
 
@@ -95,7 +95,8 @@ def on_connect(client, userdata, flags, reason_code, properties):
 # The callback for when a PUBLISH message is received from the server.
 def sample(debug, dry_run):
     
-    async def on_message(client, userdata, msg):
+    # async def on_message(client, userdata, msg):
+    def on_message(client, userdata, msg):
         global ws_conn
 
         if debug:
@@ -103,7 +104,8 @@ def sample(debug, dry_run):
         
         if ws_conn == None:
             try: # to reconnect
-                await connect_to_websocket_server()
+                pass
+                # await connect_to_websocket_server()
             except (ConnectionRefusedError, OSError):
                 print(
                     f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later."
@@ -118,7 +120,8 @@ def sample(debug, dry_run):
         except json.decoder.JSONDecodeError:
             status = {"type": "ERROR", "msg": f"[{datetime.now()}] JSON decode error"}
         if ws_conn != None:
-            await send_to_websocket_server(data, status, debug)
+            pass
+            # await send_to_websocket_server(data, status, debug)
 
     return on_message
 
