@@ -2,11 +2,9 @@
 
 import os
 import argparse
-import asyncio
 import configparser
 import paho.mqtt.client as mqtt
 import psycopg2
-import websockets
 import json
 import signal
 from datetime import datetime
@@ -30,8 +28,6 @@ cfg_ws = config["HeatPump_WebSocket"]
 # connection to DB that shall be persisted throughout
 pg_conn = None
 
-# connection to WebSocket server that shall be persisted throughout
-ws_conn = None
 
 # open connection to DB
 def connect_to_psql():
@@ -45,26 +41,17 @@ def connect_to_psql():
     )
 
 
-# open connection to WebSocket server
-async def connect_to_websocket_server():
-    global ws_conn
-    uri = f"ws://{cfg_ws['host']}:{cfg_ws['port']}"
-    ws_conn = await websockets.connect(uri)
-
-
-# close connection to database and WebSocket server when this script is terminated:
+# close connection to database server when this script is terminated:
 def close_connections(dry_run):
-    global pg_conn, ws_conn
+    global pg_conn
 
     def close(signalnum, stackframe):
-        global pg_conn, ws_conn
+        global pg_conn
         print(
-            f"[{datetime.now()}] Received SIGTERM. Closing connection to database and WebSocket server."
+            f"[{datetime.now()}] Received SIGTERM. Closing connection to database server."
         )
         if not dry_run:
             pg_conn.close()
-            # Not working:
-            # await ws_conn.close()
     return close
 
 
@@ -95,7 +82,6 @@ def on_connect(client, userdata, flags, reason_code, properties):
 # The callback for when a PUBLISH message is received from the server.
 def sample(debug, dry_run):
     
-    # async def on_message(client, userdata, msg):
     def on_message(client, userdata, msg):
         global ws_conn
 
@@ -118,46 +104,17 @@ def sample(debug, dry_run):
             data = json.loads(msg.payload)
             insert_into_psql(data, debug, dry_run)
         except json.decoder.JSONDecodeError:
-            status = {"type": "ERROR", "msg": f"[{datetime.now()}] JSON decode error"}
-        if ws_conn != None:
-            pass
-            # await send_to_websocket_server(data, status, debug)
+            if debug:
+                print(f"[{datetime.now()}] JSON decode error")
 
     return on_message
-
-
-async def send_to_websocket_server(data, status, debug):
-    global ws_conn
-    msg = {
-        "token": cfg_ws["send_token"],
-        "values": data,
-        "status": status
-    }
-    if debug:
-        print("Sending msg to server:", json.dumps(msg))
-    try:
-        await ws_conn.send(json.dumps(msg))
-    except websockets.exceptions.ConnectionClosedError:
-        # Connection was closed, reopen it
-        print(f"[{datetime.now()}] Reopening closed WS connection.")
-        status = {"type": "WARN",
-                  "msg": "Had to reopen closed WebSocket connection"}
-        try:
-            await connect_to_websocket_server()
-            await send_to_websocket_server(data, status, debug)
-        except (ConnectionRefusedError, OSError):
-            print(
-                f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later."
-            )
-            ws_conn = None
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="insert_bresser_data_into_db",
         description="""
-        Insert Bresser 5-in-1 weather station data read with shell command `rtl_433`
-        into an SQL DB and also send it to WebSocket server `inverter_websocket_server.js`
+        Insert heat pump power meter pulses read via MQTT into an SQL DB
         """,
         epilog=""
     )
