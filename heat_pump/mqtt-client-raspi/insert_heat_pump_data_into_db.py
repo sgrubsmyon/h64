@@ -83,23 +83,13 @@ def on_connect(client, userdata, flags, reason_code, properties):
 def sample(debug, dry_run):
     
     def on_message(client, userdata, msg):
-        global ws_conn
-
         if debug:
             print("Received MQTT message:", msg.topic+" "+str(msg.payload))
+            print(msg.payload)
+            print(str(msg.payload))
+            print(json.loads(msg.payload))
+            print(json.loads(str(msg.payload)))
         
-        if ws_conn == None:
-            try: # to reconnect
-                pass
-                # await connect_to_websocket_server()
-            except (ConnectionRefusedError, OSError):
-                print(
-                    f"[{datetime.now()}] WebSocket server is down. Not sending data. Trying again later."
-                )
-                ws_conn = None
-
-        status = {"type": "NORMAL", "msg": ""}
-
         try:
             data = json.loads(msg.payload)
             insert_into_psql(data, debug, dry_run)
