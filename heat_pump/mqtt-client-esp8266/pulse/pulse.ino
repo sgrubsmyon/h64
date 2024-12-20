@@ -147,20 +147,20 @@ void setTimestampToParams(String& datetime, unsigned long& ms) { // , String& us
 }
 
 String buildMessage() {
-  // String message = String("{'token': '");
+  // String message = String("{\"token\": \"");
   // message += String(MQTT_TOKEN);
-  // message += String("', 'time': '");
+  // message += String("\", \"time\": \"");
   String datetime = "";
   // String usec = "";
   unsigned long ms = 0;
   setTimestampToParams(datetime, ms); // , usec, ms
-  String message = String("{'time': '");
+  String message = String("{\"time\": \"");
   message += datetime;
-  // message += String("', 'usec': ");
+  // message += String("\", \"usec\": ");
   // message += usec;
-  message += String("', 'millis': ");
+  message += String("\", \"millis\": ");
   message += ms;
-  message += String(", 'pulse_counter': ");
+  message += String(", \"pulse_counter\": ");
   message += pulse_counter;
   message += "}";
 
