@@ -127,7 +127,7 @@ if __name__ == "__main__":
     mqttc.on_connect = on_connect
     mqttc.on_message = sample(args.debug, args.dry_run)
 
-    mqttc.connect("192.168.178.100", 1883, 60)
+    mqttc.connect(cfg_mqtt["host"], int(cfg_mqtt["port"]), 60)
 
     # Blocking call that processes network traffic, dispatches callbacks and
     # handles reconnecting.
