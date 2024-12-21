@@ -84,11 +84,9 @@ def sample(debug, dry_run):
     
     def on_message(client, userdata, msg):
         if debug:
-            print("Received MQTT message:", msg.topic+" "+str(msg.payload))
-            print(msg.payload)
-            print(str(msg.payload))
-            print(json.loads(msg.payload))
-            print(json.loads(str(msg.payload)))
+            print("Received MQTT message on topic:", msg.topic)
+            print("Message payload:", msg.payload)
+            print("Parsed message:", json.loads(msg.payload))
         
         try:
             data = json.loads(msg.payload)
