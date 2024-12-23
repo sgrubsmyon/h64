@@ -1,9 +1,11 @@
 [Unit]
 Description=H64 data collection tools - heat pump insert into DB
+After=postgresql.service
 
 [Service]
 User=yourusername
 Group=yourusername
+ExecStartPre=/usr/bin/pg_isready -h localhost -p 5432
 ExecStart=/usr/bin/python3 /home/yourusername/h64/heat_pump/mqtt-client-raspi/insert_heat_pump_data_into_db.py
 StandardOutput=file:/var/log/h64/insert_heat_pump_data_into_db
 StandardError=file:/var/log/h64/insert_heat_pump_data_into_db
