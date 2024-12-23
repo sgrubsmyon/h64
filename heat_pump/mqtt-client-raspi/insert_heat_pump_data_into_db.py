@@ -77,7 +77,7 @@ def on_connect(client, userdata, flags, reason_code, properties):
     print(f"Connected with result code {reason_code}")
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("/home/heat_pump/electric_power_pulse")
+    client.subscribe(cfg_heatpump["powermeter_mqtt_topic"], qos=2)
 
 # The callback for when a PUBLISH message is received from the server.
 def sample(debug, dry_run):
