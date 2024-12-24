@@ -91,7 +91,7 @@ const server = Bun.serve({
 
 console.log(`Waiting for clients to connect...\n`, `  http://${server.hostname}:${server.port}/`);
 
-// Connect to MQTT broker (https://www.emqx.com/en/blog/how-to-use-mqtt-in-nodejs)
+// Connect to MQTT broker (https://www.emqx.com/en/blog/how-to-use-mqtt-in-nodejs, https://www.npmjs.com/package/mqtt#example)
 const mqtt_connect_url = `mqtt://${CONFIG_MQTT.host}:${CONFIG_MQTT.port}`;
 const client_id = `mqtt_${Math.random().toString(16).slice(3)}`;
 
@@ -104,26 +104,46 @@ const client = mqtt.connect(mqtt_connect_url, {
   reconnectPeriod: 1000,
 });
 
-client.on('connect', () => {
-  console.log('Connected to MQTT broker');
-  client.subscribe([CONFIG_MQTT.powermeter_mqtt_topic], () => {
-    console.log(`Subscribed to topic '${CONFIG_MQTT.powermeter_mqtt_topic}'`);
+client.on("connect", () => {
+  console.log("Connected to MQTT broker");
+  client.subscribe(CONFIG_MQTT.powermeter_mqtt_topic.substring(1), (err) => {
+    if (!err) {
+      console.log(`Subscribed to topic '${CONFIG_MQTT.powermeter_mqtt_topic}'`);
+    }
   });
 });
+
+/**
+ * Converts a date string with microseconds into a number of seconds since epoch with microseconds precision.
+ *
+ * @param {string} datestring - The date string in the format "YYYY-MM-DDTHH:MM:SS.ssssss" 
+ *                              where "ssssss" represents microseconds.
+ * @returns {number} - The timestamp in microseconds precision.
+ */
+function getMicroTime(datestring) {
+  const date = new Date(datestring + "Z"); // Z for UTC
+  const epoch = date.getTime(); // is in milliseconds
+  const micros = datestring.substring(23); // get the microseconds
+  const micro_timestring = epoch.toString() + "." + micros;
+  return parseFloat(micro_timestring) * 1000; // now in seconds
+}
 
 function updatePower() {
   if (CURR_VALUES_1 === null || CURR_VALUES_2 === null) {
     CURR_POWER = NaN;
   } else {
-    const time1 = new Date(CURR_VALUES_1.time);
-    const time2 = new Date(CURR_VALUES_2.time);
-    const timediff = CURR_VALUES_2.time - CURR_VALUES_1.time;
-    CURR_POWER = CURR_VALUES_1.current_power - CURR_VALUES_2.current_power;
+    const time1 = getMicroTime(CURR_VALUES_1.time);
+    const time2 = getMicroTime(CURR_VALUES_2.time);
+    const timediff = time2 - time1;
+    // one pulse every 0.001 kWh or 1000 pulses per kWh
+    // => from one pulse to another, the energy difference is 0.001 kWh or 1 Wh or 1 W * 3600 seconds
+    // => we have: power * timediff = 3600 Ws => power = 3600 Ws / timediff
+    CURR_POWER = 3600 / timediff;
   }
 }
 
 // Now wait for an MQTT message from the client
-client.on('message', (topic, payload) => {  
+client.on("message", (topic, payload) => {  
   const msg = JSON.parse(payload.toString());
   if (DEBUG) {
     console.log(`[${new Date().toISOString()}] Received message on topic '${topic}':`, msg);
@@ -168,7 +188,7 @@ client.on('message', (topic, payload) => {
       console.log(`[${new Date().toISOString()}] Broadcasting message to connected clients:`, broadcast_msg);
     }
     // Broadcast the new current values to all connected clients
-    if (ws.publish("heat_pump", broadcast_msg) !== broadcast_msg.length) {
+    if (server.publish("heat_pump", broadcast_msg) !== broadcast_msg.length) {
       throw new Error("Failed to publish message");
     }
 });
