@@ -39,6 +39,73 @@ var CURR_POWER = NaN;
  * End globals *
  ***************/
 
+const server = Bun.serve({
+  hostname: CONFIG_WS.host,
+  port: CONFIG_WS.port,
+
+  // Protocol upgrade logic
+  fetch(req, server) {
+    const success = server.upgrade(req, {
+      data: {
+        socket_id: Math.random(),
+      },
+    });
+    if (success) {
+      // Bun automatically returns a 101 Switching Protocols
+      // if the upgrade succeeds
+      return undefined;
+    }
+    // handle HTTP request normally
+    return new Response(
+      "Error switching protocols for connection to WebSocket server",
+      { status: 500 });
+  },
+
+  // Websocket handlers:
+  websocket: {
+    open(ws) {
+      CLIENT_AUTOINCREMENT++;
+      N_CONN_CLIENTS++;
+      console.log(ws);
+      POOL[ws.data.socket_id] = ws;
+      console.log("POOL:", POOL);
+      if (DEBUG) {
+        console.log(`[${new Date().toISOString()}] New connection (${CLIENT_AUTOINCREMENT}), now ${N_CONN_CLIENTS} open connection${N_CONN_CLIENTS == 1 ? "" : "s"}`);
+      }
+      ws.subscribe("heat_pump");
+
+      // Send the current values only back to the freshly connected client
+      ws.send(JSON.stringify({
+        status: CURR_STATUS,
+        values: {
+          values1: CURR_VALUES_1,
+          values2: CURR_VALUES_2,
+          power: CURR_POWER
+        }
+      }));
+    },
+
+    close(ws) {
+      N_CONN_CLIENTS--;
+      delete POOL[ws.data.socket_id];
+      console.log("POOL:", POOL);
+      if (DEBUG) {
+        console.log(`Disconnected, now ${N_CONN_CLIENTS} open connection${N_CONN_CLIENTS == 1 ? "" : "s"}`);
+      }
+    },
+
+    perMessageDeflate: CONFIG_WS.compress === "true" ? true : false,
+    publishToSelf: true, // what does this mean?
+  },
+
+});
+
+console.log(`Waiting for clients to connect...\n`, `  http://${server.hostname}:${server.port}/`);
+
+/*******************
+ * MQTT connection *
+ *******************/
+
 /**
  * Converts a date string with microseconds into a number of seconds since epoch with microseconds precision.
  *
@@ -91,116 +158,57 @@ MQTT_CLIENT.on("connect", () => {
   });
 });
 
-const server = Bun.serve({
-  hostname: CONFIG_WS.host,
-  port: CONFIG_WS.port,
 
-  // Protocol upgrade logic
-  fetch(req, server) {
-    const success = server.upgrade(req, {
-      data: {
-        socket_id: Math.random(),
-      },
-    });
-    if (success) {
-      // Bun automatically returns a 101 Switching Protocols
-      // if the upgrade succeeds
-      return undefined;
+// Now wait for an MQTT message from the MQTT_CLIENT
+MQTT_CLIENT.on("message", (topic, payload) => {
+  const msg = JSON.parse(payload.toString());
+  if (DEBUG) {
+    console.log(`[${new Date().toISOString()}] Received message on topic '${topic}':`, msg);
+  }
+  // const msg_keys = Object.keys(msg);
+  // if (!msg_keys.includes("token") && msg.token !== CONFIG.send_token) {
+  //   // ignore message
+  //   return;
+  // }
+  // if (msg_keys.includes("values") && msg.values !== null) {
+  //   // Update the current values with new ones:
+  //   for (const [key, value] of Object.entries(msg.values)) {
+  //     // if the value is valid, adopt it as new value
+  //     if (value !== null && value !== undefined) {
+  //       CURR_VALUES[key] = value;
+  //     }
+  //   }
+  // }
+  if (CURR_VALUES_1 === null) {
+    CURR_VALUES_1 = msg;
+    CURR_STATUS = "Waiting for 2nd pulse";
+  } else if (CURR_VALUES_2 === null) {
+    CURR_VALUES_2 = msg;
+    CURR_STATUS = "OK";
+    updatePower();
+  } else {
+    CURR_VALUES_1 = CURR_VALUES_2;
+    CURR_VALUES_2 = msg;
+    CURR_STATUS = "OK";
+    updatePower();
+  }
+
+  const broadcast_msg = JSON.stringify({
+    status: CURR_STATUS,
+    values: {
+      values1: CURR_VALUES_1,
+      values2: CURR_VALUES_2,
+      power: CURR_POWER
     }
-    // handle HTTP request normally
-    return new Response(
-      "Error switching protocols for connection to WebSocket server",
-      { status: 500 });
-  },
-
-  // Websocket handlers:
-  websocket: {
-    open(ws) {
-      CLIENT_AUTOINCREMENT++;
-      N_CONN_CLIENTS++;
-      console.log(ws);
-      POOL[ws.data.socket_id] = ws;
-      console.log("POOL:", POOL);
-      if (DEBUG) {
-        console.log(`[${new Date().toISOString()}] New connection (${CLIENT_AUTOINCREMENT}), now ${N_CONN_CLIENTS} open connection${N_CONN_CLIENTS == 1 ? "" : "s"}`);
-      }
-      ws.subscribe("heat_pump");
-
-      // Send the current values only back to the freshly connected client
-      ws.send(JSON.stringify({
-        status: CURR_STATUS,
-        values: {
-          values1: CURR_VALUES_1,
-          values2: CURR_VALUES_2,
-          power: CURR_POWER
-        }
-      }));
-
-      // Now wait for an MQTT message from the MQTT_CLIENT
-      MQTT_CLIENT.on("message", (topic, payload) => {
-        const msg = JSON.parse(payload.toString());
-        if (DEBUG) {
-          console.log(`[${new Date().toISOString()}] Received message on topic '${topic}':`, msg);
-        }
-        // const msg_keys = Object.keys(msg);
-        // if (!msg_keys.includes("token") && msg.token !== CONFIG.send_token) {
-        //   // ignore message
-        //   return;
-        // }
-        // if (msg_keys.includes("values") && msg.values !== null) {
-        //   // Update the current values with new ones:
-        //   for (const [key, value] of Object.entries(msg.values)) {
-        //     // if the value is valid, adopt it as new value
-        //     if (value !== null && value !== undefined) {
-        //       CURR_VALUES[key] = value;
-        //     }
-        //   }
-        // }
-        if (CURR_VALUES_1 === null) {
-          CURR_VALUES_1 = msg;
-          CURR_STATUS = "Waiting for 2nd pulse";
-        } else if (CURR_VALUES_2 === null) {
-          CURR_VALUES_2 = msg;
-          CURR_STATUS = "OK";
-          updatePower();
-        } else {
-          CURR_VALUES_1 = CURR_VALUES_2;
-          CURR_VALUES_2 = msg;
-          CURR_STATUS = "OK";
-          updatePower();
-        }
-
-        const broadcast_msg = JSON.stringify({
-          status: CURR_STATUS,
-          values: {
-            values1: CURR_VALUES_1,
-            values2: CURR_VALUES_2,
-            power: CURR_POWER
-          }
-        });
-        if (DEBUG) {
-          console.log(`[${new Date().toISOString()}] Broadcasting message to connected clients:`, broadcast_msg);
-        }
-        // Broadcast the new current values to all connected clients
-        if (server.publish("heat_pump", broadcast_msg) !== broadcast_msg.length) {
-          throw new Error("Failed to publish message");
-        }
-      });
-    },
-
-    close(ws) {
-      N_CONN_CLIENTS--;
-      delete POOL[ws.data.socket_id];
-      console.log("POOL:", POOL);
-      if (DEBUG) {
-        console.log(`Disconnected, now ${N_CONN_CLIENTS} open connection${N_CONN_CLIENTS == 1 ? "" : "s"}`);
-      }
-    },
-
-    perMessageDeflate: CONFIG_WS.compress === "true" ? true : false,
-    publishToSelf: true, // what does this mean?
-  },
-
+  });
+  if (DEBUG) {
+    console.log(`[${new Date().toISOString()}] Broadcasting message to connected clients:`, broadcast_msg);
+  }
+  // Broadcast the new current values to all connected clients
+  for (let ws of POOL) {
+    ws.send(broadcast_msg);
+    if (ws.send("heat_pump", broadcast_msg) !== broadcast_msg.length) {
+      throw new Error("Failed to send message to client with ID " + ws.data.socket_id);
+    }
+  }
 });
-
-console.log(`Waiting for clients to connect...\n`, `  http://${server.hostname}:${server.port}/`);
