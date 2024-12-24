@@ -110,7 +110,7 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--debug', action='store_true',
                         help="Turn debug output on")
     parser.add_argument('-n', '--dry-run', action='store_true',
-                        help="Turn debug output on")
+                        help="Do a dry-run (i.e., don't write to DB)")
 
     args = parser.parse_args()
 
