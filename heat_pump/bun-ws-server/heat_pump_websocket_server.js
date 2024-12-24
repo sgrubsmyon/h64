@@ -205,7 +205,7 @@ MQTT_CLIENT.on("message", (topic, payload) => {
     console.log(`[${new Date().toISOString()}] Broadcasting message to connected clients:`, broadcast_msg);
   }
   // Broadcast the new current values to all connected clients
-  for (let ws of POOL) {
+  for (const ws of Object.values(POOL)) {
     ws.send(broadcast_msg);
     if (ws.send("heat_pump", broadcast_msg) !== broadcast_msg.length) {
       throw new Error("Failed to send message to client with ID " + ws.data.socket_id);
