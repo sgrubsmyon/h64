@@ -29,7 +29,7 @@ if (DEBUG) {
 
 var CLIENT_AUTOINCREMENT = 0;
 var N_CONN_CLIENTS = 0;
-var POOL = []; // pool of active WebSocket client connections
+var POOL = {}; // pool of active WebSocket client connections
 var CURR_STATUS = "Waiting for 1st pulse";
 var CURR_VALUES_1 = null;
 var CURR_VALUES_2 = null;
@@ -97,7 +97,11 @@ const server = Bun.serve({
 
   // Protocol upgrade logic
   fetch(req, server) {
-    const success = server.upgrade(req);
+    const success = server.upgrade(req, {
+      data: {
+        socket_id: Math.random(),
+      },
+    });
     if (success) {
       // Bun automatically returns a 101 Switching Protocols
       // if the upgrade succeeds
@@ -115,8 +119,8 @@ const server = Bun.serve({
       CLIENT_AUTOINCREMENT++;
       N_CONN_CLIENTS++;
       console.log(ws);
-      console.log(Object.keys(ws));
-      POOL.push(ws);
+      POOL[ws.data.socket_id] = ws;
+      console.log("POOL:", POOL);
       if (DEBUG) {
         console.log(`[${new Date().toISOString()}] New connection (${CLIENT_AUTOINCREMENT}), now ${N_CONN_CLIENTS} open connection${N_CONN_CLIENTS == 1 ? "" : "s"}`);
       }
@@ -186,7 +190,7 @@ const server = Bun.serve({
 
     close(ws) {
       N_CONN_CLIENTS--;
-      // POOL.push(ws);
+      POOL[ws.data.socket_id] = null;
       if (DEBUG) {
         console.log(`Disconnected, now ${N_CONN_CLIENTS} open connection${N_CONN_CLIENTS == 1 ? "" : "s"}`);
       }
