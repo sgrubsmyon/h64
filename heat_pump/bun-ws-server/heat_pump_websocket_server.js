@@ -51,7 +51,7 @@ function getMicroTime(datestring) {
   const epoch = date.getTime(); // is in milliseconds
   const micros = datestring.substring(23); // get the microseconds
   const micro_timestring = epoch.toString() + "." + micros;
-  return parseFloat(micro_timestring) * 1000; // now in seconds
+  return parseFloat(micro_timestring) / 1000; // now in seconds
 }
 
 function updatePower() {
