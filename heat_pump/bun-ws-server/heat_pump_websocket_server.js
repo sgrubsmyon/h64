@@ -190,7 +190,7 @@ const server = Bun.serve({
 
     close(ws) {
       N_CONN_CLIENTS--;
-      POOL[ws.data.socket_id] = null;
+      delete POOL[ws.data.socket_id];
       console.log("POOL:", POOL);
       if (DEBUG) {
         console.log(`Disconnected, now ${N_CONN_CLIENTS} open connection${N_CONN_CLIENTS == 1 ? "" : "s"}`);
