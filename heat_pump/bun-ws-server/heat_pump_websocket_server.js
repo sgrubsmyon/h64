@@ -106,6 +106,7 @@ const client = mqtt.connect(mqtt_connect_url, {
 
 client.on("connect", () => {
   console.log("Connected to MQTT broker");
+  console.log("Will now subscribe to topic:", CONFIG_MQTT.powermeter_mqtt_topic.substring(1));
   client.subscribe(CONFIG_MQTT.powermeter_mqtt_topic.substring(1), (err) => {
     if (!err) {
       console.log(`Subscribed to topic '${CONFIG_MQTT.powermeter_mqtt_topic}'`);
