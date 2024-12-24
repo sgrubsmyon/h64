@@ -29,6 +29,7 @@ if (DEBUG) {
 
 var CLIENT_AUTOINCREMENT = 0;
 var N_CONN_CLIENTS = 0;
+var POOL = []; // pool of active WebSocket client connections
 var CURR_STATUS = "Waiting for 1st pulse";
 var CURR_VALUES_1 = null;
 var CURR_VALUES_2 = null;
@@ -113,6 +114,9 @@ const server = Bun.serve({
     open(ws) {
       CLIENT_AUTOINCREMENT++;
       N_CONN_CLIENTS++;
+      console.log(ws);
+      console.log(Object.keys(ws));
+      POOL.push(ws);
       if (DEBUG) {
         console.log(`[${new Date().toISOString()}] New connection (${CLIENT_AUTOINCREMENT}), now ${N_CONN_CLIENTS} open connection${N_CONN_CLIENTS == 1 ? "" : "s"}`);
       }
@@ -182,6 +186,7 @@ const server = Bun.serve({
 
     close(ws) {
       N_CONN_CLIENTS--;
+      // POOL.push(ws);
       if (DEBUG) {
         console.log(`Disconnected, now ${N_CONN_CLIENTS} open connection${N_CONN_CLIENTS == 1 ? "" : "s"}`);
       }
