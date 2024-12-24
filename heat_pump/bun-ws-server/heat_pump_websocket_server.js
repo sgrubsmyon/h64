@@ -29,8 +29,8 @@ if (DEBUG) {
 var CLIENT_AUTOINCREMENT = 0;
 var N_CONN_CLIENTS = 0;
 var CURR_STATUS = "Waiting for 1st pulse";
-var CURR_TIMESTAMP_1 = null;
-var CURR_TIMESTAMP_2 = null;
+var CURR_VALUES_1 = null;
+var CURR_VALUES_2 = null;
 var CURR_POWER = NaN;
 
 /***************
@@ -68,48 +68,13 @@ const server = Bun.serve({
       // Send the current values only back to the freshly connected client
       ws.send(JSON.stringify({
         status: CURR_STATUS,
-        timestamp1: CURR_TIMESTAMP_1,
-        timestamp2: CURR_TIMESTAMP_2,
-        power: CURR_POWER
+        values: {
+          values1: CURR_VALUES_1,
+          values2: CURR_VALUES_2,
+          power: CURR_POWER
+        }
       }));
     },
-
-    // // Now wait for an MQTT message with a power meter pulse
-    // message(ws, message) {
-    //   const msg = JSON.parse(message);
-    //   if (DEBUG) {
-    //     console.log(`[${new Date().toISOString()}] Received message:`, msg);
-    //   }
-    //   const msg_keys = Object.keys(msg);
-    //   if (!msg_keys.includes("token") && msg.token !== CONFIG.send_token) {
-    //     // ignore message
-    //     return;
-    //   }
-    //   if (msg_keys.includes("values") && msg.values !== null) {
-    //     // Update the current values with new ones:
-    //     for (const [key, value] of Object.entries(msg.values)) {
-    //       // if the value is valid, adopt it as new value
-    //       if (value !== null && value !== undefined) {
-    //         CURR_VALUES[key] = value;
-    //       }
-    //     }
-    //   }
-    //   if (msg_keys.includes("status")) {
-    //     CURR_STATUS = msg.status;
-    //   }
-
-    //   const broadcast_msg = JSON.stringify({
-    //     values: CURR_VALUES,
-    //     status: CURR_STATUS
-    //   });
-    //   if (DEBUG) {
-    //     console.log(`[${new Date().toISOString()}] Broadcasting message to connected clients:`, broadcast_msg);
-    //   }
-    //   // Broadcast the new current values to all connected clients
-    //   if (ws.publish("heat_pump", broadcast_msg) !== broadcast_msg.length) {
-    //     throw new Error("Failed to publish message");
-    //   }
-    // },
 
     close(ws) {
       N_CONN_CLIENTS--;
@@ -146,7 +111,64 @@ client.on('connect', () => {
   });
 });
 
+function updatePower() {
+  if (CURR_VALUES_1 === null || CURR_VALUES_2 === null) {
+    CURR_POWER = NaN;
+  } else {
+    const time1 = new Date(CURR_VALUES_1.time);
+    const time2 = new Date(CURR_VALUES_2.time);
+    const timediff = CURR_VALUES_2.time - CURR_VALUES_1.time;
+    CURR_POWER = CURR_VALUES_1.current_power - CURR_VALUES_2.current_power;
+  }
+}
+
 // Now wait for an MQTT message from the client
-client.on('message', (topic, payload) => {
-  console.log('Received Message:', topic, payload.toString());
+client.on('message', (topic, payload) => {  
+  const msg = JSON.parse(payload.toString());
+  if (DEBUG) {
+    console.log(`[${new Date().toISOString()}] Received message on topic '${topic}':`, msg);
+  }
+  // const msg_keys = Object.keys(msg);
+  // if (!msg_keys.includes("token") && msg.token !== CONFIG.send_token) {
+  //   // ignore message
+  //   return;
+  // }
+  // if (msg_keys.includes("values") && msg.values !== null) {
+  //   // Update the current values with new ones:
+  //   for (const [key, value] of Object.entries(msg.values)) {
+  //     // if the value is valid, adopt it as new value
+  //     if (value !== null && value !== undefined) {
+  //       CURR_VALUES[key] = value;
+  //     }
+  //   }
+  // }
+  if (CURR_VALUES_1 === null) {
+    CURR_VALUES_1 = msg;
+    CURR_STATUS = "Waiting for 2nd pulse";
+  } else if (CURR_VALUES_2 === null) {
+    CURR_VALUES_2 = msg;
+    CURR_STATUS = "OK";
+    updatePower();
+  } else {
+    CURR_VALUES_1 = CURR_VALUES_2;
+    CURR_VALUES_2 = msg;
+    CURR_STATUS = "OK";
+    updatePower();
+  }
+
+  const broadcast_msg = JSON.stringify({
+    status: CURR_STATUS,
+    values: {
+      values1: CURR_VALUES_1,
+      values2: CURR_VALUES_2,
+      power: CURR_POWER
+    }
+  });
+    if (DEBUG) {
+      console.log(`[${new Date().toISOString()}] Broadcasting message to connected clients:`, broadcast_msg);
+    }
+    // Broadcast the new current values to all connected clients
+    if (ws.publish("heat_pump", broadcast_msg) !== broadcast_msg.length) {
+      throw new Error("Failed to publish message");
+    }
 });
