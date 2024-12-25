@@ -30,6 +30,7 @@ if (DEBUG) {
 var CLIENT_AUTOINCREMENT = 0;
 var N_CONN_CLIENTS = 0;
 var POOL = {}; // pool of active WebSocket client connections
+var CURR_SOCKET = null;
 var CURR_STATUS = "Waiting for 1st pulse";
 var CURR_VALUES_1 = null;
 var CURR_VALUES_2 = null;
@@ -48,7 +49,7 @@ const server = Bun.serve({
     console.log("req.headers:", req.headers);
     const success = server.upgrade(req, {
       data: {
-        socket_id: req.headers.get("sec-websocket-key"),
+        socket_id: Math.random(), // does not work (why?): req.headers.get("sec-websocket-key"),
       },
     });
     if (success) {
@@ -69,9 +70,11 @@ const server = Bun.serve({
       N_CONN_CLIENTS++;
       console.log(ws);
       POOL[ws.data.socket_id] = ws;
-      console.log("POOL:", POOL);
+      CURR_SOCKET = ws;
       if (DEBUG) {
         console.log(`[${new Date().toISOString()}] New connection (${CLIENT_AUTOINCREMENT}), now ${N_CONN_CLIENTS} open connection${N_CONN_CLIENTS == 1 ? "" : "s"}`);
+        console.log("POOL:", POOL);
+        console.log("CURR_SOCKET:", CURR_SOCKET);
       }
       ws.subscribe("heat_pump");
 
@@ -89,9 +92,16 @@ const server = Bun.serve({
     close(ws) {
       N_CONN_CLIENTS--;
       delete POOL[ws.data.socket_id];
-      console.log("POOL:", POOL);
+      const pool_length = Object.keys(POOL).length;
+      if (pool_length > 0) {
+        CURR_SOCKET = Object.values(POOL)[pool_length - 1];
+      } else {
+        CURR_SOCKET = null;
+      }
       if (DEBUG) {
         console.log(`Disconnected, now ${N_CONN_CLIENTS} open connection${N_CONN_CLIENTS == 1 ? "" : "s"}`);
+        console.log("POOL:", POOL);
+        console.log("CURR_SOCKET:", CURR_SOCKET);
       }
     },
 
@@ -205,11 +215,13 @@ MQTT_CLIENT.on("message", (topic, payload) => {
   if (DEBUG) {
     console.log(`[${new Date().toISOString()}] Broadcasting message to connected clients:`, broadcast_msg);
   }
-  // Broadcast the new current values to all connected clients
-  for (const ws of Object.values(POOL)) {
-    // ws.send(broadcast_msg);
-    if (ws.send(broadcast_msg) !== broadcast_msg.length) {
-      throw new Error("Failed to send message to client with ID " + ws.data.socket_id);
+  // for (const ws of Object.values(POOL)) {
+  //   ws.send(broadcast_msg);
+  // }
+  // Broadcast the new current values to all connected clients using the most current socket (if any)
+  if (CURR_SOCKET !== null) {
+    if (CURR_SOCKET.publish("heat_pump", broadcast_msg) !== broadcast_msg.length) {
+      throw new Error("Failed to publish message");
     }
   }
 });
