@@ -46,7 +46,6 @@ const server = Bun.serve({
 
   // Protocol upgrade logic
   fetch(req, server) {
-    console.log("req.headers:", req.headers);
     const success = server.upgrade(req, {
       data: {
         socket_id: Math.random(), // does not work (why?): req.headers.get("sec-websocket-key"),
@@ -68,7 +67,6 @@ const server = Bun.serve({
     open(ws) {
       CLIENT_AUTOINCREMENT++;
       N_CONN_CLIENTS++;
-      console.log(ws);
       POOL[ws.data.socket_id] = ws;
       CURR_SOCKET = ws;
       if (DEBUG) {
@@ -212,14 +210,11 @@ MQTT_CLIENT.on("message", (topic, payload) => {
       power: CURR_POWER
     }
   });
-  if (DEBUG) {
-    console.log(`[${new Date().toISOString()}] Broadcasting message to connected clients:`, broadcast_msg);
-  }
-  // for (const ws of Object.values(POOL)) {
-  //   ws.send(broadcast_msg);
-  // }
   // Broadcast the new current values to all connected clients using the most current socket (if any)
   if (CURR_SOCKET !== null) {
+    if (DEBUG) {
+      console.log(`[${new Date().toISOString()}] Broadcasting message to connected clients:`, broadcast_msg);
+    }
     if (CURR_SOCKET.publish("heat_pump", broadcast_msg) !== broadcast_msg.length) {
       throw new Error("Failed to publish message");
     }
