@@ -48,7 +48,7 @@ const server = Bun.serve({
     console.log("req.headers:", req.headers);
     const success = server.upgrade(req, {
       data: {
-        socket_id: Math.random(),
+        socket_id: req.headers["sec-websocket-key"],
       },
     });
     if (success) {
