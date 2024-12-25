@@ -146,6 +146,8 @@ $ cd inverter/bun_ws_server
 $ bun install
 $ cd weather_station/bun_ws_server
 $ bun install
+$ cd heat_pump/bun-ws-server
+$ bun install
 ```
 
 ### Vue.js
@@ -266,6 +268,10 @@ upstream websocket_weather {
 	server localhost:8766;
 }
 
+upstream websocket_heatpump {
+	server localhost:8767;
+}
+
 # ...
 
 server {
@@ -285,6 +291,18 @@ server {
 	listen 80;
 	location / {
 		proxy_pass http://websocket_weather;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection $connection_upgrade;
+		proxy_set_header Host $host;
+	}
+}
+
+server {
+	server_name heatpumpdata.example.com;
+	listen 80;
+	location / {
+		proxy_pass http://websocket_heatpump;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade $http_upgrade;
 		proxy_set_header Connection $connection_upgrade;
