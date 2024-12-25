@@ -1,0 +1,13 @@
+[Unit]
+Description=H64 data collection tools - heat pump WebSocket server
+
+[Service]
+User=yourusername
+Group=yourusername
+ExecStart=/home/yourusername/.bun/bin/bun /home/yourusername/h64/heat_pump/bun-ws-server/heat_pump_websocket_server.js
+StandardOutput=file:/var/log/h64/heat_pump_websocket_server
+StandardError=file:/var/log/h64/heat_pump_websocket_server
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
