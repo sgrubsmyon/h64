@@ -45,6 +45,7 @@ const server = Bun.serve({
 
   // Protocol upgrade logic
   fetch(req, server) {
+    console.log("req.headers:", req.headers);
     const success = server.upgrade(req, {
       data: {
         socket_id: Math.random(),
