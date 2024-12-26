@@ -320,9 +320,10 @@ function updateLoad(data) {
   }
 }
 
-function updateValue(id, value, unit, subtag = "tspan") {
+function updateValue(id: string, value: string | number, unit: string, subtag = "tspan") {
   const value_text = document.querySelector(subtag ? `#${id} > ${subtag}` : `#${id}`);
-  if (unit !== "") {
+  if (!value_text) return;
+  if (unit !== '') {
     value_text.innerHTML = `${value} ${unit}`;
   } else {
     value_text.innerHTML = `${value}`;
