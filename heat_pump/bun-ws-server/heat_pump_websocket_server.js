@@ -193,12 +193,12 @@ MQTT_CLIENT.on("message", (topic, payload) => {
     CURR_STATUS = "Waiting for 2nd pulse";
   } else if (CURR_VALUES_2 === null) {
     CURR_VALUES_2 = msg;
-    CURR_STATUS = "OK";
+    CURR_STATUS = "NORMAL";
     updatePower();
   } else {
     CURR_VALUES_1 = CURR_VALUES_2;
     CURR_VALUES_2 = msg;
-    CURR_STATUS = "OK";
+    CURR_STATUS = "NORMAL";
     updatePower();
   }
 
