@@ -37,5 +37,13 @@ npm run format
 quasar build
 ```
 
+### Deploy
+
+```bash
+rsync -rtlPvi --delete ~/h64/frontend/h64-quasar/dist/spa/ host:h64/frontend/h64-quasar/dist/spa/
+ssh host
+sudo rsync -rtlPvi --delete ~/h64/frontend/h64-quasar/dist/spa/ /var/www/html/h64/
+```
+
 ### Customize the configuration
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
