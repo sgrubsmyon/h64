@@ -51,10 +51,22 @@ $ psql -U postgres -h localhost
 > \q
 ```
 
-Open h64 database in psql:
+#### Open h64 database in psql:
 
 ```
 $ psql -U postgres -h localhost -d h64
+```
+
+Show tables:
+
+```
+# \dt
+```
+
+Describe table:
+
+```
+# \d+ tablename
 ```
 
 ##### Create tables for inverter data:
