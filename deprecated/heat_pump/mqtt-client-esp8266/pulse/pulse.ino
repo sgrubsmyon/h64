@@ -9,8 +9,8 @@
 #include <AsyncMqttClient.h>
 #include "time.h"
 
-#define WIFI_SSID "aloevera"
-#define WIFI_PASSWORD "MfoYMdFcbujmVxpHMq4PJndhbAE4KjvPHEC"
+#define WIFI_SSID "yourssid"
+#define WIFI_PASSWORD "yourpassword"
 
 // Raspberri Pi Mosquitto MQTT Broker
 #define MQTT_HOST IPAddress(192, 168, 178, 100)
