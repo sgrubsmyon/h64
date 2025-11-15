@@ -1,0 +1,49 @@
+[DeyeInverter]
+inverter_ip = 192.168.123.123
+inverter_port = 8899
+# serial number of the inverter's wifi module:
+inverter_serialnumber = 1234567890
+# in full Watts (as integer):
+# installed_power = 8000
+sampling_start_point_faster_minute = 0
+sampling_start_point_faster_second = 0
+sampling_start_point_fast_minute = 0
+sampling_start_point_fast_second = 4.5
+sampling_start_point_slow_minute = 0
+sampling_start_point_slow_second = 1.5
+sampling_interval_faster_minute = 0
+sampling_interval_faster_second = 3
+sampling_interval_fast_minute = 0
+sampling_interval_fast_second = 15
+sampling_interval_slow_minute = 5
+sampling_interval_slow_second = 0
+
+[DeyeInverter_WebSocket]
+host = localhost
+port = 6789
+compress = false
+send_token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+recv_token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+[WeatherStation]
+id = 12345678
+command = /usr/bin/rtl_433
+frequency_opt = -f
+frequency = 868M
+format_opt = -F
+format =  json
+other_options = 
+
+[WeatherStation_WebSocket]
+host = localhost
+port = 6790
+compress = false
+send_token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+recv_token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+[PostgreSQL]
+host = localhost
+port = 5432
+user = postgres
+db = yourdatabasename
+password = password

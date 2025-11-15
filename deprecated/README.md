@@ -1,12 +1,10 @@
 # Code for collecting and visualizing data at a random family home
 
-I switched to Home Assistant for a more powerful, covenient and conventional setup.
-One can still look at the old self-made code for talking with the Deye inverter
-(model SUN-10K-SG04LP3-EU) via sending TCP packets over Wifi in the `deprecated`
-directory.
+This repository includes code to read Modbus data from a Deye inverter
+(model SUN-10K-SG04LP3-EU) via sending TCP packets over Wifi. The Deye
+code is adopted from https://github.com/kbialek/deye-inverter-mqtt
+(many thanks!).
 
-In Home Assistant, I use the https://github.com/davidrapan/ha-solarman integration for
-fetching data from the Deye.
 
 ## Install dependencies
 
