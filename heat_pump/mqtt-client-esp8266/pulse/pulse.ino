@@ -13,14 +13,13 @@
 #define WIFI_PASSWORD "yourpassword"
 
 // Raspberri Pi Mosquitto MQTT Broker
-#define MQTT_HOST IPAddress(192, 168, 178, 100)
+#define MQTT_HOST IPAddress(192, 168, 123, 123)
 // For a cloud MQTT broker, type the domain name
 //#define MQTT_HOST "example.com"
 #define MQTT_PORT 1883
 
 // MQTT Topics
 #define MQTT_TOPIC "/home/heat_pump/electric_power_pulse"
-#define MQTT_TOKEN "bfed7b62-980d-46e7-90d5-5cf0fe8179cf"
 
 // The GPIO pin that the power meter S0 interface is connected to
 #define S0_PIN 4 // GPIO4 is labeled D2 on the NodeMCU ESP8266 (see pinput diagrams PDF)
@@ -57,6 +56,7 @@ Ticker wifiReconnectTimer;
 const uint8_t qos = 2; // QoS = 2 means: make sure that the MQTT message is delivered, but only once
 unsigned long pulse_counter = 0; // As extra precaution: send an incremental counter value with each pulse,
                                  // just in case that in spite of QoS = 2 duplicate messages are received
+float prev_timestamp = 0.0; // to hold the timestamp of the previous pulse
 
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
@@ -114,12 +114,14 @@ void onMqttPublish(uint16_t packetId) {
   Serial.println(packetId);
 }
 
-void setTimestampToParams(String& datetime, unsigned long& ms) { // , String& usec
+void setTimestampToParams(String& datetime, unsigned long& ms, float& epoch_float) { // , String& usec
   // for datetime
   time_t rawtime;
   struct tm* timeinfo;
   // for subseconds
   struct timeval tv;
+  // for UNIX timestamp (seconds since epoch)
+  unsigned long epoch;
 
   // get datetime
   time(&rawtime);
@@ -129,10 +131,10 @@ void setTimestampToParams(String& datetime, unsigned long& ms) { // , String& us
     Serial.println("Failed to obtain time");
     return;
   }
-
+  
   // get milliseconds since device started up
   ms = millis();
-
+  
   // for time formatting, see https://randomnerdtutorials.com/esp32-date-time-ntp-client-server-arduino/
   timeinfo = localtime(&rawtime);
   char time_string[27];
@@ -144,25 +146,44 @@ void setTimestampToParams(String& datetime, unsigned long& ms) { // , String& us
   // "return" statements
   datetime = String(time_string) + "." + String(subseconds); // add the microseconds
   // usec = tv.tv_usec;
+
+  // cast the time to epoch
+  epoch = (unsigned long)rawtime;
+  // convert to float with microseconds precision
+  epoch_float = (float)epoch + ((float)tv.tv_usec / 1000000.0);
 }
 
 String buildMessage() {
-  // String message = String("{\"token\": \"");
-  // message += String(MQTT_TOKEN);
-  // message += String("\", \"time\": \"");
   String datetime = "";
-  // String usec = "";
   unsigned long ms = 0;
-  setTimestampToParams(datetime, ms); // , usec, ms
+  float curr_timestamp = 0.0;
+  setTimestampToParams(datetime, ms, curr_timestamp);
+
+  if (prev_timestamp > 0) {
+    float delta = curr_timestamp - prev_timestamp;
+    Serial.printf("Time since last pulse: %.6f seconds\n", delta);
+    
+    // Calculate power in Watts
+    // Each pulse represents 1 Wh, so power (W) = (1 Wh) / (delta in hours) = 3600 / delta (seconds)
+    float power_watts = 3600.0 / delta;
+    Serial.printf("Calculated power: %.2f W\n", power_watts);
+  } else {
+    Serial.println("This is the first pulse received.");
+  }
+
   String message = String("{\"time\": \"");
   message += datetime;
-  // message += String("\", \"usec\": ");
-  // message += usec;
   message += String("\", \"millis\": ");
   message += ms;
   message += String(", \"pulse_counter\": ");
   message += pulse_counter;
+  message += String(", \"timestamp\": ");
+  message += String(curr_timestamp, 6);
+  message += String(", \"power\": ");
+  message += String(power_watts, 2);
   message += "}";
+
+  prev_timestamp = curr_timestamp;
 
   return message;
 }
