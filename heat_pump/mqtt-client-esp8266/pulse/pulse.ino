@@ -11,7 +11,7 @@
 
 #define UNSET -1
 
-#define WIFI_SSID "aloevera"
+#define WIFI_SSID "yourssid"
 #define WIFI_PASSWORD "yourpassword"
 
 // Raspberri Pi Mosquitto MQTT Broker
