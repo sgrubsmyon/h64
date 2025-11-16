@@ -123,7 +123,7 @@ console.log(`Waiting for clients to connect...\n`, `  http://${server.hostname}:
  * @returns {number} - The timestamp in microseconds precision.
  */
 function getMicroTime(datestring) {
-  const date = new Date(datestring + "Z"); // Z for UTC
+  const date = new Date(datestring); // should already end in a Z for UTC
   const epoch = date.getTime(); // is in milliseconds
   const micros = datestring.substring(23); // get the microseconds
   const micro_timestring = epoch.toString() + "." + micros;

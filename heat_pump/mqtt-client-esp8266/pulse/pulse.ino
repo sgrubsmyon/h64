@@ -9,7 +9,9 @@
 #include <AsyncMqttClient.h>
 #include "time.h"
 
-#define WIFI_SSID "yourssid"
+#define UNSET -1
+
+#define WIFI_SSID "aloevera"
 #define WIFI_PASSWORD "yourpassword"
 
 // Raspberri Pi Mosquitto MQTT Broker
@@ -144,7 +146,7 @@ void setTimestampToParams(String& datetime, unsigned long& ms, float& epoch_floa
   sprintf(subseconds, "%06d", tv.tv_usec);
   
   // "return" statements
-  datetime = String(time_string) + "." + String(subseconds); // add the microseconds
+  datetime = String(time_string) + "." + String(subseconds) + "Z"; // add the microseconds and add the "Z" for UTC time
   // usec = tv.tv_usec;
 
   // cast the time to epoch
@@ -159,13 +161,14 @@ String buildMessage() {
   float curr_timestamp = 0.0;
   setTimestampToParams(datetime, ms, curr_timestamp);
 
+  float power_watts = UNSET;
   if (prev_timestamp > 0) {
     float delta = curr_timestamp - prev_timestamp;
     Serial.printf("Time since last pulse: %.6f seconds\n", delta);
     
     // Calculate power in Watts
     // Each pulse represents 1 Wh, so power (W) = (1 Wh) / (delta in hours) = 3600 / delta (seconds)
-    float power_watts = 3600.0 / delta;
+    power_watts = 3600.0 / delta;
     Serial.printf("Calculated power: %.2f W\n", power_watts);
   } else {
     Serial.println("This is the first pulse received.");
