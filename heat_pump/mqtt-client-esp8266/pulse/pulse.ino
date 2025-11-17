@@ -21,7 +21,7 @@
 #define MQTT_PORT 1883
 
 // MQTT Topics
-#define MQTT_TOPIC "/home/heat_pump/electric_power_pulse"
+#define MQTT_TOPIC "home/heat_pump/electric_power_pulse"
 
 // The GPIO pin that the power meter S0 interface is connected to
 #define S0_PIN 4 // GPIO4 is labeled D2 on the NodeMCU ESP8266 (see pinput diagrams PDF)
@@ -176,12 +176,12 @@ String buildMessage() {
 
   String message = String("{\"time\": \"");
   message += datetime;
-  message += String("\", \"millis\": ");
+  message += String("\", \"timestamp\": ");
+  message += String(curr_timestamp, 6);
+  message += String(", \"millis\": ");
   message += ms;
   message += String(", \"pulse_counter\": ");
   message += pulse_counter;
-  message += String(", \"timestamp\": ");
-  message += String(curr_timestamp, 6);
   message += String(", \"power\": ");
   message += String(power_watts, 2);
   message += "}";
