@@ -58,7 +58,7 @@ Ticker wifiReconnectTimer;
 const uint8_t qos = 2; // QoS = 2 means: make sure that the MQTT message is delivered, but only once
 unsigned long pulse_counter = 0; // As extra precaution: send an incremental counter value with each pulse,
                                  // just in case that in spite of QoS = 2 duplicate messages are received
-float prev_timestamp = 0.0; // to hold the timestamp of the previous pulse
+double prev_timestamp = 0.0; // to hold the timestamp of the previous pulse
 
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
@@ -116,7 +116,7 @@ void onMqttPublish(uint16_t packetId) {
   Serial.println(packetId);
 }
 
-void setTimestampToParams(String& datetime, unsigned long& ms, float& epoch_float) { // , String& usec
+void setTimestampToParams(String& datetime, unsigned long& ms, double& epoch_double) {
   // for datetime
   time_t rawtime;
   struct tm* timeinfo;
@@ -151,19 +151,19 @@ void setTimestampToParams(String& datetime, unsigned long& ms, float& epoch_floa
 
   // cast the time to epoch
   epoch = (unsigned long)rawtime;
-  // convert to float with microseconds precision
-  epoch_float = (float)epoch + ((float)tv.tv_usec / 1000000.0);
+  // convert to double with microseconds precision
+  epoch_double = (double)epoch + ((double)tv.tv_usec / 1000000.0);
 }
 
 String buildMessage() {
   String datetime = "";
   unsigned long ms = 0;
-  float curr_timestamp = 0.0;
+  double curr_timestamp = 0.0;
   setTimestampToParams(datetime, ms, curr_timestamp);
 
-  float power_watts = UNSET;
+  double power_watts = UNSET;
   if (prev_timestamp > 0) {
-    float delta = curr_timestamp - prev_timestamp;
+    double delta = curr_timestamp - prev_timestamp;
     Serial.printf("Time since last pulse: %.6f seconds\n", delta);
     
     // Calculate power in Watts
