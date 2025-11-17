@@ -19,6 +19,8 @@
 // For a cloud MQTT broker, type the domain name
 //#define MQTT_HOST "example.com"
 #define MQTT_PORT 1883
+#define MQTT_USER "yourmqttuser"
+#define MQTT_PASS "yourmqttpassword"
 
 // MQTT Topics
 #define MQTT_TOPIC "home/heat_pump/electric_power_pulse"
@@ -228,7 +230,7 @@ void setup() {
   mqttClient.onPublish(onMqttPublish);
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   // If your broker requires authentication (username and password), set them below
-  //mqttClient.setCredentials("REPlACE_WITH_YOUR_USER", "REPLACE_WITH_YOUR_PASSWORD");
+  mqttClient.setCredentials(MQTT_USER, MQTT_PASS);
 
   connectToWifi();
 }
