@@ -1,0 +1,19 @@
+[MQTT]
+host = 192.168.123.123
+port = 1883
+user = yourmqttuser
+pass = yourmqttpassword
+
+[HeatPump]
+mqtt_topic = "home/heat_pump/electric_power_pulse"
+
+[Inverter]
+mqtt_topic_fast = "home/assistant/inverter/deye_sun_10k/fast"
+mqtt_topic_slow = "home/assistant/inverter/deye_sun_10k/slow"
+
+[PostgreSQL]
+host = localhost
+port = 5432
+user = postgres
+db = h64
+password = YOURPOSTGRESPASSWORD
