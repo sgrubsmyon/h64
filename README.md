@@ -71,25 +71,11 @@ Describe table:
 # \d+ tablename
 ```
 
-##### Create tables for inverter data:
+##### Create tables for time series data:
 
 ```
-$ cd inverter
-$ psql -U postgres -h localhost -d h64 -f create_inverter_metrics_tables.sql
-```
-
-##### Create tables for weather data:
-
-```
-$ cd weather_station
-$ psql -U postgres -h localhost -d h64 -f create_weather_station_metrics_tables.sql
-```
-
-##### Create tables for heat pump data:
-
-```
-$ cd heat_pump/mqtt-server-raspi
-$ psql -U postgres -h localhost -d h64 -f create_heat_pump_metrics_tables.sql
+$ cd sql
+$ psql -U postgres -h localhost -d h64 -f create_tables.sql
 ```
 
 
