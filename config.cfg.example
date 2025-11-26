@@ -6,10 +6,13 @@ pass = yourmqttpassword
 
 [HeatPump]
 mqtt_topic = "home/heat_pump/electric_power_pulse"
+table_name = heat_pump
 
 [Inverter]
 mqtt_topic_fast = "home/assistant/inverter/deye_sun_10k/fast"
 mqtt_topic_slow = "home/assistant/inverter/deye_sun_10k/slow"
+table_name_fast = inverter_fast
+table_name_slow = inverter_slow
 
 [PostgreSQL]
 host = localhost
