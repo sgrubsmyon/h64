@@ -123,7 +123,11 @@ if __name__ == "__main__":
     mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
     mqttc.on_connect = on_connect
     mqttc.on_message = sample(args.debug, args.dry_run)
+    mqttc.username_pw_set(cfg_mqtt["user"], cfg_mqtt["pass"])
 
+    # Connect to MQTT broker
+    if args.debug:
+        print(f"[{datetime.now()}] Connecting to MQTT broker at {cfg_mqtt['host']}:{cfg_mqtt['port']}...")
     mqttc.connect(cfg_mqtt["host"], int(cfg_mqtt["port"]), 60)
 
     # Blocking call that processes network traffic, dispatches callbacks and
