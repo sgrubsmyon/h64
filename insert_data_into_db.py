@@ -7,7 +7,7 @@ import os
 import argparse
 import configparser
 import paho.mqtt.client as mqtt
-import psycopg2
+import psycopg
 import json
 import signal
 from datetime import datetime
