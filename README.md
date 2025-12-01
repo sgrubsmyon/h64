@@ -88,11 +88,15 @@ $ psql -U postgres -h localhost -d h64 -f create_tables.sql
 $ sudo apt update && sudo apt upgrade
 $ sudo apt install python3.10-venv # or whatever version is the currently used one
 # In the directory of h64:
-$ python3.10 -m venv venv
-$ source venv/bin/activate
+$ python3 -m venv .
+$ source bin/activate
 -->
 
 $ pip install --upgrade pip
+$ pip install -r requirements.txt
+```
+
+<!--
 $ pip install numpy
 $ pip install pandas
 $ pip install libscrc
@@ -100,7 +104,7 @@ $ sudo apt install libpq-dev
 $ pip install psycopg2
 $ pip install --upgrade websockets
 $ pip install paho-mqtt
-```
+-->
 
 <!-- (deprecated, now using Bun for the websocket servers)
 ### Node.js
