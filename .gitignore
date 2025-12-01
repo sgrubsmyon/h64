@@ -4,3 +4,9 @@ external_code
 config.cfg
 run.sh
 Nintendo_64_Logo.svg
+
+# Python venv
+lib
+lib64
+pyvenv.cfg
+bin
