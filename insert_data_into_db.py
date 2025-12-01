@@ -11,7 +11,7 @@ import psycopg
 import json
 import signal
 from datetime import datetime
-
+import pandas as pd
 
 ########################
 ### global variables ###
@@ -21,17 +21,25 @@ from datetime import datetime
 config = configparser.ConfigParser()
 basepath = os.path.dirname(os.path.abspath(__file__))
 config.read(basepath + "/config.cfg")
+# Convert config to pandas DataFrame
+nested_list_config = [
+    [ [section.name] + list(i) for i in section.items() ]
+        for section in [ v for v in config.values() ]
+            if len(section) > 0
+]
+# Flatten nested list
+flat_list_config = [ item for sublist in nested_list_config for item in sublist ]
+config_df = pd.DataFrame(flat_list_config, columns=["section", "key", "value"])
+
 cfg_mqtt = config["MQTT"]
 cfg_psql = config["PostgreSQL"]
-cfg_heatpump = config["HeatPump"]
-cfg_inverter = config["Inverter"]
 
 # Connection to DB that shall be persisted throughout
 pg_conn = None
 
 def connect_to_psql():
     global pg_conn
-    pg_conn = psycopg2.connect(
+    pg_conn = psycopg.connect(
         host=cfg_psql["host"],
         port=cfg_psql["port"],
         user=cfg_psql["user"],
@@ -71,20 +79,26 @@ def insert_into_psql(table_name, data, debug, dry_run):
         cur.close()
 
 # The callback for when the client receives a CONNACK response from the server.
-def on_connect(client, userdata, flags, reason_code, properties):
-    print(f"Connected with result code {reason_code}")
-    # Subscribing in on_connect() means that if we lose the connection and
-    # reconnect then subscriptions will be renewed.
-    client.subscribe(cfg_heatpump["mqtt_topic"], qos=2)
-    client.subscribe(cfg_inverter["mqtt_topic_fast"], qos=2)
-    client.subscribe(cfg_inverter["mqtt_topic_slow"], qos=2)
+def on_connect(debug):
+    def on_connect2(client, userdata, flags, reason_code, properties):
+        print(f"Connected with result code {reason_code}")
+        # Subscribing in on_connect() means that if we lose the connection and
+        # reconnect, then subscriptions will be renewed.
+        
+        # Find all topics from config file (keys starting with 'mqtt_topic' in pandas DataFrame config_df)
+        mqtt_topics = config_df[config_df["key"].str.startswith("mqtt_topic")]
+        # Subscribe to all topics
+        for _, row in mqtt_topics.iterrows():
+            if debug:
+                print(f"[{datetime.now()}] Subscribing to topic: {row['value']}")
+            client.subscribe(row["value"], qos=2)
+    return on_connect2
 
 # The callback for when a PUBLISH message is received from the server.
 def sample(debug, dry_run):
     def on_message(client, userdata, msg):
         if debug:
             print("Received MQTT message on topic:", msg.topic)
-            print("Message payload:", msg.payload)
             print("Parsed message:", json.loads(msg.payload))
         
         try:
@@ -93,7 +107,6 @@ def sample(debug, dry_run):
         except json.decoder.JSONDecodeError:
             if debug:
                 print(f"[{datetime.now()}] JSON decode error")
-
     return on_message
 
 
@@ -121,7 +134,7 @@ if __name__ == "__main__":
     # Start the infinite sampling loop
     # i.e., connect to MQTT broker, register message handler and loop forever
     mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-    mqttc.on_connect = on_connect
+    mqttc.on_connect = on_connect(args.debug)
     mqttc.on_message = sample(args.debug, args.dry_run)
     mqttc.username_pw_set(cfg_mqtt["user"], cfg_mqtt["pass"])
 
