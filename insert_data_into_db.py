@@ -30,6 +30,8 @@ nested_list_config = [
 # Flatten nested list
 flat_list_config = [ item for sublist in nested_list_config for item in sublist ]
 config_df = pd.DataFrame(flat_list_config, columns=["section", "key", "value"])
+# Find all topics from config file (keys starting with 'mqtt_topic' in pandas DataFrame config_df)
+mqtt_topics = config_df[config_df.key.str.startswith("mqtt_topic")]
 
 cfg_mqtt = config["MQTT"]
 cfg_psql = config["PostgreSQL"]
@@ -85,8 +87,6 @@ def on_connect(debug):
         # Subscribing in on_connect() means that if we lose the connection and
         # reconnect, then subscriptions will be renewed.
         
-        # Find all topics from config file (keys starting with 'mqtt_topic' in pandas DataFrame config_df)
-        mqtt_topics = config_df[config_df["key"].str.startswith("mqtt_topic")]
         # Subscribe to all topics
         for _, row in mqtt_topics.iterrows():
             if debug:
@@ -100,10 +100,19 @@ def sample(debug, dry_run):
         if debug:
             print("Received MQTT message on topic:", msg.topic)
             print("Parsed message:", json.loads(msg.payload))
-        
         try:
+            # Find out table name from config file based on topic.
+            # The table name is the value with the same section and the same key as
+            # the topic key, only replacing 'mqtt_topic' with 'table_name'.
+            cfg_row = mqtt_topics[mqtt_topics.value == msg.topic]
+            section = cfg_row.section.values[0]
+            key = cfg_row.key.values[0].replace("mqtt_topic", "table_name")
+            table_name = config_df[
+                (config_df.section == section) &
+                (config_df.key == key)
+            ].value.values[0]
             data = json.loads(msg.payload)
-            insert_into_psql(data, debug, dry_run)
+            insert_into_psql(table_name, data, debug, dry_run)
         except json.decoder.JSONDecodeError:
             if debug:
                 print(f"[{datetime.now()}] JSON decode error")
