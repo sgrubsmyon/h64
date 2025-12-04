@@ -42,10 +42,11 @@ pg_conn = None
 def connect_to_psql():
     global pg_conn
     pg_conn = psycopg.connect(
+        # "host={} port={} user={} password={} dbname={}".format()
         host=cfg_psql["host"],
         port=cfg_psql["port"],
         user=cfg_psql["user"],
-        database=cfg_psql["db"],
+        dbname=cfg_psql["db"],
         password=cfg_psql["password"]
     )
 
