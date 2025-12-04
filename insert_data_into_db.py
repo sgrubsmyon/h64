@@ -68,7 +68,10 @@ def close_connections(dry_run):
 ###################
 
 
-def insert_into_psql(table_name, data, debug, dry_run):
+def insert_into_psql(table_name, data, debug, dry_run, columns=None):
+    if columns is not None:
+        # Filter data to only include specified columns
+        data = { key: data[key] for key in columns if key in data }
     query = f'''
         INSERT INTO {table_name} ({', '.join(data.keys())})
             VALUES ({', '.join(['%s'] * len(data.values()))});
@@ -112,8 +115,18 @@ def sample(debug, dry_run):
                 (config_df.section == section) &
                 (config_df.key == key)
             ].value.values[0]
+            # The columns to insert (optional)
+            key_columns = key.replace("mqtt_topic", "columns")
+            if key_columns in config_df[config_df.section == section].key.values:
+                columns_str = config_df[
+                    (config_df.section == section) &
+                    (config_df.key == key_columns)
+                ].value.values[0]
+                columns = json.loads(columns_str.replace("'", '"'))
+            else:
+                columns = None
             data = json.loads(msg.payload)
-            insert_into_psql(table_name, data, debug, dry_run)
+            insert_into_psql(table_name, data, debug, dry_run, columns)
         except json.decoder.JSONDecodeError:
             if debug:
                 print(f"[{datetime.now()}] JSON decode error")

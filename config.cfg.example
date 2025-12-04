@@ -7,6 +7,7 @@ pass = yourmqttpassword
 [HeatPump]
 mqtt_topic = home/heat_pump/electric_power_pulse
 table_name = heat_pump
+columns = ["time", "power"]
 
 [Inverter]
 mqtt_topic_fast = home/assistant/inverter/deye_sun_10k/fast
