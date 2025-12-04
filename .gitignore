@@ -6,8 +6,9 @@ run.sh
 Nintendo_64_Logo.svg
 
 # Python venv
+bin
+include
 lib
 lib64
 pyvenv.cfg
-bin
 share
