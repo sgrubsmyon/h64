@@ -13,7 +13,7 @@
 #define WIFI_PASSWORD "yourpassword"
 
 // Raspberri Pi Mosquitto MQTT Broker
-#define MQTT_HOST IPAddress(192, 168, 178, 100)
+#define MQTT_HOST IPAddress(192, 168, 123, 123)
 // For a cloud MQTT broker, type the domain name
 //#define MQTT_HOST "example.com"
 #define MQTT_PORT 1883
