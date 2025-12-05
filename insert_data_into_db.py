@@ -110,13 +110,13 @@ def sample(debug, dry_run):
             # the topic key, only replacing 'mqtt_topic' with 'table_name'.
             cfg_row = mqtt_topics[mqtt_topics.value == msg.topic]
             section = cfg_row.section.values[0]
-            key = cfg_row.key.values[0].replace("mqtt_topic", "table_name")
+            key_table = cfg_row.key.values[0].replace("mqtt_topic", "table_name")
             table_name = config_df[
                 (config_df.section == section) &
-                (config_df.key == key)
+                (config_df.key == key_table)
             ].value.values[0]
             # The columns to insert (optional)
-            key_columns = key.replace("mqtt_topic", "columns")
+            key_columns = key_table.replace("table_name", "columns")
             if key_columns in config_df[config_df.section == section].key.values:
                 columns_str = config_df[
                     (config_df.section == section) &
