@@ -12,6 +12,7 @@
 # Create temporary database
 psql -U postgres -h localhost -c 'drop database h64_old;'
 psql -U postgres -h localhost -c 'create database h64_old with owner postgres;'
+psql -U postgres -h localhost -d h64_old -c 'CREATE EXTENSION IF NOT EXISTS timescaledb;'
 # Create temprary tables
 psql -U postgres -h localhost -d h64_old < deprecated/heat_pump/mqtt-server-raspi/create_heat_pump_metrics_tables.sql
 psql -U postgres -h localhost -d h64_old < deprecated/inverter/create_inverter_metrics_tables.sql
