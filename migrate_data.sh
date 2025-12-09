@@ -22,12 +22,12 @@ psql -U postgres -h localhost -d h64_old < deprecated/weather_station/create_wea
 # Create dumps on old server
 echo ""
 echo "Create dumps..."
-ssh guavapi "psql -U postgres -h localhost -d h64 -c \"COPY (SELECT * FROM heat_pump_metrics_electric_power_pulse) TO '/tmp/h64_heat_pump.csv'  WITH DELIMITER ',' CSV HEADER; COPY (SELECT time, total_load_power, total_grid_power, load_power_l1, load_power_l2, load_power_l3, pv1_power, pv2_power, battery_power FROM inverter_metrics_faster) TO '/tmp/h64_inverter_faster.csv'  WITH DELIMITER ',' CSV HEADER; COPY (SELECT * FROM inverter_metrics_slow) TO '/tmp/h64_inverter_slow.csv'  WITH DELIMITER ',' CSV HEADER; COPY (SELECT * FROM weather_station_metrics) TO '/tmp/h64_weather_station.csv'  WITH DELIMITER ',' CSV HEADER;\""
+ssh guavapi "psql -U postgres -h localhost -d h64 -c \"COPY (SELECT * FROM heat_pump_metrics_electric_power_pulse) TO '/usb-data/h64_heat_pump.csv'  WITH DELIMITER ',' CSV HEADER; COPY (SELECT time, total_load_power, total_grid_power, load_power_l1, load_power_l2, load_power_l3, pv1_power, pv2_power, battery_power FROM inverter_metrics_faster) TO '/usb-data/h64_inverter_faster.csv'  WITH DELIMITER ',' CSV HEADER; COPY (SELECT * FROM inverter_metrics_slow) TO '/usb-data/h64_inverter_slow.csv'  WITH DELIMITER ',' CSV HEADER; COPY (SELECT * FROM weather_station_metrics) TO '/usb-data/h64_weather_station.csv'  WITH DELIMITER ',' CSV HEADER;\""
 
 # Copy dumps over
 echo ""
 echo "Copy dumps..."
-rsync -rtlPvi guavapi:/tmp/h64_*.csv /tmp/
+rsync -rtlPvi guavapi:/usb-data/h64_*.csv /tmp/
 
 # Insert dumps into temporary database
 echo ""
