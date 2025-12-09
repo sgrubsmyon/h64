@@ -10,7 +10,8 @@
 #psql -U postgres -h localhost -d h64_old < h64_old.sql
 
 # Create temporary database
-psql -U postgres -h localhost -c 'DROP DATABASE h64_old; CREATE DATABASE h64_old WITH OWNER postgres;'
+psql -U postgres -h localhost -c 'DROP DATABASE h64_old;'
+psql -U postgres -h localhost -c 'CREATE DATABASE h64_old WITH OWNER postgres;'
 psql -U postgres -h localhost -d h64_old -c 'CREATE EXTENSION IF NOT EXISTS timescaledb;'
 
 # Create temprary tables
