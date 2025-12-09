@@ -27,16 +27,16 @@ ssh guavapi "psql -U postgres -h localhost -d h64 -c \"COPY (SELECT * FROM heat_
 # Copy dumps over
 echo ""
 echo "Copy dumps..."
-rsync -rtlPvi guavapi:/usb-data/h64_*.csv /tmp/
+rsync -rtlPvi guavapi:/usb-data/h64_*.csv ~/h64_old/
 
 # Insert dumps into temporary database
 echo ""
 echo "Insert dumps..."
 echo "Heat pump..."
-psql -U postgres -h localhost -d h64_old -c "COPY heat_pump_metrics_electric_power_pulse (time) FROM '/tmp/h64_heat_pump.csv' DELIMITER ', ' CSV HEADER;"
+psql -U postgres -h localhost -d h64_old -c "COPY heat_pump_metrics_electric_power_pulse (time) FROM '~/h64_old/h64_heat_pump.csv' DELIMITER ', ' CSV HEADER;"
 echo "Inverter faster..."
-psql -U postgres -h localhost -d h64_old -c "COPY inverter_metrics_faster (time, total_load_power, total_grid_power, load_power_l1, load_power_l2, load_power_l3, pv1_power, pv2_power, battery_power) FROM '/tmp/h64_inverter_faster.csv' DELIMITER ', ' CSV HEADER;"
+psql -U postgres -h localhost -d h64_old -c "COPY inverter_metrics_faster (time, total_load_power, total_grid_power, load_power_l1, load_power_l2, load_power_l3, pv1_power, pv2_power, battery_power) FROM '~/h64_old/h64_inverter_faster.csv' DELIMITER ', ' CSV HEADER;"
 echo "Inverter slow..."
-psql -U postgres -h localhost -d h64_old -c "COPY inverter_metrics_slow (time, daily_pv_production, total_pv_production, daily_load_energy_consumption, total_load_energy_consumption, daily_energy_bought, daily_energy_sold, total_energy_bought, total_energy_sold, battery_soc, battery_daily_charge, battery_daily_discharge, battery_total_charge, battery_total_discharge, dc_temperature, ac_temperature, battery_temperature, battery_voltage, active_power_regulation) FROM '/tmp/h64_inverter_slow.csv' DELIMITER ', ' CSV HEADER;"
+psql -U postgres -h localhost -d h64_old -c "COPY inverter_metrics_slow (time, daily_pv_production, total_pv_production, daily_load_energy_consumption, total_load_energy_consumption, daily_energy_bought, daily_energy_sold, total_energy_bought, total_energy_sold, battery_soc, battery_daily_charge, battery_daily_discharge, battery_total_charge, battery_total_discharge, dc_temperature, ac_temperature, battery_temperature, battery_voltage, active_power_regulation) FROM '~/h64_old/h64_inverter_slow.csv' DELIMITER ', ' CSV HEADER;"
 echo "Weather station..."
-psql -U postgres -h localhost -d h64_old -c "COPY weather_station_metrics (time, location, id, battery_ok, temperature_C, humidity, wind_max_m_s, wind_avg_m_s, wind_dir_deg, rain_mm) FROM '/tmp/h64_weather_station.csv' DELIMITER ', ' CSV HEADER;"
+psql -U postgres -h localhost -d h64_old -c "COPY weather_station_metrics (time, location, id, battery_ok, temperature_C, humidity, wind_max_m_s, wind_avg_m_s, wind_dir_deg, rain_mm) FROM '~/h64_old/h64_weather_station.csv' DELIMITER ', ' CSV HEADER;"
