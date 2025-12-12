@@ -3,7 +3,7 @@
 -- point and then sent from Home Assistant via MQTT to a single Python script
 -- that inserts select data into tables for long term storage and archiving.
 
-INSERT INTO h64.inverter_slow (
+INSERT INTO inverter_slow (
   time, battery_soc, daily_pv_production, total_pv_production,
   daily_load_energy_consumption, total_load_energy_consumption,
   daily_energy_bought, daily_energy_sold,
@@ -18,22 +18,22 @@ INSERT INTO h64.inverter_slow (
     battery_daily_charge, battery_daily_discharge,
     battery_total_charge, battery_total_discharge,
     battery_temperature, dc_temperature, ac_temperature
-  FROM h64_old.inverter_metrics_slow;
+  FROM inverter_metrics_slow;
 
-INSERT INTO h64.inverter_fast (
+INSERT INTO inverter_fast (
   time, grid_power, load_power, load_l1_power, load_l2_power, load_l3_power,
   battery_power, pv1_power, pv2_power
 ) SELECT time, total_grid_power, total_load_power,
     load_power_l1, load_power_l2, load_power_l3,
     battery_power, pv1_power, pv2_power
-  FROM h64_old.inverter_metrics_faster;
+  FROM inverter_metrics_faster;
 
-INSERT INTO h64.heat_pump (time)
-  SELECT time FROM h64_old.heat_pump_metrics_electric_power_pulse;
+INSERT INTO heat_pump (time)
+  SELECT time FROM heat_pump_metrics_electric_power_pulse;
 
-INSERT INTO h64.weather_station (
+INSERT INTO weather_station (
   time, location, id, battery_ok, temperature_C, humidity,
   wind_max_m_s, wind_avg_m_s, wind_dir_deg, rain_mm
 ) SELECT time, location, id, battery_ok, temperature_C, humidity,
     wind_max_m_s, wind_avg_m_s, wind_dir_deg, rain_mm
-  FROM h64_old.weather_station_metrics;
+  FROM weather_station_metrics;
