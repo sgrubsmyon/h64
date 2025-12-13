@@ -25,7 +25,9 @@ INSERT INTO inverter_fast (
   battery_power, pv1_power, pv2_power
 ) SELECT time, total_grid_power, total_load_power,
     load_power_l1, load_power_l2, load_power_l3,
-    battery_power, pv1_power, pv2_power
+    CASE WHEN battery_power > 0 AND battery_power < 1e-30 THEN 0 ELSE battery_power END, -- prevent REAL underflow
+    CASE WHEN pv1_power > 0 AND pv1_power < 1e-30 THEN 0 ELSE pv1_power END, -- prevent REAL underflow
+    CASE WHEN pv2_power > 0 AND pv2_power < 1e-30 THEN 0 ELSE pv2_power END -- prevent REAL underflow
   FROM inverter_metrics_faster;
 
 INSERT INTO heat_pump (time)
