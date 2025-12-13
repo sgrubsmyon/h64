@@ -1,5 +1,5 @@
 [Unit]
-Description=H64 - insert data received from Home Assistant via MQTT into DB
+Description=H64 - insert data received via MQTT (mostly from Home Assistant) into DB
 After=postgresql.service
 
 [Service]
