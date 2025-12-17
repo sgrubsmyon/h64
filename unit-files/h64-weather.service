@@ -3,9 +3,9 @@ Description=H64 - receive Bresser weather station data via RTL-SDR and send via 
 After=network-online.target
 
 [Service]
-User=mvoge
-Group=mvoge
-ExecStart=/usr/bin/rtl_433
+User=yourusername
+Group=yourusername
+ExecStart=/usr/bin/rtl_433 # Need to put config file from weather_station dir under ~/.config/rtl_433/rtl_433.conf
 StandardOutput=file:/var/log/h64/weather_station
 StandardError=file:/var/log/h64/weather_station
 Restart=always
