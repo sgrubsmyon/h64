@@ -15,6 +15,13 @@ mqtt_topic_slow = home/assistant/inverter/deye_sun_10k/slow
 table_name_fast = inverter_fast
 table_name_slow = inverter_slow
 
+[WeatherStation]
+mqtt_topic = home/weather_station/events
+table_name = weather_station
+columns = ["time", "location", "id", "battery_ok", "temperature_C", "humidity", "wind_max_m_s", "wind_avg_m_s", "wind_dir_deg", "rain_mm"]
+filter_key = id
+filter_value = 41234567
+
 [PostgreSQL]
 host = localhost
 port = 5432

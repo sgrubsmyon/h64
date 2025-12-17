@@ -105,16 +105,40 @@ def sample(debug, dry_run):
             print("Received MQTT message on topic:", msg.topic)
             print("Parsed message:", json.loads(msg.payload))
         try:
+            data = json.loads(msg.payload)
+
+            # Find out section from config file based on topic
+            cfg_row = mqtt_topics[mqtt_topics.value == msg.topic]
+            section = cfg_row.section.values[0]
+            
+            # Continue only if data not filtered out
+            key_filter_key = cfg_row.key.values[0].replace("mqtt_topic", "filter_key")
+            key_filter_value = cfg_row.key.values[0].replace("mqtt_topic", "filter_value")
+            if key_filter_key in config_df[config_df.section == section].key.values and \
+               key_filter_value in config_df[config_df.section == section].key.values:
+                filter_key = config_df[
+                    (config_df.section == section) &
+                    (config_df.key == key_filter_key)
+                ].value.values[0]
+                filter_value = config_df[
+                    (config_df.section == section) &
+                    (config_df.key == key_filter_value)
+                ].value.values[0]
+                if filter_key in data:
+                    if str(data[filter_key]) != filter_value:
+                        print(f"[{datetime.now()}] Filtered out data based on {filter_key} != {filter_value}")
+                        print(f"[{datetime.now()}] Data was: {data}")
+                        return
+            
             # Find out table name from config file based on topic.
             # The table name is the value with the same section and the same key as
             # the topic key, only replacing 'mqtt_topic' with 'table_name'.
-            cfg_row = mqtt_topics[mqtt_topics.value == msg.topic]
-            section = cfg_row.section.values[0]
             key_table = cfg_row.key.values[0].replace("mqtt_topic", "table_name")
             table_name = config_df[
                 (config_df.section == section) &
                 (config_df.key == key_table)
             ].value.values[0]
+            
             # The columns to insert (optional)
             key_columns = key_table.replace("table_name", "columns")
             if key_columns in config_df[config_df.section == section].key.values:
@@ -125,7 +149,6 @@ def sample(debug, dry_run):
                 columns = json.loads(columns_str.replace("'", '"'))
             else:
                 columns = None
-            data = json.loads(msg.payload)
             insert_into_psql(table_name, data, debug, dry_run, columns)
         except json.decoder.JSONDecodeError:
             if debug:
