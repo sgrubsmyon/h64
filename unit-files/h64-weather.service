@@ -1,0 +1,15 @@
+[Unit]
+Description=H64 - receive Bresser weather station data via RTL-SDR and send via MQTT
+After=network-online.target
+
+[Service]
+User=mvoge
+Group=mvoge
+ExecStart=/usr/bin/rtl_433
+StandardOutput=file:/var/log/h64/weather_station
+StandardError=file:/var/log/h64/weather_station
+Restart=always
+RestartSec=30s
+
+[Install]
+WantedBy=multi-user.target
