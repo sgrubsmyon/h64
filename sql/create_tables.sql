@@ -83,3 +83,22 @@ CREATE TABLE weather_station (
 
 -- Convert tables to TimescaleDB hypertables:
 SELECT create_hypertable('weather_station', 'time');
+
+
+
+
+
+
+
+
+
+
+-- Table for CO2 data from electricity maps
+CREATE TABLE electricity_maps (
+   time                             TIMESTAMPTZ  NOT NULL, -- time in the following format: "2024-07-20 14:44:52"
+   anteil_fossiler_energietraeger   REAL         NULL,     -- in percent
+   co2_intensitaet                  REAL         NULL      -- in gCO2eq/kWh
+);
+
+-- Convert tables to TimescaleDB hypertables:
+SELECT create_hypertable('electricity_maps', 'time');

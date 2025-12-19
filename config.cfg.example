@@ -22,6 +22,10 @@ columns = ["time", "location", "id", "battery_ok", "temperature_C", "humidity", 
 filter_key = id
 filter_value = 41234567
 
+[ElectricityMaps]
+mqtt_topic = home/assistant/electricity_maps
+table_name = electricity_maps
+
 [PostgreSQL]
 host = localhost
 port = 5432
