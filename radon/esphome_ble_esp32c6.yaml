@@ -1,0 +1,80 @@
+# Source: https://gist.github.com/kabakaev/759a3292112225db50b98e2254598793
+#
+# # This is an esphome configuration file.
+# # It is tested on debian-12 and [nanoESP32-C6](https://github.com/wuxx/nanoESP32-C6/blob/master/README_en.md).
+# # This configuration should work on any Linux distribution and any ESP32-C6 board though.
+#
+# # Create and activate python venv, install esphome:
+# test -d ./venv || python3 -m venv venv
+# source ./venv/bin/activate
+# pip install esphome --upgrade
+#
+# # Connect ESP32-C6 to USB, press and hold "Boot" button, press and release "Reset", release "Boot".
+# # Run `sudo dmesg` to find the device name, usually ttyACM0 or ttyACM1.
+# # In my case, the message was "cdc_acm 1-4.1.1:1.0: ttyACM1: USB ACM device".
+# esphome run --device /dev/ttyACM1 esphome_ble_esp32c6.yaml
+# esphome logs --device /dev/ttyACM1 esphome_ble_esp32c6.yaml
+
+
+esphome:
+  name: esphome-ble-esp32c6
+  platformio_options:
+    upload_port: /dev/ttyACM0
+    framework: espidf
+    board_build.flash_mode: dio
+    platform_packages:
+    - platformio/toolchain-xtensa-esp-elf @ 14.2.0+20241119
+
+esp32:
+  variant: esp32c6
+  board: esp32-c6-devkitc-1
+  framework:
+    type: esp-idf
+    version: 5.3.1 # https://github.com/espressif/esp-idf/releases/tag/v5.3.1
+    platform_version: 6.9.0 # https://github.com/platformio/platform-espressif32/releases/tag/v6.9.0
+    sdkconfig_options:
+      # CONFIG_ESPTOOLPY_FLASHSIZE_8MB: y
+      CONFIG_ESPTOOLPY_FLASHSIZE_DETECT: y
+      COMPILER_OPTIMIZATION_SIZE: y
+
+
+bluetooth_proxy:
+  active: true
+
+network:
+  enable_ipv6: False
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret home_assistant_api_password
+  reboot_timeout: 300s
+
+ota:
+  platform: esphome
+  password: !secret ota_password
+
+wifi:
+  networks:
+  - ssid: !secret wifi1_ssid
+    password: !secret wifi1_password
+
+sensor:
+  - platform: uptime
+    type: seconds
+    name: Uptime Sensor
+    entity_category: diagnostic
+  - platform: internal_temperature
+    entity_category: diagnostic
+    name: "Internal Temperature"
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Berlin
+    servers:
+      - 0.pool.ntp.org
+      - 1.pool.ntp.org
