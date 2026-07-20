@@ -80,6 +80,8 @@ CREATE TABLE weather_station (
    wind_dir_deg  SMALLINT     NULL,     -- wind direction in degrees: North = 0, East = 90, South = 180, West = 270
    rain_mm       REAL         NULL      -- amount of rain fallen since weather station was deployed (cumulative)
 );
+-- ALTER TABLE weather_station ALTER COLUMN id TYPE NUMERIC(9);
+
 
 -- Convert tables to TimescaleDB hypertables:
 SELECT create_hypertable('weather_station', 'time');
